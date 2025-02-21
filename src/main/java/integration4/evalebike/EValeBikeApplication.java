@@ -9,5 +9,4 @@ public class EValeBikeApplication {
     public static void main(String[] args) {
         SpringApplication.run(EValeBikeApplication.class, args);
     }
-
 }
