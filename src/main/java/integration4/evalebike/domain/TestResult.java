@@ -3,7 +3,7 @@ package integration4.evalebike.domain;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name="test_result")
+@Table(name = "test_result")
 public class TestResult {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

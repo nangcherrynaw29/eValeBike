@@ -3,7 +3,7 @@ package integration4.evalebike.domain;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name="user")
+@Table(name = "user")
 @Inheritance(strategy = InheritanceType.JOINED)
 public class User {
     @Id
