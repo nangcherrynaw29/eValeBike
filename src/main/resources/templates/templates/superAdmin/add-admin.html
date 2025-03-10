@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create New Admin</title>
+</head>
+<body>
+<div>
+  <h1>Create</h1>
+
+  <!-- Form to Create New Admin -->
+  <form th:action="@{/role/create}" th:object="${admin}" method="post">
+<!--    need to rename the endPoint-->
+    <div>
+
+      <label for="name">Name:</label>
+      <input type="text" id="name" th:field="*{name}" placeholder="Enter  name" required />
+    </div>
+    <div>
+      <label for="email">Email:</label>
+      <input type="email" id="email" th:field="*{email}" placeholder="Enter  email" required />
+    </div>
+
+    <div>
+      <label for="companyName">Company Name:</label>
+      <input type="text" id="companyName" th:field="*{companyName}" placeholder="Enter company name" required />
+    </div>
+    <div>
+      <label for="status">Status:</label>
+      <select id="status" th:field="*{status}">
+        <option value="Active">Active</option>
+        <option value="Inactive">Inactive</option>
+      </select>
+    </div>
+    <div>
+      <button type="submit">Create </button>
+    </div>
+  </form>
+
+  <!-- Link back to the Admin Dashboard -->
+    <a href="/templates/templates/superAdmin/admin-management">
+        <button>Back to Dashboard</button>
+    </a>
+
+</div>
+</body>
+</html>
