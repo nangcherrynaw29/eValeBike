@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User navbar</title>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <div class="container-fluid">
+        <a class="navbar-brand">User</a>
+            <span class="navbar-toggler-icon"></span>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" th:href="@{/home}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/bikeResults}">Bike Results</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/reportHistory}">Report History</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/userProfile}">My Profile</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+</body>
+</html>
