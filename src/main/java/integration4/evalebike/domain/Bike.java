@@ -25,11 +25,8 @@ public class Bike {
     private float nominalEnginePower;
     private float engineTorque;
     private LocalDate lastTestDate;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "bike_owner_id")
-    private BikeOwner owner;
 
-    public Bike(String bikeQR, String brand, String model, String chassisNumber, int productionYear, BikeSize bikeSize, int mileage, String gearType, String engineType, String powerTrain, float accuCapacity, float maxSupport, float maxEnginePower, float nominalEnginePower, float engineTorque, LocalDate lastTestDate, BikeOwner owner) {
+    public Bike(String bikeQR, String brand, String model, String chassisNumber, int productionYear, BikeSize bikeSize, int mileage, String gearType, String engineType, String powerTrain, float accuCapacity, float maxSupport, float maxEnginePower, float nominalEnginePower, float engineTorque, LocalDate lastTestDate) {
         this.bikeQR = bikeQR;
         this.brand = brand;
         this.model = model;
@@ -46,7 +43,6 @@ public class Bike {
         this.nominalEnginePower = nominalEnginePower;
         this.engineTorque = engineTorque;
         this.lastTestDate = lastTestDate;
-        this.owner = owner;
     }
 
     public Bike() {
@@ -91,14 +87,6 @@ public class Bike {
 
     public void setLastTestDate(LocalDate lastTestDate) {
         this.lastTestDate = lastTestDate;
-    }
-
-    public BikeOwner getOwner() {
-        return owner;
-    }
-
-    public void setOwner(BikeOwner owner) {
-        this.owner = owner;
     }
 
     public String getChassisNumber() {
