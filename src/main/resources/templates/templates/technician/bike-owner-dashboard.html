@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}">
+    <title>Bike Owner's Dashboard</title>
+</head>
+<body>
+<div class="dashboard">
+    <h2>Bike Owner's Dashboard</h2>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Address</th>
+            <th>Email</th>
+            <th>Phone number</th>
+        </tr>
+        <tr th:each="owner : ${bikeOwners}">
+            <td th:text="${owner.name}"></td>
+            <td th:text="${owner.address}"></td>
+            <td th:text="${owner.email}"></td>
+            <td th:text="${owner.phoneNumber}"></td>
+            <td><button>All Bikes</button></td>
+        </tr>
+    </table>
+    <button class="btn" onclick="location.href='/technician/addBikeOwner'">Add new bike owner</button>
+</div>
+</body>
+</html>

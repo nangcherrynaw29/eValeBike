@@ -25,6 +25,7 @@ dependencies {
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    implementation("org.webjars:bootstrap:5.3.3")
 }
 
 tasks.withType<Test> {
