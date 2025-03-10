@@ -15,19 +15,13 @@
             <th>Address</th>
             <th>Email</th>
             <th>Phone number</th>
-            <th>E-bike Brand</th>
-            <th>Motor type</th>
-            <th>Visual Inspection Notes</th>
         </tr>
         <tr th:each="owner : ${bikeOwners}">
             <td th:text="${owner.name}"></td>
             <td th:text="${owner.address}"></td>
             <td th:text="${owner.email}"></td>
             <td th:text="${owner.phoneNumber}"></td>
-            <td th:text="${owner.eBikeBrand}"></td>
-            <td th:text="${owner.motorType}"></td>
-            <td th:text="${owner.visualInspectionNotes}"></td>
-            <td><button>Test</button></td>
+            <td><button>All Bikes</button></td>
         </tr>
     </table>
     <button class="btn" onclick="location.href='/technician/addBikeOwner'">Add new bike owner</button>

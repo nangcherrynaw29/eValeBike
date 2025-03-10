@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bike Dashboard</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}">
+</head>
+<body>
+<div class="container mt-5">
+    <h2 class="text-center">Bike Dashboard</h2>
+    <table class="table table-striped table-bordered mt-3">
+        <thead class="table-dark">
+        <tr>
+            <th>Bike QR</th>
+            <th>Brand</th>
+            <th>Model</th>
+            <th>Chassis Number</th>
+            <th>Production Year</th>
+            <th>Bike Size</th>
+            <th>Mileage</th>
+            <th>Gear Type</th>
+            <th>Engine Type</th>
+            <th>Power Train</th>
+            <th>Accu Capacity (Ah)</th>
+            <th>Max Support (%)</th>
+            <th>Max Engine Power (W)</th>
+            <th>Nominal Engine Power (W)</th>
+            <th>Engine Torque (Nm)</th>
+            <th>Last Test Date</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="bike : ${bikes}">
+            <td th:text="${bike.bikeQR}"></td>
+            <td th:text="${bike.brand}"></td>
+            <td th:text="${bike.model}"></td>
+            <td th:text="${bike.chassisNumber}"></td>
+            <td th:text="${bike.productionYear}"></td>
+            <td th:text="${bike.bikeSize}"></td>
+            <td th:text="${bike.mileage}"></td>
+            <td th:text="${bike.gearType}"></td>
+            <td th:text="${bike.engineType}"></td>
+            <td th:text="${bike.powerTrain}"></td>
+            <td th:text="${bike.accuCapacity}"></td>
+            <td th:text="${bike.maxSupport}"></td>
+            <td th:text="${bike.maxEnginePower}"></td>
+            <td th:text="${bike.nominalEnginePower}"></td>
+            <td th:text="${bike.engineTorque}"></td>
+            <td th:text="${bike.lastTestDate}"></td>
+            <td><button>Test</button></td>
+        </tr>
+        </tbody>
+    </table>
+    <button class="btn" onclick="location.href='/technician/addBike'">Add new bike</button>
+</div>
+</body>
+</html>
