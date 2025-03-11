@@ -20,6 +20,11 @@ public abstract class User {
         this.password = password;
     }
 
+    public User(String name, String email) {
+        this.name = name;
+        this.email = email;
+    }
+
     public User() {
 
     }

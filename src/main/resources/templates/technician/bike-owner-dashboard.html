@@ -18,13 +18,13 @@
         </tr>
         <tr th:each="owner : ${bikeOwners}">
             <td th:text="${owner.name}"></td>
-            <td th:text="${owner.address}"></td>
             <td th:text="${owner.email}"></td>
             <td th:text="${owner.phoneNumber}"></td>
+            <td th:text="${owner.birthDate}"></td>
             <td><button>All Bikes</button></td>
         </tr>
     </table>
-    <button class="btn" onclick="location.href='/technician/addBikeOwner'">Add new bike owner</button>
+    <button><a th:href="@{/technician/add-bike-owner}">Add Bike Owner</a></button>
 </div>
 </body>
 </html>

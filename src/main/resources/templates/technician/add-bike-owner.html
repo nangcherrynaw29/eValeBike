@@ -4,19 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}">
+  <script src="/js/add-bike-owner.js" defer></script>
   <title>Add Bike Owner</title>
 </head>
 <body>
 <div class="form-container">
   <h2>Add Bike Owner</h2>
-  <form action="/technician/saveBikeOwner" method="post" th:object="${bikeOwner}">
+  <form id="add-bikeOwner-form">
     <div class="mb-3">
       <label for="name">Name:</label>
       <input type="text" id="name" name="name">
-    </div>
-    <div class="mb-3">
-      <label for="address">Address:</label>
-        <input type="text" id="address" name="address">
     </div>
     <div class="mb-3">
       <label for="email">Email:</label>
@@ -25,6 +22,10 @@
     <div class="mb-3">
       <label for="phoneNumber">Phone Number:</label>
       <input type="text" id="phoneNumber" name="phoneNumber">
+    </div>
+    <div class="mb-3">
+      <label for="birthDate">Date of Birth:</label>
+      <input type="date" id="birthDate" name="birthDate">
     </div>
     <button type="submit" class="btn">Create</button>
   </form>
