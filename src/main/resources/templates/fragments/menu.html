@@ -8,9 +8,9 @@
 <nav>
   <ul>
     <li><a th:href="@{/}">Home</a></li>
-    <li sec:authorize="hasAnyAuthority('technician', 'admin', 'superAdmin')"><a th:href="@{/technician/bike-owner-dashboard}">Dashboard</a></li>
-    <li sec:authorize="hasAnyAuthority('admin', 'superAdmin')"><a th:href="@{/admin/admin-dashboard}">Dashboard</a></li>
-    <li sec:authorize="hasAuthority('superAdmin')"><a th:href="@{/superAdmin/admin-management}">Dashboards</a></li>
+    <li sec:authorize="hasAnyAuthority('technician', 'admin', 'superAdmin')"><a th:href="@{/technician/bike-owner-dashboard}">Bike Owner Dashboard</a></li>
+    <li sec:authorize="hasAnyAuthority('admin', 'superAdmin')"><a th:href="@{/admin/admin-dashboard}">Technician Dashboard</a></li>
+    <li sec:authorize="hasAuthority('superAdmin')"><a th:href="@{/superAdmin/admin-management}">Admin Dashboard</a></li>
     <li sec:authorize="isAuthenticated()"><a th:href="@{/logout}">Logout</a></li>
     <li sec:authorize="isAnonymous()"><a th:href="@{/login}">Login</a></li>
   </ul>

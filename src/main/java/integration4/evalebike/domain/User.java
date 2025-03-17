@@ -13,7 +13,7 @@ public abstract class User {
     private String email;
     private String password;
     private String companyName;
-    @Transient
+    @Enumerated(EnumType.STRING)
     private Role role;
 
     public User(Integer id, String name, String email, String password) {
@@ -21,11 +21,27 @@ public abstract class User {
         this.name = name;
         this.email = email;
         this.password = password;
+        this.role = assignRole();
     }
 
     public User(String name, String email) {
         this.name = name;
         this.email = email;
+        this.role = assignRole();
+    }
+
+    private Role assignRole() {
+        if (this instanceof BikeOwner) {
+            return Role.BIKE_OWNER;
+        } else if (this instanceof Technician) {
+            return Role.TECHNICIAN;
+        } else if (this instanceof Administrator) {
+            return Role.ADMIN;
+        } else if (this instanceof SuperAdmin) {
+            return Role.SUPER_ADMIN;
+        } else {
+            return null;
+        }
     }
 
     public User() {
@@ -70,5 +86,13 @@ public abstract class User {
 
     public void setCompanyName(String companyName) {
         this.companyName = companyName;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 }
