@@ -1,4 +1,4 @@
-package integration4.evalebike.controller.Technician.dto;
+package integration4.evalebike.controller.technician.dto;
 
 import integration4.evalebike.domain.BikeOwner;
 import org.mapstruct.Mapper;

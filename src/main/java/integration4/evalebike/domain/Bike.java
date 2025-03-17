@@ -3,12 +3,14 @@ package integration4.evalebike.domain;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.Objects;
+import java.util.UUID;
 
 @Entity
 @Table(name = "bike")
 public class Bike {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "bikeqr", nullable = false, unique = true, updatable = false)
     private String bikeQR;
     private String brand;
     private String model;
@@ -26,25 +28,8 @@ public class Bike {
     private float nominalEnginePower;
     private float engineTorque;
     private LocalDate lastTestDate;
-
-    public Bike(String bikeQR, String brand, String model, String chassisNumber, int productionYear, BikeSize bikeSize, int mileage, String gearType, String engineType, String powerTrain, float accuCapacity, float maxSupport, float maxEnginePower, float nominalEnginePower, float engineTorque, LocalDate lastTestDate) {
-        this.bikeQR = bikeQR;
-        this.brand = brand;
-        this.model = model;
-        this.chassisNumber = chassisNumber;
-        this.productionYear = productionYear;
-        this.bikeSize = bikeSize;
-        this.mileage = mileage;
-        this.gearType = gearType;
-        this.engineType = engineType;
-        this.powerTrain = powerTrain;
-        this.accuCapacity = accuCapacity;
-        this.maxSupport = maxSupport;
-        this.maxEnginePower = maxEnginePower;
-        this.nominalEnginePower = nominalEnginePower;
-        this.engineTorque = engineTorque;
-        this.lastTestDate = lastTestDate;
-    }
+    @Transient
+    private String qrCodeImage;
 
     public Bike() {
 
@@ -66,6 +51,26 @@ public class Bike {
         this.nominalEnginePower = nominalEnginePower;
         this.engineTorque = engineTorque;
         this.lastTestDate = lastTestDate;
+    }
+
+    @PrePersist
+    public void generateQR() {
+        if (this.bikeQR == null) {
+            this.bikeQR = UUID.randomUUID().toString();
+        }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Bike bike = (Bike) o;
+        return bikeQR.equals(bike.bikeQR);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(bikeQR);
     }
 
     public String getBikeQR() {
@@ -194,5 +199,22 @@ public class Bike {
 
     public void setEngineTorque(float engineTorque) {
         this.engineTorque = engineTorque;
+    }
+
+    public String getQrCodeImage() {
+        return qrCodeImage;
+    }
+
+    public void setQrCodeImage(String qrCodeImage) {
+        this.qrCodeImage = qrCodeImage;
+    }
+
+    @Override
+    public String toString() {
+        return "Bike{" +
+                "bikeQR='" + bikeQR + '\'' +
+                ", brand='" + brand + '\'' +
+                ", model='" + model + '\'' +
+                '}';
     }
 }

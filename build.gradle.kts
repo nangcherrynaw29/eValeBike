@@ -29,6 +29,9 @@ dependencies {
     implementation("org.webjars:bootstrap:5.3.3")
     implementation ("org.mapstruct:mapstruct:1.6.3")
     annotationProcessor ("org.mapstruct:mapstruct-processor:1.6.3")
+    implementation("com.google.zxing:core:3.5.0")
+    implementation("com.google.zxing:javase:3.5.0")
+    implementation("org.webjars.npm:html5-qrcode:2.3.8")
 
 }
 
