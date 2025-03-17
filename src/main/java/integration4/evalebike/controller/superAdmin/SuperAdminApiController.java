@@ -3,9 +3,7 @@ package integration4.evalebike.controller.superAdmin;
 import integration4.evalebike.controller.superAdmin.dto.AddAdminDto;
 import integration4.evalebike.controller.superAdmin.dto.AdministratorDto;
 import integration4.evalebike.domain.Administrator;
-import integration4.evalebike.domain.SuperAdmin;
 import integration4.evalebike.service.AdminService;
-import integration4.evalebike.service.SuperAdminService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,16 +11,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/super-admin")
+@RequestMapping("/api/super-admin/admins")
 public class SuperAdminApiController {
-    private SuperAdminService superAdminService;
-    private AdminService adminService;
+    private final AdminService adminService;
     private final AdminMapper adminMapper;
 
 
-    public SuperAdminApiController(AdminService adminService, SuperAdminService superAdminService, AdminMapper adminMapper) {
+    public SuperAdminApiController(AdminService adminService, AdminMapper adminMapper) {
         this.adminService = adminService;
-        this.superAdminService = superAdminService;
         this.adminMapper = adminMapper;
     }
 
@@ -46,7 +42,7 @@ public class SuperAdminApiController {
               .body(adminMapper.toAdminDto(administrator));
     }
 
-    @DeleteMapping("/admins/{adminId}")
+    @DeleteMapping("/{adminId}")
     public ResponseEntity<Void> deleteAdmin(@PathVariable Integer adminId) {
         adminService.deleteAdmin(adminId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);

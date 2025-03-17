@@ -1,4 +1,4 @@
-package integration4.evalebike.controller.viewmodel;
+package integration4.evalebike.controller.viewModel;
 
 import integration4.evalebike.domain.Technician;
 

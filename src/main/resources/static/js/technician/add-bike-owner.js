@@ -16,7 +16,7 @@ form.addEventListener('submit', async e => {
     });
     if (response.status === 201) {
         const bikeOwner = await response.json();
-        window.location = `/technician/bike-owner-dashboard`;
+        window.location = `/technician/bike-owners`;
     } else {
         alert('Something went wrong while creating the bike owner');
     }

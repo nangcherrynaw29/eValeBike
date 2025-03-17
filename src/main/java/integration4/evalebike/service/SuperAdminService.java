@@ -1,6 +1,6 @@
 package integration4.evalebike.service;
 import integration4.evalebike.domain.SuperAdmin;
-import integration4.evalebike.exceptions.NotFoundException;
+import integration4.evalebike.exception.NotFoundException;
 import integration4.evalebike.repository.SuperAdminRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -23,7 +23,7 @@ public class SuperAdminService {
 
     // Get admin by ID
     public SuperAdmin getSuperAdminById(final Integer id) {
-            return superAdminRepository.findById(id).orElseThrow(()-> NotFoundException.admin(id));
+            return superAdminRepository.findById(id).orElseThrow(()-> NotFoundException.forAdmin(id));
         }
 
     // Save a new admin

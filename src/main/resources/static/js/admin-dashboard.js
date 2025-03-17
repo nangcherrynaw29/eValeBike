@@ -9,14 +9,14 @@ document.addEventListener("DOMContentLoaded", () => {
     if (addTechnicianBtn) {
         addTechnicianBtn.addEventListener("click", (e) => {
             e.preventDefault();
-            window.location.href = "/technicians/add";
+            window.location.href = "/admin/technicians/add";
         });
     }
 
     // Function to load technicians
     async function loadTechnicians() {
         try {
-            const response = await fetch("/api/technicians");
+            const response = await fetch("/api/admin/technicians");
             if (!response.ok) throw new Error("Failed to fetch technicians");
 
             const technicians = await response.json();
@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 try {
                     // Send DELETE request to the backend
-                    const response = await fetch(`/api/technicians/${technicianId}`, {
+                    const response = await fetch(`/api/admin/technicians/${technicianId}`, {
                         method: "DELETE",
                         headers: {
                             "Accept": "application/json",
@@ -106,7 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             try {
                 // Send POST request to add a new technician
-                const response = await fetch("/api/technicians", {
+                const response = await fetch("/api/admin/technicians", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -119,7 +119,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     // If the technician is created successfully
                     const technician = await response.json();
                     alert(`Technician created successfully with ID #${technician.id}`);
-                    window.location.href = "/technicians/all"; // Redirect to the dashboard
+                    window.location.href = "/admin/technicians"; // Redirect to the dashboard
                 } else {
                     alert("Something went wrong. Please try again.");
                 }
@@ -137,7 +137,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (backToDashboardBtn) {
         backToDashboardBtn.addEventListener("click", () => {
-            window.location.href = "/technicians/all";
+            window.location.href = "/admin/technicians";
         });
     }
 });

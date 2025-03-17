@@ -4,7 +4,6 @@ import integration4.evalebike.controller.admin.dto.TechnicianMapper;
 import integration4.evalebike.controller.admin.dto.request.TechnicianRequestDTO;
 import integration4.evalebike.controller.admin.dto.response.TechnicianResponseDTO;
 import integration4.evalebike.domain.Technician;
-import integration4.evalebike.service.BikeOwnerService;
 import integration4.evalebike.service.TechnicianService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,20 +13,18 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("api/technicians")
+@RequestMapping("api/admin/technicians")
 public class AdminApiController {
-    private final BikeOwnerService bikeOwnerService;
     private final TechnicianService technicianService;
     private final TechnicianMapper technicianMapper;
 
-    public AdminApiController(BikeOwnerService bikeOwnerService, TechnicianService technicianService, TechnicianMapper technicianMapper) {
-        this.bikeOwnerService = bikeOwnerService;
+    public AdminApiController(TechnicianService technicianService, TechnicianMapper technicianMapper) {
         this.technicianService = technicianService;
         this.technicianMapper = technicianMapper;
     }
 
     // Create a new technician
-    @PostMapping
+    @PostMapping()
     public ResponseEntity<TechnicianResponseDTO> createTechnician(@RequestBody final TechnicianRequestDTO technicianDTO) {
         final Technician savedTechnician = technicianService.saveTechnician(technicianDTO.name(), technicianDTO.email(), technicianDTO.password());
         return ResponseEntity
