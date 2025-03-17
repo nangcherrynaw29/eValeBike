@@ -1,19 +1,13 @@
 package integration4.evalebike.controller.superAdmin;
 
-import integration4.evalebike.controller.viewModel.AdminsViewModel;
-import integration4.evalebike.domain.Administrator;
-import integration4.evalebike.domain.SuperAdmin;
+import integration4.evalebike.controller.viewmodel.AdminsViewModel;
 import integration4.evalebike.service.AdminService;
 import integration4.evalebike.service.SuperAdminService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.List;
 @Controller
 @RequestMapping("/super-admin")
 public class SuperAdminController {

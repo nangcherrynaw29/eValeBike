@@ -1,4 +1,4 @@
-package integration4.evalebike.controller.viewModel;
+package integration4.evalebike.controller.viewmodel;
 
 import integration4.evalebike.domain.Administrator;
 
