@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         try {
             // Send the POST request with fetch
-            const response = await fetch("/api/technicians", {
+            const response = await fetch("/api/admin/technicians", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json", // Send JSON data
@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 // If the technician is created successfully (201 Created)
                 const technician = await response.json(); // Get the created technician from the response
                 alert(`Technician created successfully with ID #${technician.id}`);
-                window.location.href = "/technicians/all"; // Redirect back to the technician dashboard
+                window.location.href = "/admin/technicians"; // Redirect back to the technician dashboard
             } else {
                 // If something goes wrong
                 alert("Something went wrong. Please try again.");
@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (backToDashboardBtn) {
         backToDashboardBtn.addEventListener("click", function () {
             console.log("Back to dashboard button clicked!");
-            window.location.href = "/technicians/all";
+            window.location.href = "/admin/technicians";
         });
     }
 });

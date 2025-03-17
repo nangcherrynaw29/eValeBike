@@ -27,7 +27,7 @@ form.addEventListener('submit', async e => {
     });
     if (response.status === 201) {
         const bike = await response.json();
-        window.location = `/technician/bike-dashboard`;
+        window.location = `/technician/bikes`;
     } else {
         alert('Something went wrong while creating the bike');
     }
