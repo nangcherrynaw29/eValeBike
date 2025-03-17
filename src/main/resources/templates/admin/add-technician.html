@@ -1,42 +1,25 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Create New Technician</title>
+  <title>Add Technician</title>
 </head>
 <body>
-<div>
-
-  <!-- Form to Create New Technician -->
-  <form th:action="@{/role/create}" th:object="${technician}" method="post">
-    <!-- Name, Email, Password from User class -->
-    <div>
-      <label for="name">Name:</label>
-      <input type="text" id="name" th:field="*{name}" placeholder="Enter name" required />
-    </div>
-
-    <div>
-      <label for="email">Email:</label>
-      <input type="email" id="email" th:field="*{email}" placeholder="Enter email" required />
-    </div>
-
-    <div>
-      <label for="password">Password:</label>
-      <input type="password" id="password" th:field="*{password}" placeholder="Enter password" required />
-    </div>
-
-    <!-- Submit Button -->
-    <div>
-      <button type="submit">Create Technician</button>
-    </div>
+<div style="padding: 20px;">
+  <h2>Add Technician</h2>
+  <form id="add-technician-form">
+    <label for="technician-name">Name:</label>
+    <input type="text" id="technician-name" required><br><br>
+    <label for="technician-email">Email:</label>
+    <input type="email" id="technician-email" required><br><br>
+    <label for="technician-password">Password:</label>
+    <input type="password" id="technician-password" required><br><br>
+    <button type="submit">Add Technician</button>
+    <button type="button" id="back-to-dashboard-btn">Back to Dashboard</button>
   </form>
-
-  <!-- Link back to the Admin Dashboard -->
-  <a href="/templates/adminhboard.html">
-    <button>Back to Dashboard</button>
-  </a>
-
 </div>
+
+<script src="/js/add-technician.js" type="module"></script>
 </body>
 </html>

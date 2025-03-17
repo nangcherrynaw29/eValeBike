@@ -1,47 +1,34 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard</title>
 </head>
 <body>
-<div class="container mt-4">
+<div style="padding: 20px;">
   <h2>Admin Dashboard</h2>
 
   <!-- Technician Profiles Management -->
-  <div class="card mb-4">
-    <div class="card-header">Technician Profiles Management</div>
-    <div class="card-body">
-      <table class="table table-bordered">
-        <thead>
-        <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="technician : ${technicians}">
-          <td th:text="${technician.id}"></td>
-          <td th:text="${technician.name}"></td>
-          <td th:text="${technician.email}"></td>
-          <td>
-            <!-- Edit Button -->
-            <button class="btn btn-primary btn-sm">Edit</button>
-            <!-- Delete Button -->
-            <button class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this technician?');">Delete</button>
-          </td>
-        </tr>
-        </tbody>
-      </table>
-      <!-- Link to Add New Technician Page -->
-      <a href="/technician/create">
-        <button class="btn btn-success">Add New Technician</button>
-      </a>
-    </div>
+  <div style="margin-bottom: 20px;">
+    <h3>Technician Profiles Management</h3>
+    <table border="1" style="width: 100%; border-collapse: collapse;">
+      <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Actions</th>
+      </tr>
+      </thead>
+      <tbody id="technician-table-body">
+      <!-- Rows will be populated dynamically by JavaScript -->
+      </tbody>
+    </table>
+    <button id="add-technician-btn">Add New Technician</button>
   </div>
 </div>
+
+<script src="/js/admin-dashboard.js" type="module"></script>
 </body>
 </html>
