@@ -12,6 +12,7 @@ public abstract class User {
     private String name;
     private String email;
     private String password;
+    private String companyName;
 
     public User(Integer id, String name, String email, String password) {
         this.id = id;
@@ -59,5 +60,13 @@ public abstract class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
     }
 }

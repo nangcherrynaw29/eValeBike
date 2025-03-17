@@ -6,42 +6,30 @@
     <title>Admin Management Dashboard</title>
 </head>
 <body>
+
 <div>
     <h1>Admin Management Dashboard</h1>
 
-    <!-- Admin Table -->
-    <table >
+    <table>
         <thead>
         <tr>
             <th>ID</th>
             <th>Name</th>
             <th>Email</th>
-
             <th>Company Name</th>
-            <th>Status</th>
-
+<!--            <th>Status</th>-->
 
         </tr>
         </thead>
-        <tbody>
-        <!-- Loop through each admin -->
-        <tr th:each="admin : ${admins}">
-            <td th:text="${admin.id}"></td>
-            <td th:text="${admin.name}"></td>
-            <td th:text="${admin.email}"></td>
-            <td th:text="${admin.role}"></td>
-            <td th:text="${admin.companyName}"></td>
-            <td th:text="${admin.status}"></td>
-            <td>
-                    <button>Edit</button>
-
-            </td>
-        </tr>
+        <tbody id="admin-table-body">
+        <!-- Admins will be added here dynamically -->
         </tbody>
     </table>
 </div>
-<a href="/templates/superAdmin.html">
-    <button class="btn btn-primary">Add a new admin</button>
-</a>
+<!--///Need to implement edit button-->
+
+<button id="add-admin-btn" class="btn">Add a new admin</button>
+
 </body>
+<script src="/js/superAdmin/admin-management.js"></script>
 </html>
