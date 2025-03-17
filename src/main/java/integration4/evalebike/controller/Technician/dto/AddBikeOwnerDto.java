@@ -1,0 +1,8 @@
+package integration4.evalebike.controller.Technician.dto;
+
+import jakarta.validation.constraints.PastOrPresent;
+
+import java.time.LocalDate;
+
+public record AddBikeOwnerDto(String name, String email, String phoneNumber, @PastOrPresent LocalDate birthDate) {
+}

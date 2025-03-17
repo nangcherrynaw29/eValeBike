@@ -17,6 +17,12 @@ public class BikeOwner extends User {
         this.birthDate = birthDate;
     }
 
+    public BikeOwner(String name, String email, String phoneNumber, LocalDate birthDate) {
+        super(name, email);
+        this.phoneNumber = phoneNumber;
+        this.birthDate = birthDate;
+    }
+
     public BikeOwner() {
 
     }
