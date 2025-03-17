@@ -1,6 +1,6 @@
-package integration4.evalebike.controller.Technician;
+package integration4.evalebike.controller.technician;
 
-import integration4.evalebike.controller.Technician.dto.*;
+import integration4.evalebike.controller.technician.dto.*;
 import integration4.evalebike.domain.Bike;
 import integration4.evalebike.domain.BikeOwner;
 import integration4.evalebike.service.BikeOwnerService;
@@ -30,7 +30,7 @@ public class TechnicianAPIController {
     }
 
     @PostMapping("/bikes")
-    public ResponseEntity<BikeDto> createBike(@RequestBody @Valid final AddBikeDto addBikeDto) {
+    public ResponseEntity<BikeDto> createBike(@RequestBody @Valid final AddBikeDto addBikeDto) throws Exception{
         final Bike bike = bikeService.addBike(addBikeDto.brand(), addBikeDto.model(), addBikeDto.chassisNumber(), addBikeDto.productionYear(),
                 addBikeDto.bikeSize(), addBikeDto.mileage(), addBikeDto.gearType(), addBikeDto.engineType(), addBikeDto.powerTrain(),
                 addBikeDto.accuCapacity(), addBikeDto.maxSupport(), addBikeDto.maxEnginePower(), addBikeDto.nominalEnginePower(),
