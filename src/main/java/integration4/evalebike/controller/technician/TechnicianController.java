@@ -1,9 +1,10 @@
-package integration4.evalebike.controller.Technician;
+package integration4.evalebike.controller.technician;
 
 import integration4.evalebike.domain.Bike;
 import integration4.evalebike.domain.BikeOwner;
 import integration4.evalebike.service.BikeOwnerService;
 import integration4.evalebike.service.BikeService;
+import integration4.evalebike.service.QrCodeService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,15 +18,21 @@ import java.util.List;
 public class TechnicianController {
     private final BikeOwnerService bikeOwnerService;
     private final BikeService bikeService;
+    private final QrCodeService qrCodeService;
 
-    public TechnicianController(BikeOwnerService bikeOwnerService, BikeService bikeService) {
+    public TechnicianController(BikeOwnerService bikeOwnerService, BikeService bikeService, QrCodeService qrCodeService) {
         this.bikeOwnerService = bikeOwnerService;
         this.bikeService = bikeService;
+        this.qrCodeService = qrCodeService;
     }
 
     @GetMapping("/bike-dashboard")
     public String logBikes(Model model) {
         List<Bike> bikes = bikeService.getBikes();
+        for (Bike bike : bikes) {
+            String qrCodeImage = qrCodeService.generateQrCodeBase64(bike.getBikeQR(), 200, 200);
+            bike.setQrCodeImage(qrCodeImage);
+        }
         model.addAttribute("bikes", bikes);
         return "technician/bike-dashboard";
     }
