@@ -15,12 +15,10 @@ public class Administrator extends User {
 
     public Administrator() {}
 
-    @Override
     public String getCompanyName() {
         return companyName;
     }
 
-    @Override
     public void setCompanyName(String companyName) {
         this.companyName = companyName;
     }

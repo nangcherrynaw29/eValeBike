@@ -36,7 +36,6 @@ public class SuperAdminService {
         SuperAdmin existingSuperAdmin = superAdminRepository.findById(id).orElseThrow(() -> new RuntimeException("Admin not found"));
         existingSuperAdmin.setName(adminDetails.getName());
         existingSuperAdmin.setEmail(adminDetails.getEmail());
-        existingSuperAdmin.setCompanyName(adminDetails.getCompanyName());
         return superAdminRepository.save(existingSuperAdmin);
     }
 
