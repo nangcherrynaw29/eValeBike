@@ -68,11 +68,10 @@
                             <td th:text="${bike.nominalEnginePower}"></td>
                             <td th:text="${bike.engineTorque}"></td>
                             <td th:text="${bike.lastTestDate}"></td>
-
                             <td>
-                                <button class="btn btn-primary btn-sm">
-                                    <i class="fas fa-clipboard-check"></i> Test
-                                </button>
+                                <a th:href="@{/technician/pre-check}" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-clipboard-check"></i> Pre-test Check
+                                </a>
                             </td>
                         </tr>
                         </tbody>

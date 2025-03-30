@@ -1,5 +1,6 @@
 package integration4.evalebike.controller.technician;
 
+import integration4.evalebike.controller.technician.dto.BikeWithChassisNumberDto;
 import integration4.evalebike.domain.Bike;
 import integration4.evalebike.domain.BikeOwner;
 import integration4.evalebike.service.BikeOwnerService;
@@ -8,6 +9,7 @@ import integration4.evalebike.service.QrCodeService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -24,6 +26,14 @@ public class TechnicianController {
         this.bikeOwnerService = bikeOwnerService;
         this.bikeService = bikeService;
         this.qrCodeService = qrCodeService;
+    }
+
+    // Show all bikes owned by a specific bike owner
+    @GetMapping("/bikes/owner/{id}")
+    public String showBikesForOwner(@PathVariable("id") Integer ownerId, Model model) {
+        List<BikeWithChassisNumberDto> bikeOwnerBikes = bikeOwnerService.getAllBikeWithChassisNumbersOfOwner(ownerId);
+        model.addAttribute("bikes", bikeOwnerBikes);
+        return "technician/bike-dashboard";
     }
 
     @GetMapping("/bikes")
@@ -57,12 +67,20 @@ public class TechnicianController {
     }
 
     @PostMapping("/bikes/add")
-    public String addBike(){
+    public String addBike() {
         return "technician/add-bike";
     }
 
     @PostMapping("/bike-owners/add")
-    public String addBikeOwner(){
+    public String addBikeOwner() {
         return "technician/add-bike-owner";
+    }
+
+    // Show details for a specific bike
+    @GetMapping("/bikes/{bikeQR}")
+    public String showBikeDetails(@PathVariable String bikeQR, Model model) {
+        Bike bike = bikeService.getBikeByQR(bikeQR);
+        model.addAttribute("bike", bike);
+        return "technician/bike-dashboard";
     }
 }

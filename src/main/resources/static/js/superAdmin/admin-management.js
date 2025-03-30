@@ -1,4 +1,3 @@
-
 // Add a new admin from admin-management page
 document.addEventListener("DOMContentLoaded", () => {
     const addAdminBtn = document.querySelector("#add-admin-btn");
