@@ -1,14 +1,16 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Login</title>
   <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}">
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/home.css">
 </head>
 <body>
-<div class="container d-flex vh-100">
-  <div class="row m-auto text-center">
+<div class="container">
+  <div class="translucent-box text-center">
     <h1 class="mb-4">Login</h1>
     <div class="col-12">
       <form th:action="@{/login}" method="POST">
@@ -25,6 +27,5 @@
     </div>
   </div>
 </div>
-
 </body>
 </html>

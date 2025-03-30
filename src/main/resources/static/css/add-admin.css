@@ -1,0 +1,12 @@
+.form-container {
+    width: 95%;
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 0 15px;
+}
+.form-card {
+    width: 100%;
+}
+.btn-primary {
+    padding: 0.5rem 1.5rem;
+}

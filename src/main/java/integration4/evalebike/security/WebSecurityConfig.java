@@ -23,21 +23,27 @@ public class WebSecurityConfig {
                         .requestMatchers("/superAdmin/**").hasRole("SUPER_ADMIN")
                         .requestMatchers("/technician/**").hasAnyRole("TECHNICIAN", "ADMIN", "SUPER_ADMIN")
                         .requestMatchers("/bikeOwner/**").hasAnyRole("BIKE_OWNER", "TECHNICIAN", "ADMIN", "SUPER_ADMIN")
+                        .requestMatchers("/api/bike-owner/**").hasAnyRole("BIKE_OWNER", "TECHNICIAN", "ADMIN", "SUPER_ADMIN")
+                        .requestMatchers("/api/technician/**").hasAnyRole("TECHNICIAN", "ADMIN", "SUPER_ADMIN")
+                        .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
+                        .requestMatchers("/api/super-admin/**").hasRole("SUPER_ADMIN")
                         .requestMatchers(
                                 antMatcher(HttpMethod.GET, "/js/**"),
                                 antMatcher(HttpMethod.GET, "/css/**"),
+                                antMatcher(HttpMethod.GET, "/images/**"),
                                 antMatcher(HttpMethod.GET, "/webjars/**"),
                                 regexMatcher(HttpMethod.GET, ".+\\.ico"))
                         .permitAll()
 
                         .anyRequest().authenticated()
                 )
+                .csrf(csrf -> csrf.disable())
                 .formLogin(login -> {
-                    login.loginPage("/login").defaultSuccessUrl("/technician/bike-owners").permitAll();
+                    login.loginPage("/login").failureUrl("/login").defaultSuccessUrl("/technician/bike-owners").permitAll();
                 })
                 .logout(logout -> logout
                         .logoutUrl("/logout")
-                        .logoutSuccessUrl("/login?logout")
+                        .logoutSuccessUrl("/login")
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
                         .permitAll()

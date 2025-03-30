@@ -1,0 +1,9 @@
+.form-container {
+    width: 95%;
+    max-width: 500px;
+    margin: 20px auto;
+    padding: 0 15px;
+}
+.form-card {
+    width: 100%;
+}

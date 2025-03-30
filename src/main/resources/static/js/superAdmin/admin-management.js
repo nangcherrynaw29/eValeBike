@@ -8,7 +8,6 @@ document.addEventListener("DOMContentLoaded", () => {
             e.preventDefault();
 
             try {
-                alert("Redirecting to Add Admin Page...");
                 window.location.href = "/super-admin/admins/add";
             } catch (error) {
                 console.error("Error navigating:", error);
