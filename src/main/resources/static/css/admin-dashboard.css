@@ -1,0 +1,17 @@
+.admin-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #4a6bff;
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin-right: 8px;
+}
+
+.action-btns .btn {
+    padding: 0.25rem 0.5rem;
+    margin: 0 2px;
+}

@@ -10,4 +10,9 @@ public class HomeController {
     public String home(Model model) {
         return "/home";
     }
+
+    @GetMapping("/technician/pre-check")
+    public String preCheck(Model model) {
+        return "/technician/pre-check";
+    }
 }

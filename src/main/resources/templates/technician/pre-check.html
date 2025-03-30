@@ -4,39 +4,46 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="/css/pre-check.css">
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/form.css">
     <title>Pre-Check Conditions</title>
 </head>
-<body>
-<div th:insert="~{fragments/menu.html}"></div>
-<div class="checklist-container">
-    <div class="container mt-5">
-        <div class="card p-4 shadow">
-            <h2 class="text-center">Pre-Check Conditions</h2>
-            <ul class="list-unstyled">
-                <li class="form-check">
-                    <input class="form-check-input" type="checkbox" id="check1">
-                    <label class="form-check-label" for="check1">Roller torque is sufficient</label>
-                </li>
-                <li class="form-check">
-                    <input class="form-check-input" type="checkbox" id="check2">
-                    <label class="form-check-label" for="check2">Belt connection is properly tensioned</label>
-                </li>
-                <li class="form-check">
-                    <input class="form-check-input" type="checkbox" id="check3">
-                    <label class="form-check-label" for="check3">Bike’s data network connection is working</label>
-                </li>
-                <li class="form-check">
-                    <input class="form-check-input" type="checkbox" id="check4">
-                    <label class="form-check-label" for="check4">Wheels are secured</label>
-                </li>
-                <li class="form-check">
-                    <input class="form-check-input" type="checkbox" id="check5">
-                    <label class="form-check-label" for="check5">Tire pressure is optimal</label>
-                </li>
-            </ul>
-            <button id="activateTestBench" class="btn btn-primary w-100 mt-3" disabled>Activate Bench Test</button>
-        </div>
-    </div>
+<body class="d-flex flex-column min-vh-100">
+<div class="fixed-top">
+    <div th:insert="~{fragments/menu.html}"></div>
 </div>
+
+<div class="checklist-container mt-5 flex-grow-1">
+    <div class="card p-4 shadow">
+        <h2 class="text-center">Pre-Check Conditions</h2>
+        <br>
+        <form>
+            <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" id="check1">
+                <label class="form-check-label" for="check1">Roller torque is sufficient</label>
+            </div>
+            <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" id="check2">
+                <label class="form-check-label" for="check2">Belt connection is properly tensioned</label>
+            </div>
+            <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" id="check3">
+                <label class="form-check-label" for="check3">Bike’s data network connection is working</label>
+            </div>
+            <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" id="check4">
+                <label class="form-check-label" for="check4">Wheels are secured</label>
+            </div>
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="check5">
+                <label class="form-check-label" for="check5">Tire pressure is optimal</label>
+            </div>
+            <div class="d-flex justify-content-end">
+                <button id="activateTestBench" class="btn btn-primary" disabled>Activate Bench Test</button>
+            </div>
+        </form>
+            </div>
+        </div>
 </body>
 </html>
