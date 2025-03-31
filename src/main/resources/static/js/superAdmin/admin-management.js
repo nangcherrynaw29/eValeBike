@@ -1,4 +1,3 @@
-
 // Add a new admin from admin-management page
 document.addEventListener("DOMContentLoaded", () => {
     const addAdminBtn = document.querySelector("#add-admin-btn");
@@ -23,7 +22,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     try {
         // Fetch admin data from API
-        const response = await fetch("/api/super-admin");
+        const response = await fetch("/api/super-admin/admins");
         if (!response.ok) throw new Error("Failed to fetch admins");
 
         const admins = await response.json();
@@ -80,7 +79,6 @@ function attachDeleteEventListeners() {
                 });
 
                 if (response.ok) {
-                    alert(`Admin with ID ${adminId} deleted successfully.`);
                     adminRow.remove(); // Remove the row from the table
                 } else {
                     alert("Failed to delete admin.");

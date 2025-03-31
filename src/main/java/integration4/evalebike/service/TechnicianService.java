@@ -35,7 +35,6 @@ public class TechnicianService {
     public Technician updateTechnician(Integer id, Technician updatedTechnician) {
         Technician technician = technicianRepository.findById(id)
                 .orElseThrow(() -> NotFoundException.forTechnician(id));
-
         technician.setName(updatedTechnician.getName());
         technician.setEmail(updatedTechnician.getEmail());
         technician.setPassword(updatedTechnician.getPassword());

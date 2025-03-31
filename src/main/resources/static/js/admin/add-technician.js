@@ -30,7 +30,6 @@ document.addEventListener("DOMContentLoaded", function () {
             if (response.status === 201) {
                 // If the technician is created successfully (201 Created)
                 const technician = await response.json(); // Get the created technician from the response
-                alert(`Technician created successfully with ID #${technician.id}`);
                 window.location.href = "/admin/technicians"; // Redirect back to the technician dashboard
             } else {
                 // If something goes wrong
