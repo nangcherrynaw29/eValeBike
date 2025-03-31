@@ -1,6 +1,6 @@
 package integration4.evalebike.controller.technician;
 
-import integration4.evalebike.controller.technician.dto.BikeWithChassisNumberDto;
+import integration4.evalebike.controller.technician.dto.BikeDto;
 import integration4.evalebike.domain.Bike;
 import integration4.evalebike.domain.BikeOwner;
 import integration4.evalebike.service.BikeOwnerService;
@@ -31,7 +31,7 @@ public class TechnicianController {
     // Show all bikes owned by a specific bike owner
     @GetMapping("/bikes/owner/{id}")
     public String showBikesForOwner(@PathVariable("id") Integer ownerId, Model model) {
-        List<BikeWithChassisNumberDto> bikeOwnerBikes = bikeOwnerService.getAllBikeWithChassisNumbersOfOwner(ownerId);
+        List<BikeDto> bikeOwnerBikes = bikeOwnerService.getAllBikeOfOwner(ownerId);
         model.addAttribute("bikes", bikeOwnerBikes);
         return "technician/bike-dashboard";
     }
@@ -83,4 +83,12 @@ public class TechnicianController {
         model.addAttribute("bike", bike);
         return "technician/bike-dashboard";
     }
-}
+
+    @GetMapping("bikes/test-types/{bikeQR}")
+    public String testTypes(@PathVariable String bikeQR,Model model) {
+        Bike bike = bikeService.getBikeByQR(bikeQR);
+        model.addAttribute("bike", bike);
+        return "technician/test-types";
+    }
+
+    }

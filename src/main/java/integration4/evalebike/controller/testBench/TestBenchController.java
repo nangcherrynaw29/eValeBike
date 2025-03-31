@@ -8,7 +8,7 @@ import org.springframework.stereotype.Controller;
 public class TestBenchController {
     private final TestBenchService testBenchService;
 
-    @Autowired
+
     public TestBenchController(TestBenchService testBenchService) {
         this.testBenchService = testBenchService;
     }

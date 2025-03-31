@@ -69,9 +69,11 @@
                             <td th:text="${bike.engineTorque}"></td>
                             <td th:text="${bike.lastTestDate}"></td>
                             <td>
-                                <a th:href="@{/technician/pre-check}" class="btn btn-primary btn-sm">
+                                <a th:href="@{/technician/pre-check/{bikeQR}(bikeQR=${bike.bikeQR})}" class="btn btn-primary btn-sm">
                                     <i class="fas fa-clipboard-check"></i> Pre-test Check
                                 </a>
+
+
                             </td>
                         </tr>
                         </tbody>

@@ -20,8 +20,8 @@ public class BikeOwnerBike {
     private Bike bike;
 
     // Chassis number is stored in this intermediate table
-    @Column(nullable = false, unique = true)
-    private String chassisNumber;
+//    @Column(nullable = false, unique = true)
+//    private String chassisNumber;
 
     @Transient
     private String qrImage;
@@ -29,20 +29,13 @@ public class BikeOwnerBike {
     public BikeOwnerBike() {
     }
 
-    public BikeOwnerBike(Bike bike, BikeOwner bikeOwner, String chassisNumber, Integer id) {
+    public BikeOwnerBike(Bike bike, BikeOwner bikeOwner) {
         this.bike = bike;
         this.bikeOwner = bikeOwner;
-        this.chassisNumber = chassisNumber;
-        this.id = id;
+
     }
 
-    public String getQrImage() {
-        return qrImage;
-    }
 
-    public void setQrImage(String qrImage) {
-        this.qrImage = qrImage;
-    }
 
     public Bike getBike() {
         return bike;
@@ -52,9 +45,7 @@ public class BikeOwnerBike {
         return bikeOwner;
     }
 
-    public String getChassisNumber() {
-        return chassisNumber;
-    }
+
 
     public Integer getId() {
         return id;
@@ -64,11 +55,16 @@ public class BikeOwnerBike {
         this.bike = bike;
     }
 
-    public void setChassisNumber(String chassisNumber) {
-        this.chassisNumber = chassisNumber;
-    }
 
     public void setBikeOwner(BikeOwner bikeOwner) {
         this.bikeOwner = bikeOwner;
+    }
+
+    public String getQrImage() {
+        return qrImage;
+    }
+
+    public void setQrImage(String qrImage) {
+        this.qrImage = qrImage;
     }
 }

@@ -8,7 +8,7 @@
 </head>
 <body>
 <div class="container mt-5">
-    <h2 class="text-center">Select Test Type for Bike: <span th:text="${bike.bikeQR}"></span></h2>
+    <h2 class="text-center">Select Test Type for Bike: <span th:text="${bike.chassisNumber}"></span></h2>
     <p class="text-center">Brand: <span th:text="${bike.brand}"></span> | Model: <span th:text="${bike.model}"></span></p>
 
     <div class="row mt-4">
@@ -17,7 +17,7 @@
                 <div class="card-body">
                     <h5 class="card-title">Stress Test</h5>
                     <p class="card-text">Evaluates the bike's performance under extreme conditions.</p>
-                    <form th:action="@{'/technician/start/' + ${bike.bikeQR}}" method="post" class="text-center" th:onsubmit="'window.location.href=\'/technician/loading\''">
+                    <form th:action="@{'/technician/start/' + ${bike.chassisNumber}}" method="post" class="text-center" th:onsubmit="'window.location.href=\'/technician/loading\''">
                         <input type="hidden" name="testType" value="STRESS" />
                         <button type="submit" class="btn btn-primary">Start Stress Test</button>
                     </form>
@@ -29,7 +29,7 @@
                 <div class="card-body">
                     <h5 class="card-title">Endurance Test</h5>
                     <p class="card-text">Assesses the bike's long-term durability.</p>
-                    <form th:action="@{'/technician/start/' + ${bike.bikeQR}}" method="post" class="text-center" th:onsubmit="'window.location.href=\'/technician/loading\''">
+                    <form th:action="@{'/technician/start/' + ${bike.chassisNumber}}" method="post" class="text-center" th:onsubmit="'window.location.href=\'/technician/loading\''">
                         <input type="hidden" name="testType" value="ENDURANCE" />
                         <button type="submit" class="btn btn-primary">Start Endurance Test</button>
                     </form>
