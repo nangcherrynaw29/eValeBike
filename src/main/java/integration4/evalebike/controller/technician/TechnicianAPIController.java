@@ -8,10 +8,7 @@ import integration4.evalebike.service.BikeService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/technician")
@@ -30,8 +27,8 @@ public class TechnicianAPIController {
     }
 
     @PostMapping("/bikes")
-    public ResponseEntity<BikeDto> createBike(@RequestBody @Valid final AddBikeDto addBikeDto) throws Exception{
-        final Bike bike = bikeService.addBike(addBikeDto.brand(), addBikeDto.model(), addBikeDto.chassisNumber(), addBikeDto.productionYear(),
+    public ResponseEntity<BikeDto> createBike(@RequestBody @Valid final AddBikeDto addBikeDto) throws Exception {
+        final Bike bike = bikeService.addBike(addBikeDto.brand(), addBikeDto.model(), addBikeDto.productionYear(),
                 addBikeDto.bikeSize(), addBikeDto.mileage(), addBikeDto.gearType(), addBikeDto.engineType(), addBikeDto.powerTrain(),
                 addBikeDto.accuCapacity(), addBikeDto.maxSupport(), addBikeDto.maxEnginePower(), addBikeDto.nominalEnginePower(),
                 addBikeDto.engineTorque(), addBikeDto.lastTestDate());

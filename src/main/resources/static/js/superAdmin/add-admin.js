@@ -32,7 +32,6 @@ document.addEventListener("DOMContentLoaded", function () {
             if (response.status === 201) {
                 // If the admin is created successfully (201 Created)
                 const admin = await response.json(); // Get the created admin from the response
-                alert(`Congrats, your admin was created. It has ID #${admin.id}`);
                 window.location.href = "/super-admin/admins"; // Redirect to the admin management page
             } else {
                 // If something goes wrong

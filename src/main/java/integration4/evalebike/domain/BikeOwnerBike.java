@@ -1,0 +1,74 @@
+package integration4.evalebike.domain;
+
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "bike_owner_bike")
+public class BikeOwnerBike {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    // Many BikeOwnerBike entries can belong to one BikeOwner
+    @ManyToOne
+    @JoinColumn(name = "bike_owner_id", nullable = false)
+    private BikeOwner bikeOwner;
+
+    // Many BikeOwnerBike entries can refer to one Bike
+    @ManyToOne
+    @JoinColumn(name = "bike_qr", referencedColumnName = "bikeqr", nullable = false)
+    private Bike bike;
+
+    // Chassis number is stored in this intermediate table
+    @Column(nullable = false, unique = true)
+    private String chassisNumber;
+
+    @Transient
+    private String qrImage;
+
+    public BikeOwnerBike() {
+    }
+
+    public BikeOwnerBike(Bike bike, BikeOwner bikeOwner, String chassisNumber, Integer id) {
+        this.bike = bike;
+        this.bikeOwner = bikeOwner;
+        this.chassisNumber = chassisNumber;
+        this.id = id;
+    }
+
+    public String getQrImage() {
+        return qrImage;
+    }
+
+    public void setQrImage(String qrImage) {
+        this.qrImage = qrImage;
+    }
+
+    public Bike getBike() {
+        return bike;
+    }
+
+    public BikeOwner getBikeOwner() {
+        return bikeOwner;
+    }
+
+    public String getChassisNumber() {
+        return chassisNumber;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setBike(Bike bike) {
+        this.bike = bike;
+    }
+
+    public void setChassisNumber(String chassisNumber) {
+        this.chassisNumber = chassisNumber;
+    }
+
+    public void setBikeOwner(BikeOwner bikeOwner) {
+        this.bikeOwner = bikeOwner;
+    }
+}

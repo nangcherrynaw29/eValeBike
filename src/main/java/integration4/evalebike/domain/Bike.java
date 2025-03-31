@@ -3,6 +3,8 @@ package integration4.evalebike.domain;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -14,7 +16,6 @@ public class Bike {
     private String bikeQR;
     private String brand;
     private String model;
-    private String chassisNumber;
     private int productionYear;
     @Enumerated(EnumType.STRING)
     private BikeSize bikeSize;
@@ -28,17 +29,20 @@ public class Bike {
     private float nominalEnginePower;
     private float engineTorque;
     private LocalDate lastTestDate;
+    // TODO: moved to BikeOwnerBike class
     @Transient
     private String qrCodeImage;
+
+    @OneToMany(mappedBy = "bike", fetch = FetchType.LAZY)
+    private List<BikeOwnerBike> bikeList = new ArrayList<>();
 
     public Bike() {
 
     }
 
-    public Bike(String brand, String model, String chassisNumber, int productionYear, BikeSize bikeSize, int mileage, String gearType, String engineType, String powerTrain, float accuCapacity, float maxSupport, float maxEnginePower, float nominalEnginePower, float engineTorque, LocalDate lastTestDate) {
+    public Bike(String brand, String model, int productionYear, BikeSize bikeSize, int mileage, String gearType, String engineType, String powerTrain, float accuCapacity, float maxSupport, float maxEnginePower, float nominalEnginePower, float engineTorque, LocalDate lastTestDate) {
         this.brand = brand;
         this.model = model;
-        this.chassisNumber = chassisNumber;
         this.productionYear = productionYear;
         this.bikeSize = bikeSize;
         this.mileage = mileage;
@@ -71,6 +75,14 @@ public class Bike {
     @Override
     public int hashCode() {
         return Objects.hash(bikeQR);
+    }
+
+    public List<BikeOwnerBike> getBikeList() {
+        return bikeList;
+    }
+
+    public void setBikeList(List<BikeOwnerBike> bikeList) {
+        this.bikeList = bikeList;
     }
 
     public String getBikeQR() {
@@ -111,14 +123,6 @@ public class Bike {
 
     public void setLastTestDate(LocalDate lastTestDate) {
         this.lastTestDate = lastTestDate;
-    }
-
-    public String getChassisNumber() {
-        return chassisNumber;
-    }
-
-    public void setChassisNumber(String chassisNumber) {
-        this.chassisNumber = chassisNumber;
     }
 
     public int getProductionYear() {
