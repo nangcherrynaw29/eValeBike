@@ -16,6 +16,7 @@ public class Bike {
     private String bikeQR;
     private String brand;
     private String model;
+    private String chassisNumber;
     private int productionYear;
     @Enumerated(EnumType.STRING)
     private BikeSize bikeSize;
@@ -40,9 +41,10 @@ public class Bike {
 
     }
 
-    public Bike(String brand, String model, int productionYear, BikeSize bikeSize, int mileage, String gearType, String engineType, String powerTrain, float accuCapacity, float maxSupport, float maxEnginePower, float nominalEnginePower, float engineTorque, LocalDate lastTestDate) {
+    public Bike(String brand, String model, String chassisNumber, int productionYear, BikeSize bikeSize, int mileage, String gearType, String engineType, String powerTrain, float accuCapacity, float maxSupport, float maxEnginePower, float nominalEnginePower, float engineTorque, LocalDate lastTestDate) {
         this.brand = brand;
         this.model = model;
+        this.chassisNumber = chassisNumber;
         this.productionYear = productionYear;
         this.bikeSize = bikeSize;
         this.mileage = mileage;
@@ -220,5 +222,13 @@ public class Bike {
                 ", brand='" + brand + '\'' +
                 ", model='" + model + '\'' +
                 '}';
+    }
+
+    public String getChassisNumber() {
+        return chassisNumber;
+    }
+
+    public void setChassisNumber(String chassisNumber) {
+        this.chassisNumber = chassisNumber;
     }
 }

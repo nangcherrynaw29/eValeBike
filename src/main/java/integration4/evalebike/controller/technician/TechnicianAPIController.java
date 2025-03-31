@@ -28,7 +28,7 @@ public class TechnicianAPIController {
 
     @PostMapping("/bikes")
     public ResponseEntity<BikeDto> createBike(@RequestBody @Valid final AddBikeDto addBikeDto) throws Exception {
-        final Bike bike = bikeService.addBike(addBikeDto.brand(), addBikeDto.model(), addBikeDto.productionYear(),
+        final Bike bike = bikeService.addBike(addBikeDto.brand(), addBikeDto.model(), addBikeDto.chassisNumber(), addBikeDto.productionYear(),
                 addBikeDto.bikeSize(), addBikeDto.mileage(), addBikeDto.gearType(), addBikeDto.engineType(), addBikeDto.powerTrain(),
                 addBikeDto.accuCapacity(), addBikeDto.maxSupport(), addBikeDto.maxEnginePower(), addBikeDto.nominalEnginePower(),
                 addBikeDto.engineTorque(), addBikeDto.lastTestDate());
