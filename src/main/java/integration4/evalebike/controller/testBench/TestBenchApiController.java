@@ -24,7 +24,7 @@ public class TestBenchApiController {
     public ResponseEntity<TestResponseDTO> startTest(
             @RequestBody TestRequestDTO requestDTO, Principal principa) {
         String username = principa.getName();
-        return ResponseEntity.ok(testBenchService.startTest(requestDTO,username));
+        return ResponseEntity.ok(testBenchService.startTest(requestDTO,username).block());
 
     }
 

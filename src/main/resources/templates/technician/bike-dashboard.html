@@ -48,7 +48,9 @@
             <td th:text="${bike.nominalEnginePower}"></td>
             <td th:text="${bike.engineTorque}"></td>
             <td th:text="${bike.lastTestDate}"></td>
-            <td><button>Test</button></td>
+            <td>
+                <a th:href="@{/technician/test-types/{bikeQR}(bikeQR=${bike.bikeQR})}" class="btn btn-primary btn-sm">Test</a>
+            </td>
         </tr>
         </tbody>
     </table>

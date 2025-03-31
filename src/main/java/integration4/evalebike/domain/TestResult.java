@@ -1,7 +1,7 @@
 package integration4.evalebike.domain;
 
 import jakarta.persistence.*;
-
+//I dont think we need this anymore.
 @Entity
 @Table(name = "test_result")
 public class TestResult {

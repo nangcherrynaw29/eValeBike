@@ -8,6 +8,10 @@ public class TestRequestDTO {
     double enginePowerNominal;
     double engineTorque;
 
+    public TestRequestDTO(String testType, float accuCapacity, float maxSupport, float maxEnginePower, float nominalEnginePower, float engineTorque) {
+    }
+
+
     public double getBatteryCapacity() {
         return batteryCapacity;
     }

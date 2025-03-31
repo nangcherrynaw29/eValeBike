@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Test Type</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}">
+</head>
+<body>
+<div class="container mt-5">
+    <h2 class="text-center">Select Test Type for Bike: <span th:text="${bike.bikeQR}"></span></h2>
+    <p class="text-center">Brand: <span th:text="${bike.brand}"></span> | Model: <span th:text="${bike.model}"></span></p>
+
+    <div class="row mt-4">
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Stress Test</h5>
+                    <p class="card-text">Evaluates the bike's performance under extreme conditions.</p>
+                    <form th:action="@{'/technician/start/' + ${bike.bikeQR}}" method="post" class="text-center" th:onsubmit="'window.location.href=\'/technician/loading\''">
+                        <input type="hidden" name="testType" value="STRESS" />
+                        <button type="submit" class="btn btn-primary">Start Stress Test</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Endurance Test</h5>
+                    <p class="card-text">Assesses the bike's long-term durability.</p>
+                    <form th:action="@{'/technician/start/' + ${bike.bikeQR}}" method="post" class="text-center" th:onsubmit="'window.location.href=\'/technician/loading\''">
+                        <input type="hidden" name="testType" value="ENDURANCE" />
+                        <button type="submit" class="btn btn-primary">Start Endurance Test</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Performance Test</h5>
+                    <p class="card-text">Measures the bike's peak capabilities.</p>
+                    <form th:action="@{'/technician/start/' + ${bike.bikeQR}}" method="post" class="text-center" th:onsubmit="'window.location.href=\'/technician/loading\''">
+                        <input type="hidden" name="testType" value="PERFORMANCE" />
+                        <button type="submit" class="btn btn-primary">Start Performance Test</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mt-4">
+        <a th:href="@{/technician/bike-dashboard}" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+</div>
+<script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

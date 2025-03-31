@@ -6,38 +6,62 @@ import integration4.evalebike.controller.testBench.dto.TestRequestDTO;
 import integration4.evalebike.controller.testBench.dto.TestResponseDTO;
 import integration4.evalebike.domain.TestReport;
 import integration4.evalebike.domain.TestReportEntry;
-import integration4.evalebike.repository.BikeRepository;
-import integration4.evalebike.repository.TestBenchRepository;
 import integration4.evalebike.repository.TestReportRepository;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import org.springframework.http.HttpStatusCode;
-
-
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+//It would make sense more if the name is just TestService.
 @Service
 public class TestBenchService {
-    private final TestBenchRepository testBenchRepository;
     private final WebClient webClient;
-    private final BikeRepository bikeRepository;
     private final TestReportRepository testReportRepository;
 
-    public TestBenchService(BikeRepository bikeRepository, TestBenchRepository testBenchRepository, WebClient webClient, TestReportRepository testReportRepository) {
-        this.bikeRepository = bikeRepository;
-        this.testBenchRepository = testBenchRepository;
+    public TestBenchService( WebClient webClient, TestReportRepository testReportRepository) {
         this.webClient = webClient;
         this.testReportRepository = testReportRepository;
     }
 
-    public TestResponseDTO startTest(TestRequestDTO request, String technicianUsername) {
-        // Prepare API request
+//    public TestResponseDTO startTest(TestRequestDTO request, String technicianUsername) {
+//        // Prepare API request
+//        Map<String, Object> requestBody = new HashMap<>();
+//        requestBody.put("type", request.getTestType());
+//        requestBody.put("batteryCapacity", request.getBatteryCapacity());
+//        requestBody.put("maxSupport", request.getMaxSupport());
+//        requestBody.put("enginePowerMax", request.getEnginePowerMax());
+//        requestBody.put("enginePowerNominal", request.getEnginePowerNominal());
+//        requestBody.put("engineTorque", request.getEngineTorque());
+//
+//        System.out.println("Sending request body: " + requestBody);
+//        // Call external API
+//        TestResponseDTO responseDto = webClient.post()
+//                .uri("https://testbench.raoul.dev/api/test")
+//                .header("X-Api-Key", "9e8dffd7-f6e1-45b4-b4aa-69fd257ca200")
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .bodyValue(requestBody)
+//                .retrieve()
+//                .onStatus(HttpStatusCode::isError, response -> {
+//                    return response.bodyToMono(String.class)
+//                            .flatMap(errorBody -> {
+//                                System.err.println("Error response body: " + errorBody);
+//                                return Mono.error(new RuntimeException("Failed to start test: " + errorBody));
+//                            });
+//                })
+//                .bodyToMono(TestResponseDTO.class)
+//                .block();
+//
+//        return responseDto;
+//
+//    }
+
+    public Mono<TestResponseDTO> startTest(TestRequestDTO request, String technicianUsername) {
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("type", request.getTestType());
         requestBody.put("batteryCapacity", request.getBatteryCapacity());
@@ -45,27 +69,20 @@ public class TestBenchService {
         requestBody.put("enginePowerMax", request.getEnginePowerMax());
         requestBody.put("enginePowerNominal", request.getEnginePowerNominal());
         requestBody.put("engineTorque", request.getEngineTorque());
+        requestBody.put("technicianUsername", technicianUsername);
 
-        System.out.println("Sending request body: " + requestBody);
-        // Call external API
-        TestResponseDTO responseDto = webClient.post()
-                .uri("https://testbench.raoul.dev/api/test")
-                .header("X-Api-Key", "9e8dffd7-f6e1-45b4-b4aa-69fd257ca200")
+        return webClient.post()
+                .uri("/api/tests")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(requestBody)
                 .retrieve()
                 .onStatus(HttpStatusCode::isError, response -> {
                     return response.bodyToMono(String.class)
                             .flatMap(errorBody -> {
-                                System.err.println("Error response body: " + errorBody);
                                 return Mono.error(new RuntimeException("Failed to start test: " + errorBody));
                             });
                 })
-                .bodyToMono(TestResponseDTO.class)
-                .block();
-
-        return responseDto;
-
+                .bodyToMono(TestResponseDTO.class);
     }
 
     public Mono<TestResponseDTO> getTestResultById(String testId) {

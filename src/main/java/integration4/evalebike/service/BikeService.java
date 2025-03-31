@@ -9,13 +9,13 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Transactional
 @Service
 public class BikeService {
     private final BikeRepository bikeRepository;
 
-    @Autowired
     public BikeService(BikeRepository bikeRepository) {
         this.bikeRepository = bikeRepository;
     }
@@ -30,5 +30,9 @@ public class BikeService {
         Bike bike = new Bike(brand, model, chassisNumber, productionYear, bikeSize, mileage, gearType, engineType, powerTrain,
                 accuCapacity, maxSupport, maxEnginePower, nominalEnginePower, engineTorque, lastTestDate);
         return bikeRepository.save(bike);
+    }
+
+    public Optional<Bike> findById(String bikeQR) {
+        return bikeRepository.findById(bikeQR);
     }
 }
