@@ -30,8 +30,10 @@ public class BikeService {
     }
 
     public Bike addBike(String brand, String model, String chassisNumber, int productionYear, BikeSize bikeSize,
-                        int mileage, String gearType, String engineType, String powerTrain, float accuCapacity, float maxSupport,
-                        float maxEnginePower, float nominalEnginePower, float engineTorque, LocalDate lastTestDate) throws Exception {
+                        int mileage, String gearType, String engineType,
+                        String powerTrain,
+                        double accuCapacity, double maxSupport,
+                        double maxEnginePower, double nominalEnginePower, double engineTorque, LocalDate lastTestDate) throws Exception {
 
         Bike bike = new Bike(brand, model, chassisNumber, productionYear, bikeSize, mileage, gearType, engineType, powerTrain,
                 accuCapacity, maxSupport, maxEnginePower, nominalEnginePower, engineTorque, lastTestDate);

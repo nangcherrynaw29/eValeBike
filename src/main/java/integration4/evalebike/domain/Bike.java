@@ -24,11 +24,11 @@ public class Bike {
     private String gearType;
     private String engineType;
     private String powerTrain;
-    private float accuCapacity;
-    private float maxSupport;
-    private float maxEnginePower;
-    private float nominalEnginePower;
-    private float engineTorque;
+    private double accuCapacity;
+    private double maxSupport;
+    private double maxEnginePower;
+    private double nominalEnginePower;
+    private double engineTorque;
     private LocalDate lastTestDate;
     // TODO: moved to BikeOwnerBike class
     @Transient
@@ -41,22 +41,35 @@ public class Bike {
 
     }
 
-    public Bike(String brand, String model, String chassisNumber, int productionYear, BikeSize bikeSize, int mileage, String gearType, String engineType, String powerTrain, float accuCapacity, float maxSupport, float maxEnginePower, float nominalEnginePower, float engineTorque, LocalDate lastTestDate) {
-        this.brand = brand;
-        this.model = model;
-        this.chassisNumber = chassisNumber;
-        this.productionYear = productionYear;
-        this.bikeSize = bikeSize;
-        this.mileage = mileage;
-        this.gearType = gearType;
-        this.engineType = engineType;
-        this.powerTrain = powerTrain;
+    public Bike(double accuCapacity, List<BikeOwnerBike> bikeList, String bikeQR, BikeSize bikeSize, String brand, String chassisNumber, double engineTorque, String engineType, String gearType, LocalDate lastTestDate, double maxEnginePower, double maxSupport, int mileage, String model, double nominalEnginePower, String powerTrain, int productionYear, String qrCodeImage) {
         this.accuCapacity = accuCapacity;
-        this.maxSupport = maxSupport;
-        this.maxEnginePower = maxEnginePower;
-        this.nominalEnginePower = nominalEnginePower;
+        this.bikeList = bikeList;
+        this.bikeQR = bikeQR;
+        this.bikeSize = bikeSize;
+        this.brand = brand;
+        this.chassisNumber = chassisNumber;
         this.engineTorque = engineTorque;
+        this.engineType = engineType;
+        this.gearType = gearType;
         this.lastTestDate = lastTestDate;
+        this.maxEnginePower = maxEnginePower;
+        this.maxSupport = maxSupport;
+        this.mileage = mileage;
+        this.model = model;
+        this.nominalEnginePower = nominalEnginePower;
+        this.powerTrain = powerTrain;
+        this.productionYear = productionYear;
+        this.qrCodeImage = qrCodeImage;
+    }
+
+    public Bike(String brand, String model, String chassisNumber, int productionYear, BikeSize bikeSize, int mileage, String gearType, String engineType,
+                String powerTrain,
+                double accuCapacity,
+                double maxSupport,
+                double maxEnginePower,
+                double nominalEnginePower,
+                double engineTorque,
+                LocalDate lastTestDate) {
     }
 
     @PrePersist
@@ -167,7 +180,7 @@ public class Bike {
         this.powerTrain = powerTrain;
     }
 
-    public float getAccuCapacity() {
+    public double getAccuCapacity() {
         return accuCapacity;
     }
 
@@ -175,7 +188,7 @@ public class Bike {
         this.accuCapacity = accuCapacity;
     }
 
-    public float getMaxSupport() {
+    public double getMaxSupport() {
         return maxSupport;
     }
 
@@ -183,7 +196,7 @@ public class Bike {
         this.maxSupport = maxSupport;
     }
 
-    public float getMaxEnginePower() {
+    public double getMaxEnginePower() {
         return maxEnginePower;
     }
 
@@ -191,7 +204,7 @@ public class Bike {
         this.maxEnginePower = maxEnginePower;
     }
 
-    public float getNominalEnginePower() {
+    public double getNominalEnginePower() {
         return nominalEnginePower;
     }
 
@@ -199,7 +212,7 @@ public class Bike {
         this.nominalEnginePower = nominalEnginePower;
     }
 
-    public float getEngineTorque() {
+    public double getEngineTorque() {
         return engineTorque;
     }
 

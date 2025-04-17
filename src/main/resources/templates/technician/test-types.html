@@ -17,7 +17,7 @@
                 <div class="card-body">
                     <h5 class="card-title">Stress Test</h5>
                     <p class="card-text">Evaluates the bike's performance under extreme conditions.</p>
-                    <form th:action="@{'/technician/start/' + ${bike.chassisNumber}}" method="post" class="text-center" th:onsubmit="'window.location.href=\'/technician/loading\''">
+                    <form th:action="@{'/api/technician/start/' + ${bike.bikeQR}}" method="post" class="text-center">
                         <input type="hidden" name="testType" value="STRESS" />
                         <button type="submit" class="btn btn-primary">Start Stress Test</button>
                     </form>
@@ -27,11 +27,11 @@
         <div class="col-md-4 mb-3">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">Endurance Test</h5>
+                    <h5 class="card-title">Efficiency Test</h5>
                     <p class="card-text">Assesses the bike's long-term durability.</p>
-                    <form th:action="@{'/technician/start/' + ${bike.chassisNumber}}" method="post" class="text-center" th:onsubmit="'window.location.href=\'/technician/loading\''">
-                        <input type="hidden" name="testType" value="ENDURANCE" />
-                        <button type="submit" class="btn btn-primary">Start Endurance Test</button>
+                    <form th:action="@{'/api/technician/start/' + ${bike.bikeQR}}" method="post" class="text-center">
+                        <input type="hidden" name="testType" value="EFFICIENCY" />
+                        <button type="submit" class="btn btn-primary">Start Efficiency Test</button>
                     </form>
                 </div>
             </div>
@@ -39,11 +39,24 @@
         <div class="col-md-4 mb-3">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">Performance Test</h5>
+                    <h5 class="card-title">Manual Test</h5>
                     <p class="card-text">Measures the bike's peak capabilities.</p>
-                    <form th:action="@{'/technician/start/' + ${bike.bikeQR}}" method="post" class="text-center" th:onsubmit="'window.location.href=\'/technician/loading\''">
-                        <input type="hidden" name="testType" value="PERFORMANCE" />
-                        <button type="submit" class="btn btn-primary">Start Performance Test</button>
+                    <form th:action="@{'/api/technician/start/' + ${bike.bikeQR}}" method="post" class="text-center">
+                        <input type="hidden" name="testType" value="MANUAL" />
+                        <button type="submit" class="btn btn-primary">Start Manual Test</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Fast Test</h5>
+                    <p class="card-text">Measures the bike's peak capabilities.</p>
+                    <form th:action="@{'/api/technician/start/' + ${bike.bikeQR}}" method="post" class="text-center">
+                        <input type="hidden" name="testType" value="FAST" />
+                        <button type="submit" class="btn btn-primary">Start Fast Test</button>
                     </form>
                 </div>
             </div>

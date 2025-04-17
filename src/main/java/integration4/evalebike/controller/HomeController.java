@@ -15,6 +15,7 @@ public class HomeController {
     @GetMapping("/technician/pre-check/{bikeQR}")
     public String technicianPreCheck(@PathVariable String bikeQR, Model model)
      {
+         model.addAttribute("bikeQR", bikeQR);
         return "/technician/pre-check";
     }
 }

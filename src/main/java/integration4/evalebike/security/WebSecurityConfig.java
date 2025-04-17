@@ -19,6 +19,7 @@ public class WebSecurityConfig {
         return security
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/login", "/home").permitAll()
+                        .requestMatchers("/api/test/**").hasAnyRole("ADMIN", "TECHNICIAN")
                         .requestMatchers("/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
                         .requestMatchers("/superAdmin/**").hasRole("SUPER_ADMIN")
                         .requestMatchers("/technician/**").hasAnyRole("TECHNICIAN", "ADMIN", "SUPER_ADMIN")

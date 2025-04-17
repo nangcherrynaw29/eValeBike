@@ -1,17 +1,18 @@
 package integration4.evalebike.controller.technician;
 
 import integration4.evalebike.controller.technician.dto.BikeDto;
+import integration4.evalebike.controller.testBench.dto.TestReportDTO;
+import integration4.evalebike.controller.testBench.dto.TestResponseDTO;
 import integration4.evalebike.domain.Bike;
 import integration4.evalebike.domain.BikeOwner;
 import integration4.evalebike.service.BikeOwnerService;
 import integration4.evalebike.service.BikeService;
 import integration4.evalebike.service.QrCodeService;
+import integration4.evalebike.service.TestBenchService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -21,11 +22,12 @@ public class TechnicianController {
     private final BikeOwnerService bikeOwnerService;
     private final BikeService bikeService;
     private final QrCodeService qrCodeService;
-
-    public TechnicianController(BikeOwnerService bikeOwnerService, BikeService bikeService, QrCodeService qrCodeService) {
+    private final TestBenchService testBenchService;
+    public TechnicianController(BikeOwnerService bikeOwnerService, BikeService bikeService, QrCodeService qrCodeService, TestBenchService testBenchService) {
         this.bikeOwnerService = bikeOwnerService;
         this.bikeService = bikeService;
         this.qrCodeService = qrCodeService;
+        this.testBenchService = testBenchService;
     }
 
     // Show all bikes owned by a specific bike owner
@@ -91,4 +93,26 @@ public class TechnicianController {
         return "technician/test-types";
     }
 
+    @GetMapping("/loading")
+    public String loading(@RequestParam("testId") String testId, Model model) {
+        model.addAttribute("testId", testId);
+        return "technician/loading";
     }
+
+    @GetMapping("/test-status/{testId}")
+    public Mono<TestResponseDTO> getTestResultById(@PathVariable String testId) {
+        return testBenchService.getTestResultById(testId);
+    }
+
+    @GetMapping("/test-result/{testId}")
+    public String getTestResult(@PathVariable String testId, Model model) {
+        TestReportDTO report = testBenchService.getTestReportById(testId).block(); // Blocking for simplicity
+        if (report == null) {
+            return "redirect:/technician/bike-dashboard?error=No+report+found+for+test+ID+" + testId;
+        }
+        model.addAttribute("report", report);
+        return "report";
+    }
+
+}
+// start test is not workin g

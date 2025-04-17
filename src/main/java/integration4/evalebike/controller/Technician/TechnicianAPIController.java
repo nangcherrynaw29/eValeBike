@@ -1,16 +1,25 @@
 package integration4.evalebike.controller.technician;
 
 import integration4.evalebike.controller.technician.dto.*;
+import integration4.evalebike.controller.testBench.dto.TestRequestDTO;
+import integration4.evalebike.controller.testBench.dto.TestResponseDTO;
 import integration4.evalebike.domain.Bike;
 import integration4.evalebike.domain.BikeOwner;
 import integration4.evalebike.service.BikeOwnerService;
 import integration4.evalebike.service.BikeService;
+import integration4.evalebike.service.TestBenchService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
-@RestController
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.security.Principal;
+
+@Controller
 @RequestMapping("/api/technician")
 public class TechnicianAPIController {
 
@@ -18,12 +27,14 @@ public class TechnicianAPIController {
     private final BikeOwnerService bikeOwnerService;
     private final BikeMapper bikeMapper;
     private final BikeOwnerMapper bikeOwnerMapper;
+    private final TestBenchService  testBenchService;
 
-    public TechnicianAPIController(BikeService bikeService, BikeOwnerService bikeOwnerService, BikeMapper bikeMapper, BikeOwnerMapper bikeOwnerMapper) {
+    public TechnicianAPIController(BikeService bikeService, BikeOwnerService bikeOwnerService, BikeMapper bikeMapper, BikeOwnerMapper bikeOwnerMapper, TestBenchService testBenchService) {
         this.bikeService = bikeService;
         this.bikeOwnerService = bikeOwnerService;
         this.bikeMapper = bikeMapper;
         this.bikeOwnerMapper = bikeOwnerMapper;
+        this.testBenchService = testBenchService;
     }
 
     @PostMapping("/bikes")
@@ -42,26 +53,45 @@ public class TechnicianAPIController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(bikeOwnerMapper.toBikeOwnerDto(bikeOwner));
     }
+
+    @PostMapping("/start/{bikeQR}")
+    public Mono<String> startTest(@PathVariable String bikeQR, @RequestParam("testType") String testType, Principal principal) {
+        System.out.println("Received bikeQR: " + bikeQR + ", testType: " + testType);
+        String technicianUsername = principal != null ? principal.getName() : "anonymous";
+
+        return Mono.justOrEmpty(bikeService.findById(bikeQR))
+                .switchIfEmpty(Mono.error(new RuntimeException("Bike not found with QR: " + bikeQR)))
+                .doOnNext(bike -> System.out.println("Found bike: " + bike))
+                .map(bike -> {
+                    return new TestRequestDTO(
+                            testType.toUpperCase(),
+                            bike.getAccuCapacity(),
+                            bike.getMaxSupport(),
+                            bike.getMaxEnginePower(),
+                            bike.getNominalEnginePower(),
+                            bike.getEngineTorque()
+                    );
+                })
+                .flatMap(testRequestDTO -> testBenchService.startTest(testRequestDTO, technicianUsername))
+                .map(response -> "redirect:/technician/loading?testId=" + response.getId())
+                .onErrorResume(e -> {
+                    System.err.println("Error starting test: " + e.getMessage());
+                    e.printStackTrace();
+                    String errorMessage = "Failed to start test";
+                    if (e.getMessage().contains("Bike not found")) {
+                        errorMessage = "Bike not found with QR: " + bikeQR;
+                    } else if (e.getMessage().contains("Bad Request")) {
+                        errorMessage = "Invalid test parameters";
+                    }
+                    String encodedError = URLEncoder.encode(errorMessage, StandardCharsets.UTF_8);
+                    return Mono.just("redirect:/technician/bike-dashboard?error=" + encodedError);
+                });
+    }
+
+    @GetMapping("/status/{testId}")
+    @ResponseBody
+    public Mono<TestResponseDTO> getTestStatus(@PathVariable String testId) {
+        return testBenchService.getTestResultById(testId);
+    }
+
 }
-//this is not working.. this method is supposed to hit the endpoint till we get the completed test
-//    @PostMapping("/start/{bikeQR}")
-//    public Mono<String> startTest(@PathVariable String bikeQR, @RequestParam("testType") String testType, Principal principal) {
-//        String technicianUsername = principal != null ? principal.getName() : "anonymous";
-//
-//        return Mono.justOrEmpty(bikeService.findById(bikeQR))
-//                .switchIfEmpty(Mono.error(new RuntimeException("Bike not found with QR: " + bikeQR)))
-//                .map(bike -> new TestRequestDTO(
-//                        testType,
-//                        bike.getAccuCapacity(),
-//                        bike.getMaxSupport(),
-//                        bike.getMaxEnginePower(),
-//                        bike.getNominalEnginePower(),
-//                        bike.getEngineTorque()
-//                ))
-//                .flatMap(testRequestDTO -> testBenchService.startTest(testRequestDTO, technicianUsername))
-//                .map(response -> "redirect:/technician/loading?testId=" + response.getId())
-//                .onErrorResume(e -> {
-//                    String encodedError = java.net.URLEncoder.encode(e.getMessage(), java.nio.charset.StandardCharsets.UTF_8);
-//                    return Mono.just("redirect:/technician/bike-dashboard?error=" + encodedError);
-//                });
-//    }

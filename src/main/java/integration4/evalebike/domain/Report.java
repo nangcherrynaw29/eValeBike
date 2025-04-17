@@ -3,7 +3,7 @@ package integration4.evalebike.domain;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
-
+//not using this
 @Entity
 @Table(name="report")
 public class Report {
