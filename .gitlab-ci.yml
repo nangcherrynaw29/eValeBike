@@ -1,0 +1,7 @@
+unittest:
+  image: openjdk:11
+  stage: test
+  script:
+    - echo $JAVA_HOME
+  when: delayed
+  start_in: 5 minutes
