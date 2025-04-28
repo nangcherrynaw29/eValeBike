@@ -1,11 +1,19 @@
-document.addEventListener("DOMContentLoaded", function () {
-    const checkboxes = document.querySelectorAll(".form-check-input");
-    const activateButton = document.getElementById("activateTestBench");
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const checkboxes = document.querySelectorAll('.form-check-input');
+    const activateButton = document.querySelector('.btn-primary');
 
+    // Initially disable the button
+    activateButton.classList.add('disabled');
+
+    // Function to check if all checkboxes are checked
     function updateButtonState() {
-        // Check if all checkboxes are checked
         const allChecked = Array.from(checkboxes).every(checkbox => checkbox.checked);
-        activateButton.disabled = !allChecked;
+        if (allChecked) {
+            activateButton.classList.remove('disabled');
+        } else {
+            activateButton.classList.add('disabled');
+        }
     }
 
     // Add event listeners to all checkboxes
@@ -13,6 +21,11 @@ document.addEventListener("DOMContentLoaded", function () {
         checkbox.addEventListener("change", updateButtonState);
     });
 
-    // Run initially in case checkboxes are pre-checked
-    updateButtonState();
+    // Prevent form submission if not all checkboxes are checked
+    form.addEventListener('submit', function(event) {
+        const allChecked = Array.from(checkboxes).every(checkbox => checkbox.checked);
+        if (!allChecked) {
+            event.preventDefault();
+        }
+    });
 });
