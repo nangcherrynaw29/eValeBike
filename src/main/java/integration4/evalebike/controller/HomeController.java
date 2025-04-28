@@ -3,7 +3,6 @@ package integration4.evalebike.controller;
 import integration4.evalebike.domain.Status;
 import integration4.evalebike.domain.Technician;
 import integration4.evalebike.domain.TestBench;
-import integration4.evalebike.exception.NotFoundException;
 import integration4.evalebike.security.CustomUserDetails;
 import integration4.evalebike.service.TechnicianService;
 import integration4.evalebike.service.TestBenchService;
