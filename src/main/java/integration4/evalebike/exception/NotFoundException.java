@@ -21,11 +21,21 @@ public class NotFoundException extends RuntimeException {
     }
 
     public static NotFoundException forSuperAdmin(final int superAdminId) {
-        return new NotFoundException(String.format("Super admin with ID %d was not found.", superAdminId));
+        return new NotFoundException(
+                "Super admin with ID %d was not found.".
+                        formatted(superAdminId));
     }
 
     public static NotFoundException forAdmin(final int adminId) {
-        return new NotFoundException(String.format("Admin with ID %d was not found.", adminId));
+        return new NotFoundException(
+                "Admin with ID %d was not found."
+                        .formatted(adminId));
     }
 
+    public static NotFoundException forTestBench(final int testBenchId) {
+        return new NotFoundException(
+                "Test bench with ID %d was not found"
+                        .formatted(testBenchId)
+        );
+    }
 }

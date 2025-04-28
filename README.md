@@ -57,45 +57,50 @@ To stop the database
 
 This project includes two Spring profiles:
 
-### 🛠 Development (`application-dev.yml`)
+### 🛠 Development (`application-dev.properties`)
 - Uses a **PostgreSQL database** running in a **Docker container**.
 
-```yaml
-spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5436/eValeBike
-    username: user
-    password: password
-  jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
-    hibernate:
-      ddl-auto: update
-    show-sql: true  # Show SQL queries in the console for debugging. 
+```properties
+spring.application.name=eValeBike
+spring.datasource.url=jdbc:postgresql://localhost:5436/eValeBike
+spring.datasource.username=user
+spring.datasource.password=password
+
+# Enable SQL logging for debugging
+spring.jpa.show-sql=true
+
 ```
 
-### 🚀 Production (`application-prod.yml`)
+### 🚀 Production (`application-prod.properties`)
 - Placeholder for **production database settings** for now it is the same as development profile.
-```yaml
-spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5436/eValeBike
-    username: user
-    password: password
-  jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
-    hibernate:
-      ddl-auto: update
-    show-sql: false  # To avoid unnecessary logging and improve performance.
+
+```properties
+spring.application.name=eValeBike
+spring.datasource.url=jdbc:postgresql://localhost:5436/eValeBike
+spring.datasource.username=user
+spring.datasource.password=password
+
+# Disable SQL logging for performance
+spring.jpa.show-sql=false
+
 ```
 
 By default, the **development profile** is active. You can switch profiles by modifying:
 
-```yaml
-spring:
-  profiles:
-    active: dev # Change to 'prod' if needed
-  application:
-    name: eValeBike  
+```properties
+spring.application.name=eValeBike
+spring.datasource.url=jdbc:postgresql://localhost:5436/eValeBike
+spring.datasource.username=user
+spring.datasource.password=password
+
+spring.profiles.active=dev
+
+spring.jpa.hibernate.ddl-auto=update
+
+spring.jpa.open-in-view=false
+
+logging.level.org.springframework.security=debug
+
 ```
 ### **📂 Project Structure**
 
@@ -108,9 +113,9 @@ spring:
  ┃ ┃ ┃    ┗ 📂evalebike
  ┃ ┃ ┃       ┗ 📜 MainApplication.java
  ┃ ┃ ┣ 📂 resources
- ┃ ┃ ┃ ┣ 📜 application.yml
- ┃ ┃ ┃ ┣ 📜 application-dev.yml
- ┃ ┃ ┃ ┗ 📜 application-prod.yml
+ ┃ ┃ ┃ ┣ 📜 application.properties
+ ┃ ┃ ┃ ┣ 📜 application-dev.properties
+ ┃ ┃ ┃ ┗ 📜 application-prod.properties
  ┣ 📜 build.gradle.kts
  ┣ 📜 docker-compose.yml
  ┣ 📜 README.md
