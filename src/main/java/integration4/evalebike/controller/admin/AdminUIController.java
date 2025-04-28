@@ -2,7 +2,10 @@ package integration4.evalebike.controller.admin;
 
 
 import integration4.evalebike.controller.viewModel.TechniciansViewModel;
+import integration4.evalebike.security.CustomUserDetails;
+import integration4.evalebike.service.RecentActivityService;
 import integration4.evalebike.service.TechnicianService;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

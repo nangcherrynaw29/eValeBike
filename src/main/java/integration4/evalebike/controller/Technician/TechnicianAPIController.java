@@ -3,16 +3,17 @@ package integration4.evalebike.controller.technician;
 import integration4.evalebike.controller.technician.dto.*;
 import integration4.evalebike.controller.testBench.dto.TestRequestDTO;
 import integration4.evalebike.controller.testBench.dto.TestResponseDTO;
-import integration4.evalebike.domain.Bike;
-import integration4.evalebike.domain.BikeOwner;
-import integration4.evalebike.domain.TestEvent;
+import integration4.evalebike.domain.*;
 import integration4.evalebike.repository.TestEventRepository;
+import integration4.evalebike.security.CustomUserDetails;
 import integration4.evalebike.service.BikeOwnerService;
 import integration4.evalebike.service.BikeService;
+import integration4.evalebike.service.RecentActivityService;
 import integration4.evalebike.service.TestBenchService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
@@ -20,6 +21,7 @@ import reactor.core.publisher.Mono;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
+import java.time.LocalDateTime;
 
 @Controller
 @RequestMapping("/api/technician")
@@ -31,39 +33,43 @@ public class TechnicianAPIController {
     private final BikeOwnerMapper bikeOwnerMapper;
     private final TestBenchService  testBenchService;
     private final TestEventRepository testEventRepository;
+    private final RecentActivityService recentActivityService;
 
-    public TechnicianAPIController(BikeService bikeService, BikeOwnerService bikeOwnerService, BikeMapper bikeMapper, BikeOwnerMapper bikeOwnerMapper, TestBenchService testBenchService, TestEventRepository testEventRepository) {
+    public TechnicianAPIController(BikeService bikeService, BikeOwnerService bikeOwnerService, BikeMapper bikeMapper, BikeOwnerMapper bikeOwnerMapper, TestBenchService testBenchService, TestEventRepository testEventRepository, RecentActivityService recentActivityService) {
         this.bikeService = bikeService;
         this.bikeOwnerService = bikeOwnerService;
         this.bikeMapper = bikeMapper;
         this.bikeOwnerMapper = bikeOwnerMapper;
         this.testBenchService = testBenchService;
         this.testEventRepository = testEventRepository;
+        this.recentActivityService = recentActivityService;
     }
 
     @PostMapping("/bikes")
-    public ResponseEntity<BikeDto> createBike(@RequestBody @Valid final AddBikeDto addBikeDto) throws Exception {
+    public ResponseEntity<BikeDto> createBike(@RequestBody @Valid final AddBikeDto addBikeDto, @AuthenticationPrincipal final CustomUserDetails userDetails) throws Exception {
         final Bike bike = bikeService.addBike(addBikeDto.brand(), addBikeDto.model(), addBikeDto.chassisNumber(), addBikeDto.productionYear(),
                 addBikeDto.bikeSize(), addBikeDto.mileage(), addBikeDto.gearType(), addBikeDto.engineType(), addBikeDto.powerTrain(),
                 addBikeDto.accuCapacity(), addBikeDto.maxSupport(), addBikeDto.maxEnginePower(), addBikeDto.nominalEnginePower(),
                 addBikeDto.engineTorque(), addBikeDto.lastTestDate());
+        recentActivityService.save(new RecentActivity(Activity.BIKE_ADDED, "Created bike with chassis number: " + addBikeDto.chassisNumber(), LocalDateTime.now(), userDetails.getUserId()));
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(bikeMapper.toBikeDto(bike));
     }
 
     @PostMapping("/bikeOwners")
-    public ResponseEntity<BikeOwnerDto> createBikeOwner(@RequestBody @Valid final AddBikeOwnerDto addBikeOwnerDto) {
+    public ResponseEntity<BikeOwnerDto> createBikeOwner(@RequestBody @Valid final AddBikeOwnerDto addBikeOwnerDto, @AuthenticationPrincipal final CustomUserDetails userDetails) throws Exception {
         final BikeOwner bikeOwner = bikeOwnerService.addBikeOwner(addBikeOwnerDto.name(), addBikeOwnerDto.email(), addBikeOwnerDto.phoneNumber(), addBikeOwnerDto.birthDate());
+        recentActivityService.save(new RecentActivity(Activity.CREATED_USER, "Created bike owner " + addBikeOwnerDto.name(), LocalDateTime.now(), userDetails.getUserId()));
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(bikeOwnerMapper.toBikeOwnerDto(bikeOwner));
     }
 
     @PostMapping("/start/{bikeQR}")
-    public Mono<String> startTest(@PathVariable String bikeQR, @RequestParam("testType") String testType, Principal principal) {
+    public Mono<String> startTest(@PathVariable String bikeQR, @RequestParam("testType") String testType, Principal principal, @AuthenticationPrincipal final CustomUserDetails userDetails) throws Exception {
         System.out.println("Received bikeQR: " + bikeQR + ", testType: " + testType);
 
         String technicianUsername = principal != null ? principal.getName() : "anonymous";
-
+        recentActivityService.save(new RecentActivity(Activity.INITIALIZED_TEST, "All tests started successfully", LocalDateTime.now(), userDetails.getUserId()));
         return Mono.justOrEmpty(bikeService.findById(bikeQR))
                 .switchIfEmpty(Mono.error(new RuntimeException("Bike not found with QR: " + bikeQR)))
                 .doOnNext(bike -> System.out.println("Found bike: " + bike))
@@ -102,6 +108,7 @@ public class TechnicianAPIController {
                     return Mono.just("redirect:/technician/bikes?error=" + encodedError);
                 });
     }
+
     @GetMapping("/status/{testId}")
     @ResponseBody
     public Mono<TestResponseDTO> getTestStatus(@PathVariable String testId) {

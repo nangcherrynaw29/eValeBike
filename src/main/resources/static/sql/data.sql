@@ -84,3 +84,11 @@ WHERE NOT EXISTS (SELECT 1 FROM administrator WHERE id = 3);
 INSERT INTO super_admin (id)
 SELECT 4
 WHERE NOT EXISTS (SELECT 1 FROM super_admin WHERE id = 4);
+
+INSERT INTO recent_activity (id, activity, description, date, user_id)
+VALUES
+    (1, 'CREATED_USER', 'Created technician Mike', '2025-04-26', 4),
+    (2, 'UPDATED_USER', 'Updated information about Mike', '2025-04-28', 4),
+    (3, 'INITIALIZED_TEST', 'All tests started successfully', '2025-04-28 14:45', 4),
+    (4, 'INITIALIZED_TEST', 'All tests started successfully', '2025-04-23 15:09', 4)
+ON CONFLICT (id) DO NOTHING;

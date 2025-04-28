@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="/js/admin/admin-dashboard.js" type="module" defer></script>
+  <script src="/js/recent-history.js" type="module" defer></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <link rel="stylesheet" href="/css/global.css">
   <link rel="stylesheet" href="/css/dashboard.css">
@@ -17,7 +18,7 @@
   <div class="dashboard-header">
     <h2 class="dashboard-title">Technician Dashboard</h2>
     <div class="user-info">
-      <span>Welcome, <strong>Admin</strong>!</span>
+      <span>Welcome, <strong><span sec:authentication="name"></span></strong>!</span>
       <div class="user-avatar">A</div>
     </div>
   </div>
@@ -46,38 +47,17 @@
     </div>
   </div>
 
-  <div class="main-content-row">
+  <div class="row">
     <!-- Recent Activity Column -->
-    <div class="activity-column">
-      <div class="card">
-        <div class="card-header">
-          Recent Technician Activity
-        </div>
-        <div class="card-body">
-          <div class="activity-item">
-            <div class="activity-info">
-              <div class="activity-title">New Technician Added</div>
-              <div class="activity-desc">Michael Johnson joined the team</div>
-            </div>
-            <div class="activity-time">Today</div>
+    <div class="col-md-5">
+      <div class="activity-column">
+        <div class="card">
+          <div class="card-header">
+            Recent Activity
           </div>
-          <div class="activity-item">
-            <div class="activity-info">
-              <div class="activity-title">Profile Updated</div>
-              <div class="activity-desc">Sarah Smith updated her qualifications</div>
-            </div>
-            <div class="activity-time">Yesterday</div>
+          <div class="card-body">
+            <!-- JavaScript will dynamically inject activity items here -->
           </div>
-          <div class="activity-item">
-            <div class="activity-info">
-              <div class="activity-title">Service Completed</div>
-              <div class="activity-desc">John Doe finished 5 bike services</div>
-            </div>
-            <div class="activity-time">2 days ago</div>
-          </div>
-          <a href="#" class="btn-view mt-2">
-            View All Activity <i class="fas fa-chevron-right"></i>
-          </a>
         </div>
       </div>
     </div>
