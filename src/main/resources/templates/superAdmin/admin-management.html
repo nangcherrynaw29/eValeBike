@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="en" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,7 +17,7 @@
     <div class="dashboard-header">
         <h2 class="dashboard-title">Admin Management</h2>
         <div class="user-info">
-            <span>Welcome, <strong>Super Admin</strong>!</span>
+            <span>Welcome, <strong><span sec:authentication="name"></span></strong>!</span>
             <div class="user-avatar">S</div>
         </div>
     </div>
@@ -51,33 +51,33 @@
         <div class="activity-column">
             <div class="card">
                 <div class="card-header">
-                    Recent Admin Activity
-                </div>
-                <div class="card-body">
-                    <div class="activity-item">
-                        <div class="activity-info">
-                            <div class="activity-title">New Admin Added</div>
-                            <div class="activity-desc">John Doe was granted admin access</div>
-                        </div>
-                        <div class="activity-time">Today</div>
-                    </div>
-                    <div class="activity-item">
-                        <div class="activity-info">
-                            <div class="activity-title">Permissions Updated</div>
-                            <div class="activity-desc">Sarah Smith's access level was changed</div>
-                        </div>
-                        <div class="activity-time">Yesterday</div>
-                    </div>
-                    <div class="activity-item">
-                        <div class="activity-info">
-                            <div class="activity-title">Login Detected</div>
-                            <div class="activity-desc">Michael Johnson logged in from new device</div>
-                        </div>
-                        <div class="activity-time">2 days ago</div>
-                    </div>
-                    <a href="#" class="btn-view mt-2">
-                        View All Activity <i class="fas fa-chevron-right"></i>
-                    </a>
+                    Pending Approvals
+<!--                </div>-->
+<!--                <div class="card-body">-->
+<!--                    <div class="activity-item">-->
+<!--                        <div class="activity-info">-->
+<!--                            <div class="activity-title">New Admin Added</div>-->
+<!--                            <div class="activity-desc">John Doe was granted admin access</div>-->
+<!--                        </div>-->
+<!--                        <div class="activity-time">Today</div>-->
+<!--                    </div>-->
+<!--                    <div class="activity-item">-->
+<!--                        <div class="activity-info">-->
+<!--                            <div class="activity-title">Permissions Updated</div>-->
+<!--                            <div class="activity-desc">Sarah Smith's access level was changed</div>-->
+<!--                        </div>-->
+<!--                        <div class="activity-time">Yesterday</div>-->
+<!--                    </div>-->
+<!--                    <div class="activity-item">-->
+<!--                        <div class="activity-info">-->
+<!--                            <div class="activity-title">Login Detected</div>-->
+<!--                            <div class="activity-desc">Michael Johnson logged in from new device</div>-->
+<!--                        </div>-->
+<!--                        <div class="activity-time">2 days ago</div>-->
+<!--                    </div>-->
+<!--                    <a href="#" class="btn-view mt-2">-->
+<!--                        View All Activity <i class="fas fa-chevron-right"></i>-->
+<!--                    </a>-->
                 </div>
             </div>
         </div>
