@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 viewAllButton.remove();
 
                 // Load all remaining activities when the button is clicked (starting from index 3)
-                const remainingActivities = data.slice(3, 20);
+                const remainingActivities = data.slice(3,10);
                 remainingActivities.forEach(activity => {
                     const activityItem = document.createElement('div');
                     activityItem.className = 'activity-item';

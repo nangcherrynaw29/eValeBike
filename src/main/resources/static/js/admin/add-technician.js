@@ -7,13 +7,11 @@ document.addEventListener("DOMContentLoaded", function () {
         // Collect form data
         const name = document.querySelector("#technician-name").value;
         const email = document.querySelector("#technician-email").value;
-        const password = document.querySelector("#technician-password").value;
 
         // Create the data to send as a JSON object
         const jsonBody = JSON.stringify({
             name: name,
-            email: email,
-            password: password,
+            email: email
         });
 
         try {

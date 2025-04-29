@@ -34,7 +34,7 @@ public class AdminApiController {
     // Create a new technician
     @PostMapping()
     public ResponseEntity<TechnicianResponseDTO> createTechnician(@RequestBody final TechnicianRequestDTO technicianDTO, @AuthenticationPrincipal final CustomUserDetails userDetails) {
-        final Technician savedTechnician = technicianService.saveTechnician(technicianDTO.name(), technicianDTO.email(), technicianDTO.password());
+        final Technician savedTechnician = technicianService.saveTechnician(technicianDTO.name(), technicianDTO.email());
         recentActivityService.save(new RecentActivity(Activity.CREATED_USER, "Technician " + technicianDTO.name() + " created", LocalDateTime.now(), userDetails.getUserId()));
         return ResponseEntity
                 .status(HttpStatus.CREATED)

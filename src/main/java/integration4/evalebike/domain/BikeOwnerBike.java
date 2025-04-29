@@ -19,10 +19,6 @@ public class BikeOwnerBike {
     @JoinColumn(name = "bike_qr", referencedColumnName = "bikeqr", nullable = false)
     private Bike bike;
 
-    // Chassis number is stored in this intermediate table
-//    @Column(nullable = false, unique = true)
-//    private String chassisNumber;
-
     @Transient
     private String qrImage;
 

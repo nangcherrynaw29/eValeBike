@@ -5,6 +5,7 @@ import integration4.evalebike.domain.Bike;
 import integration4.evalebike.domain.BikeOwner;
 import integration4.evalebike.domain.BikeOwnerBike;
 
+import integration4.evalebike.exception.NotFoundException;
 import integration4.evalebike.repository.BikeOwnerBikeRepository;
 import integration4.evalebike.repository.BikeOwnerRepository;
 import integration4.evalebike.repository.BikeRepository;
@@ -32,16 +33,16 @@ public class BikeOwnerService {
         this.qrCodeService = qrCodeService;
     }
 
-    public List<BikeOwner> getAllBikeOwners() {
+    public List<BikeOwner> getAll() {
         return bikeOwnerRepository.findAll();
     }
 
-    public BikeOwner addBikeOwner(String name, String email, String phoneNumber, LocalDate birthDate) {
+    public BikeOwner add(String name, String email, String phoneNumber, LocalDate birthDate) {
         BikeOwner bikeOwner = new BikeOwner(name, email, phoneNumber, birthDate);
         return bikeOwnerRepository.save(bikeOwner);
     }
 
-    public List<BikeDto> getAllBikeOfOwner(Integer bikeOwnerId) {
+    public List<BikeDto> getAllBikes(Integer bikeOwnerId) {
         List<Bike> bikes = bikeOwnerBikeRepository.findByBikeOwnerId(bikeOwnerId)
                 .stream()
                 .map(BikeOwnerBike::getBike)
@@ -53,5 +54,12 @@ public class BikeOwnerService {
         });
 
         return bikes.stream().map(BikeDto::fromBike).collect(Collectors.toList());
+    }
+
+    public void delete(Integer id) {
+        BikeOwner bikeOwner = bikeOwnerRepository.findById(id)
+                .orElseThrow(() -> NotFoundException.forBikeOwner(id));
+        bikeOwnerBikeRepository.deleteByBikeOwnerId(id);
+        bikeOwnerRepository.delete(bikeOwner);
     }
 }

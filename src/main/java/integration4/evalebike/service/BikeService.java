@@ -3,9 +3,9 @@ package integration4.evalebike.service;
 import integration4.evalebike.domain.Bike;
 import integration4.evalebike.domain.BikeSize;
 import integration4.evalebike.exception.NotFoundException;
+import integration4.evalebike.repository.BikeOwnerBikeRepository;
 import integration4.evalebike.repository.BikeRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -16,24 +16,26 @@ import java.util.Optional;
 @Service
 public class BikeService {
     private final BikeRepository bikeRepository;
+    private final BikeOwnerBikeRepository bikeOwnerBikeRepository;
 
-    public BikeService(BikeRepository bikeRepository) {
+    public BikeService(BikeRepository bikeRepository, BikeOwnerBikeRepository bikeOwnerBikeRepository) {
         this.bikeRepository = bikeRepository;
+        this.bikeOwnerBikeRepository = bikeOwnerBikeRepository;
     }
 
-    public List<Bike> getBikes() {
+    public List<Bike> getAll() {
         return bikeRepository.findAll();
     }
 
-    public Bike getBikeByQR(String qrCode) {
+    public Bike getByQR(String qrCode) {
         return bikeRepository.findById(qrCode).orElseThrow(() -> NotFoundException.forBike(qrCode));
     }
 
-    public Bike addBike(String brand, String model, String chassisNumber, int productionYear, BikeSize bikeSize,
-                        int mileage, String gearType, String engineType,
-                        String powerTrain,
-                        double accuCapacity, double maxSupport,
-                        double maxEnginePower, double nominalEnginePower, double engineTorque, LocalDate lastTestDate) throws Exception {
+    public Bike add(String brand, String model, String chassisNumber, int productionYear, BikeSize bikeSize,
+                    int mileage, String gearType, String engineType,
+                    String powerTrain,
+                    double accuCapacity, double maxSupport,
+                    double maxEnginePower, double nominalEnginePower, double engineTorque, LocalDate lastTestDate) throws Exception {
 
         Bike bike = new Bike(brand, model, chassisNumber, productionYear, bikeSize, mileage, gearType, engineType, powerTrain,
                 accuCapacity, maxSupport, maxEnginePower, nominalEnginePower, engineTorque, lastTestDate);
@@ -43,5 +45,12 @@ public class BikeService {
 
     public Optional<Bike> findById(String bikeQR) {
         return bikeRepository.findById(bikeQR);
+    }
+
+    public void delete(String id) {
+        Bike bike = bikeRepository.findById(id)
+                .orElseThrow(() -> NotFoundException.forBike(id));
+        bikeOwnerBikeRepository.deleteByBikeQr(id);
+        bikeRepository.delete(bike);
     }
 }

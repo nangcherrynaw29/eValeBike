@@ -33,14 +33,14 @@ public class TechnicianController {
     // Show all bikes owned by a specific bike owner
     @GetMapping("/bikes/owner/{id}")
     public String showBikesForOwner(@PathVariable("id") Integer ownerId, Model model) {
-        List<BikeDto> bikeOwnerBikes = bikeOwnerService.getAllBikeOfOwner(ownerId);
+        List<BikeDto> bikeOwnerBikes = bikeOwnerService.getAllBikes(ownerId);
         model.addAttribute("bikes", bikeOwnerBikes);
         return "technician/bike-dashboard";
     }
 
     @GetMapping("/bikes")
     public String logBikes(Model model) {
-        List<Bike> bikes = bikeService.getBikes();
+        List<Bike> bikes = bikeService.getAll();
         for (Bike bike : bikes) {
             String qrCodeImage = qrCodeService.generateQrCodeBase64(bike.getBikeQR(), 200, 200);
             bike.setQrCodeImage(qrCodeImage);
@@ -51,7 +51,7 @@ public class TechnicianController {
 
     @GetMapping("/bike-owners")
     public String logBikeOwners(Model model) {
-        List<BikeOwner> bikeOwners = bikeOwnerService.getAllBikeOwners();
+        List<BikeOwner> bikeOwners = bikeOwnerService.getAll();
         model.addAttribute("bikeOwners", bikeOwners);
         return "technician/bike-owner-dashboard";
     }
@@ -81,14 +81,14 @@ public class TechnicianController {
     // Show details for a specific bike
     @GetMapping("/bikes/{bikeQR}")
     public String showBikeDetails(@PathVariable String bikeQR, Model model) {
-        Bike bike = bikeService.getBikeByQR(bikeQR);
+        Bike bike = bikeService.getByQR(bikeQR);
         model.addAttribute("bike", bike);
         return "technician/bike-dashboard";
     }
 
     @GetMapping("bikes/test-types/{bikeQR}")
     public String testTypes(@PathVariable String bikeQR,Model model) {
-        Bike bike = bikeService.getBikeByQR(bikeQR);
+        Bike bike = bikeService.getByQR(bikeQR);
         model.addAttribute("bike", bike);
         return "technician/test-types";
     }

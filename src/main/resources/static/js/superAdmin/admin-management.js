@@ -34,12 +34,11 @@ document.addEventListener("DOMContentLoaded", async () => {
             row.dataset.id = admin.id;
         //please note that I am using dataset here
             row.innerHTML = `
-                <td>${admin.id}</td>
                 <td>${admin.name}</td>
                 <td>${admin.email}</td>
                 <td>${admin.companyName}</td>
                 <td>
-                    <button class="delete-btn" data-id="${admin.id}">Delete</button>
+                    <button class="btn btn-outline-danger delete-btn" data-id="${admin.id}"><i class="fa-solid fa-trash"></i></button>
                 </td>
             `;
 
@@ -66,9 +65,6 @@ function attachDeleteEventListeners() {
                 alert("Admin ID not found.");
                 return;
             }
-
-            const confirmDelete = confirm("Are you sure you want to delete this admin?");
-            if (!confirmDelete) return;
 
             try {
                 const response = await fetch(`/api/super-admin/admins/${adminId}`, {

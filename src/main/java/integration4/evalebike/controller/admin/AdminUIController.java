@@ -22,7 +22,7 @@ public class AdminUIController {
 
     @GetMapping()
     public ModelAndView index() {
-        final ModelAndView modelAndView = new ModelAndView("admin/admin-dashboard");
+        final ModelAndView modelAndView = new ModelAndView("admin/technician-dashboard");
         modelAndView.addObject("technicians", TechniciansViewModel.fromTechnician(technicianService.getAll()));
         return modelAndView;
     }

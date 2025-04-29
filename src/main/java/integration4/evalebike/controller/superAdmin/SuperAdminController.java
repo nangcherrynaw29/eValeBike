@@ -18,7 +18,7 @@ public class SuperAdminController {
 
     @GetMapping()
     public ModelAndView index() {
-        final ModelAndView modelAndView = new ModelAndView("superAdmin/admin-management");
+        final ModelAndView modelAndView = new ModelAndView("superAdmin/admin-dashboard");
         modelAndView.addObject("superAdmins", AdminsViewModel.from(adminService.getAllAdmins()));
         return modelAndView;
     }

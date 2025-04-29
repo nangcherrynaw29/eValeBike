@@ -13,6 +13,13 @@ public class NotFoundException extends RuntimeException {
         );
     }
 
+    public static NotFoundException forBikeOwner(final Integer bikeOwnerId) {
+        return new NotFoundException(
+                "Bike Owner with ID %s was not found"
+                        .formatted(bikeOwnerId)
+        );
+    }
+
     public static NotFoundException forBike(final String bikeId) {
         return new NotFoundException(
                 "Bike with ID %s was not found"

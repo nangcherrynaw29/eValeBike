@@ -24,11 +24,10 @@ public class TechnicianService {
                 .orElseThrow(() -> NotFoundException.forTechnician(id));
     }
 
-    public Technician saveTechnician(final String name, final String email, final String password) {
+    public Technician saveTechnician(final String name, final String email) {
         Technician technician = new Technician();
         technician.setName(name);
         technician.setEmail(email);
-        technician.setPassword(password);
         return technicianRepository.save(technician);
     }
 
