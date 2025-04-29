@@ -30,7 +30,6 @@ public class Bike {
     private double nominalEnginePower;
     private double engineTorque;
     private LocalDate lastTestDate;
-    // TODO: moved to BikeOwnerBike class
     @Transient
     private String qrCodeImage;
 

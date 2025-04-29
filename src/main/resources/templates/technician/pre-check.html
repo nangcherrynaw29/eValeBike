@@ -19,34 +19,46 @@
     <div class="card p-4 shadow">
         <h2 class="text-center">Pre-Check Conditions</h2>
         <br>
-        <form>
+        <form id="preCheckForm" th:action="@{/technician/pre-check}" method="POST">
+            <input type="hidden" name="technicianId" th:value="${technicianId}">
+            <input type="hidden" name="bikeQR" th:value="${bikeQR}">
+            <div class="mb-4">
+                <label for="testBenchNumber" class="form-label">Which test bench is being used?</label>
+                <input type="number"
+                       class="form-control"
+                       id="testBenchNumber"
+                       name="testBenchNumber"
+                       min="1"
+                       required
+                       placeholder="Enter test bench number">
+            </div>
             <div class="form-check mb-2">
-                <input class="form-check-input" type="checkbox" id="check1">
+                <input class="form-check-input" type="checkbox" id="check1" required>
                 <label class="form-check-label" for="check1">Roller torque is sufficient</label>
             </div>
             <div class="form-check mb-2">
-                <input class="form-check-input" type="checkbox" id="check2">
+                <input class="form-check-input" type="checkbox" id="check2" required>
                 <label class="form-check-label" for="check2">Belt connection is properly tensioned</label>
             </div>
             <div class="form-check mb-2">
-                <input class="form-check-input" type="checkbox" id="check3">
-                <label class="form-check-label" for="check3">Bike’s data network connection is working</label>
+                <input class="form-check-input" type="checkbox" id="check3" required>
+                <label class="form-check-label" for="check3">Bike's data network connection is working</label>
             </div>
             <div class="form-check mb-2">
-                <input class="form-check-input" type="checkbox" id="check4">
+                <input class="form-check-input" type="checkbox" id="check4" required>
                 <label class="form-check-label" for="check4">Wheels are secured</label>
             </div>
             <div class="form-check mb-3">
-                <input class="form-check-input" type="checkbox" id="check5">
+                <input class="form-check-input" type="checkbox" id="check5" required>
                 <label class="form-check-label" for="check5">Tire pressure is optimal</label>
             </div>
             <div class="d-flex justify-content-end">
-                <a th:href="@{/technician/bikes/test-types/{bikeQR}(bikeQR=${bikeQR})}" class="btn btn-primary btn-sm">
+                <button type="submit" class="btn btn-primary btn-sm">
                     <i class="fas fa-clipboard-check"></i> Activate test
-                </a>
+                </button>
             </div>
         </form>
-            </div>
-        </div>
+    </div>
+</div>
 </body>
 </html>

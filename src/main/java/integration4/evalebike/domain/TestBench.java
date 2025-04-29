@@ -11,18 +11,23 @@ public class TestBench {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer testBenchId;
+    @Column(name = "test_bench_name", unique = true)
     private String testBenchName;
     private String location;
     @Enumerated(EnumType.STRING)
     private Status status;
     private LocalDate lastCalibrationDate;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "technician_id")
+    private Technician technician;
 
-    public TestBench(Integer testBenchId, String testBenchName, String location, Status status, LocalDate lastCalibrationDate) {
-        this.testBenchId = testBenchId;
-        this.testBenchName = testBenchName;
+    public TestBench(LocalDate lastCalibrationDate, String location, Status status, Technician technician, Integer testBenchId, String testBenchName) {
+        this.lastCalibrationDate = lastCalibrationDate;
         this.location = location;
         this.status = status;
-        this.lastCalibrationDate = lastCalibrationDate;
+        this.technician = technician;
+        this.testBenchId = testBenchId;
+        this.testBenchName = testBenchName;
     }
 
     public TestBench() {
@@ -59,6 +64,14 @@ public class TestBench {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public Technician getTechnician() {
+        return technician;
+    }
+
+    public void setTechnician(Technician technician) {
+        this.technician = technician;
     }
 
     public LocalDate getLastCalibrationDate() {

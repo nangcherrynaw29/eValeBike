@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,69 +20,70 @@
         </div>
     </div>
 
-        <!-- Bike Table Column -->
-        <div class="table-column">
-            <div class="table-container">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5>All Bikes</h5>
-                </div>
-                    <table class="table table-striped">
-                        <thead>
-                        <tr>
-                            <th>Bike QR</th>
-                            <th>Brand</th>
-                            <th>Model</th>
-                            <th>Chassis Number</th>
-                            <th>Production Year</th>
-                            <th>Bike Size</th>
-                            <th>Mileage</th>
-                            <th>Gear Type</th>
-                            <th>Engine Type</th>
-                            <th>Power Train</th>
-                            <th>Accu Capacity (Ah)</th>
-                            <th>Max Support (%)</th>
-                            <th>Max Engine Power (W)</th>
-                            <th>Nominal Engine Power (W)</th>
-                            <th>Engine Torque (Nm)</th>
-                            <th>Last Test Date</th>
+    <!-- Bike Table Column -->
+    <div class="table-column">
+        <div class="table-container">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5>All Bikes</h5>
+            </div>
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Bike QR</th>
+                    <th>Brand</th>
+                    <th>Model</th>
+                    <th>Chassis Number</th>
+                    <th>Production Year</th>
+                    <th>Bike Size</th>
+                    <th>Mileage</th>
+                    <th>Gear Type</th>
+                    <th>Engine Type</th>
+                    <th>Power Train</th>
+                    <th>Accu Capacity (Ah)</th>
+                    <th>Max Support (%)</th>
+                    <th>Max Engine Power (W)</th>
+                    <th>Nominal Engine Power (W)</th>
+                    <th>Engine Torque (Nm)</th>
+                    <th>Last Test Date</th>
 
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr th:each="bike : ${bikes}">
-                            <td>
-                                <img th:src="${bike.qrCodeImage}" alt="QR Code" width="150" height="150" class="img-thumbnail">
-                            </td>
-                            <td th:text="${bike.brand}"></td>
-                            <td th:text="${bike.model}"></td>
-                            <td th:text="${bike.chassisNumber}"></td>
-                            <td th:text="${bike.productionYear}"></td>
-                            <td th:text="${bike.bikeSize}"></td>
-                            <td th:text="${bike.mileage}"></td>
-                            <td th:text="${bike.gearType}"></td>
-                            <td th:text="${bike.engineType}"></td>
-                            <td th:text="${bike.powerTrain}"></td>
-                            <td th:text="${bike.accuCapacity}"></td>
-                            <td th:text="${bike.maxSupport}"></td>
-                            <td th:text="${bike.maxEnginePower}"></td>
-                            <td th:text="${bike.nominalEnginePower}"></td>
-                            <td th:text="${bike.engineTorque}"></td>
-                            <td th:text="${bike.lastTestDate}"></td>
-                            <td>
-                                <a th:href="@{/technician/pre-check/{bikeQR}(bikeQR=${bike.bikeQR})}" class="btn btn-primary btn-sm">
-                                    <i class="fas fa-clipboard-check"></i> Pre-test Check
-                                </a>
-
-
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                <a th:href="@{/technician/bikes/add}" class="btn btn-primary btn-block mb-2">
-                    <i class="fas fa-plus"></i> Add New Bike
-                </a>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="bike : ${bikes}">
+                    <td>
+                        <img th:src="${bike.qrCodeImage}" alt="QR Code" width="150" height="150" class="img-thumbnail">
+                    </td>
+                    <td th:text="${bike.brand}"></td>
+                    <td th:text="${bike.model}"></td>
+                    <td th:text="${bike.chassisNumber}"></td>
+                    <td th:text="${bike.productionYear}"></td>
+                    <td th:text="${bike.bikeSize}"></td>
+                    <td th:text="${bike.mileage}"></td>
+                    <td th:text="${bike.gearType}"></td>
+                    <td th:text="${bike.engineType}"></td>
+                    <td th:text="${bike.powerTrain}"></td>
+                    <td th:text="${bike.accuCapacity}"></td>
+                    <td th:text="${bike.maxSupport}"></td>
+                    <td th:text="${bike.maxEnginePower}"></td>
+                    <td th:text="${bike.nominalEnginePower}"></td>
+                    <td th:text="${bike.engineTorque}"></td>
+                    <td th:text="${bike.lastTestDate}"></td>
+                    <td>
+                        <div sec:authorize="hasRole('TECHNICIAN')">
+                            <a th:href="@{/technician/pre-check/{bikeQR}(bikeQR=${bike.bikeQR})}"
+                               class="btn btn-primary btn-sm">
+                                <i class="fas fa-clipboard-check"></i> Pre-test Check
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <a th:href="@{/technician/bikes/add}" class="btn btn-primary btn-block mb-2">
+                <i class="fas fa-plus"></i> Add New Bike
+            </a>
         </div>
-        </div>
+    </div>
 </div>
 </body>
 </html>

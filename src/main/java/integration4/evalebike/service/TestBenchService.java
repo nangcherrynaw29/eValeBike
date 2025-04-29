@@ -5,10 +5,13 @@ import integration4.evalebike.controller.testBench.dto.TestReportDTO;
 import integration4.evalebike.controller.testBench.dto.TestReportEntryDTO;
 import integration4.evalebike.controller.testBench.dto.TestRequestDTO;
 import integration4.evalebike.controller.testBench.dto.TestResponseDTO;
-import integration4.evalebike.domain.TestReport;
-import integration4.evalebike.domain.TestReportEntry;
+import integration4.evalebike.domain.*;
+import integration4.evalebike.exception.NotFoundException;
+import integration4.evalebike.repository.TechnicianRepository;
+import integration4.evalebike.repository.TestBenchRepository;
 import integration4.evalebike.repository.TestReportRepository;
 import io.netty.handler.timeout.TimeoutException;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -17,6 +20,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import org.springframework.http.HttpStatusCode;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -30,14 +34,18 @@ public class TestBenchService {
 
     private final WebClient testBenchClient;
     private final TestReportRepository testReportRepository;
+    private final TestBenchRepository testBenchRepository;
+    private final TechnicianRepository technicianRepository;
     private final String apiKey = "9e8dffd7-f6e1-45b4-b4aa-69fd257ca200";
 
-    public TestBenchService(WebClient.Builder webClientBuilder, TestReportRepository testReportRepository) {
+    public TestBenchService(WebClient.Builder webClientBuilder, TestReportRepository testReportRepository, TestBenchRepository testBenchRepository, TechnicianRepository technicianRepository) {
         this.testBenchClient = webClientBuilder
                 .baseUrl("https://testbench.raoul.dev")
                 .defaultHeader("X-Api-Key", apiKey)
                 .build();
         this.testReportRepository = testReportRepository;
+        this.testBenchRepository = testBenchRepository;
+        this.technicianRepository = technicianRepository;
     }
 
     public Mono<TestResponseDTO> startTest(TestRequestDTO request, String technicianUsername) {
@@ -89,7 +97,8 @@ public class TestBenchService {
                 .timeout(Duration.ofMinutes(30))
                 .onErrorResume(TimeoutException.class, e -> Mono.error(new RuntimeException("Test timed out")));
     }
-//this is to check the status of the test
+
+    //this is to check the status of the test
     public Mono<TestResponseDTO> getTestResultById(String testId) {
         return testBenchClient.get()
                 .uri("/api/test/{id}", testId)
@@ -208,6 +217,7 @@ public class TestBenchService {
                 )
                 .doOnError(e -> logger.error("Error fetching report for testId {}: {}", testId, e.getMessage()));
     }
+
     private Mono<String> fetchCsvReport(String testId) {
         return testBenchClient.get()
                 .uri("/api/test/{id}/report", testId)
@@ -343,5 +353,36 @@ public class TestBenchService {
                     }
                 })
                 .collect(Collectors.toList());
+    }
+
+    public List<TestBench> getAllTestBenches() {
+        return testBenchRepository.findAll();
+    }
+
+    @Transactional
+    public void assignTestBench(Integer testBenchId, Integer technicianId) {
+
+        TestBench testBench = testBenchRepository.findById(testBenchId)
+                .orElseThrow(() -> NotFoundException.forTestBench(testBenchId));
+
+        Technician technician = technicianRepository.findById(technicianId)
+                .orElseThrow(() -> NotFoundException.forTechnician(technicianId));
+
+        // Check if the test bench is already assigned to a different technician
+        if (testBench.getTechnician() != null &&
+                !testBench.getTechnician().getId().equals(technicianId)) {
+            throw new IllegalStateException(
+                    "Test bench is already assigned to another technician");
+        }
+
+        // Set technician and update status to ACTIVE
+        testBench.setTechnician(technician);
+        testBench.setStatus(Status.ACTIVE);
+
+        testBenchRepository.save(testBench);
+    }
+
+    public List<TestBench> findByTechnicianIdAndStatus(Integer technicianId, Status status) {
+        return testBenchRepository.findByTechnicianIdAndStatus(technicianId, status);
     }
 }
