@@ -34,9 +34,12 @@ build_job:
 test_job:
   stage: test
   script:
-    - echo "Waiting for PostgreSQL to be ready..."
     - apt-get update && apt-get install -y postgresql-client
-    - until pg_isready -h db -p 5432; do echo "Waiting for db..."; sleep 5; done
+    - |
+      until psql -h db -U $POSTGRES_USER -d $POSTGRES_DB -c '\q'; do
+        echo "Waiting for PostgreSQL to be ready...";
+        sleep 5;
+      done
     - gradle test
   artifacts:
     when: always
