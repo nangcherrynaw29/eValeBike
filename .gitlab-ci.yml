@@ -3,6 +3,7 @@ image: gradle:8-jdk21
 services:
   - name: postgres:17.2-alpine
     alias: db
+  - docker: dind
 
 variables:
   POSTGRES_DB: eValeBike
@@ -21,6 +22,7 @@ stages:
 before_script:
   - echo "Starting CI/CD pipeline..."
   - export GRADLE_USER_HOME=`pwd`/.gradle
+  - docker info
 
 build_job:
   stage: build
