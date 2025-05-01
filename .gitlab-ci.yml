@@ -3,26 +3,29 @@ image: gradle:8-jdk21
 services:
   - name: postgres:17.2-alpine
     alias: db
-  - docker: dind
+  - name: docker:dind #docker in docker; building docker images
 
 variables:
   POSTGRES_DB: eValeBike
-  POSTGRES_USER: user
-  POSTGRES_PASSWORD: password
+  POSTGRES_USER: user #todo make Gitlab variable
+  POSTGRES_PASSWORD: password #todo make Gitlab variable
   SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/eValeBike
-  SPRING_DATASOURCE_USERNAME: user
-  SPRING_DATASOURCE_PASSWORD: password
+  SPRING_DATASOURCE_USERNAME: user #todo make Gitlab variable
+  SPRING_DATASOURCE_PASSWORD: password #todo make Gitlab variable
+  DOCKER_HOST: tcp://docker:2375  # Required for Docker-in-Docker
+  DOCKER_TLS_CERTDIR: "" # tls disabled
 
 stages:
   - build
   - test
+  - sast #static application security testing
   - deploy
   - destroy
 
 before_script:
   - echo "Starting CI/CD pipeline..."
   - export GRADLE_USER_HOME=`pwd`/.gradle
-  - docker info
+  - docker info || (echo "Docker not available" && exit 1)  # Ensure Docker is running
 
 build_job:
   stage: build
@@ -36,20 +39,35 @@ build_job:
 test_job:
   stage: test
   script:
-    - apt-get update && apt-get install -y postgresql-client
+    - apt-get update && apt-get install -y postgresql-client #install postgres client
     - |
       export PGPASSWORD=$POSTGRES_PASSWORD
       until psql -h db -U $POSTGRES_USER -d $POSTGRES_DB -c '\q'; do
         echo "Waiting for PostgreSQL to be ready..."
         sleep 5
       done
+    #to see if postgresl is ready
     - gradle test
   artifacts:
     when: always
     reports:
-      junit: build/test-results/test/TEST-*.xml
+      junit: build/test-results/test/TEST-*.xml #post junit results to gitlab
     paths:
       - build/test-results/test/
+
+# Static Application Security Testing (SAST)
+sast_job:
+  stage: sast
+  image: gradle:8-jdk21
+  script:
+    #SpotBugs integrated with Gradle
+    - gradle spotbugsMain
+  artifacts:
+    when: always
+    paths:
+      - build/reports/spotbugs/main.xml
+    reports:
+      sast: build/reports/spotbugs/main.xml
 
 deploy_job:
   stage: deploy
