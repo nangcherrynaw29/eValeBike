@@ -1,6 +1,6 @@
 const testId = new URLSearchParams(window.location.search).get('testId');
 function checkStatus() {
-    fetch('/api/technician/status/' + testId)
+    fetch('/technician/status/' + testId)
         .then(response => response.json())
         .then(data => {
             document.getElementById('status').innerText = 'Status: ' + data.state;

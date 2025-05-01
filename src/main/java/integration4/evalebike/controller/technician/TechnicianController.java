@@ -10,6 +10,8 @@ import integration4.evalebike.domain.BikeOwner;
 import integration4.evalebike.domain.TestReport;
 import integration4.evalebike.domain.TestReportEntry;
 import integration4.evalebike.service.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +29,7 @@ public class TechnicianController {
     private final QrCodeService qrCodeService;
     private final TestBenchService testBenchService;
     private final TestReportService testReportService;
+    private static final Logger logger = LoggerFactory.getLogger(TechnicianController.class);
 
     public TechnicianController(BikeOwnerService bikeOwnerService, BikeService bikeService, QrCodeService qrCodeService, TestBenchService testBenchService, TestReportService testReportService) {
         this.bikeOwnerService = bikeOwnerService;
@@ -105,27 +108,40 @@ public class TechnicianController {
         return "technician/loading";
     }
 
-    @GetMapping("/test-status/{testId}")
-    public Mono<TestResponseDTO> getTestResultById(@PathVariable String testId) {
-        return testBenchService.getTestStatusById(testId);
+
+    @GetMapping("/status/{testId}")
+    @ResponseBody
+    public Mono<TestResponseDTO> getTestStatus(@PathVariable String testId) {
+        logger.info("Fetching status for testId: {}", testId);
+        return testBenchService.getTestStatusById(testId)
+                .doOnNext(response -> logger.debug("Status for testId {}: {}", testId, response.getState()))
+                .doOnError(e -> logger.error("Error fetching status for testId {}: {}", testId, e.getMessage()));
     }
 
     @GetMapping("/report/{testId}")
     public Mono<String> showReportByTestId(@PathVariable("testId") String testId, Model model) {
-        TestReport report = testReportService.getTestReportById(testId);
-        ReportViewModel reportVm = ReportViewModel.from(report);
+        logger.info("Fetching report for testId: {}", testId);
 
-        List<TestReportEntry> entries = report.getReportEntries();
-        TestReportEntryViewModel summaryVm = entries != null && !entries.isEmpty()
-                ? TestReportEntryViewModel.summarize(entries)
-                : null;
+        return Mono.fromCallable(() -> testReportService.getTestReportWithEntriesById(testId))
+                .flatMap(optionalReport -> Mono.justOrEmpty(optionalReport)
+                        .map(report -> {
+                            ReportViewModel reportVm = ReportViewModel.from(report);
+                            List<TestReportEntry> entries = report.getReportEntries();
+                            TestReportEntryViewModel summaryVm = entries != null && !entries.isEmpty()
+                                    ? TestReportEntryViewModel.summarize(entries)
+                                    : null;
 
-        model.addAttribute("report", reportVm);
-        model.addAttribute("summary", summaryVm);
-
-        return Mono.just("technician/test-report-details");
+                            model.addAttribute("report", reportVm);
+                            model.addAttribute("summary", summaryVm);
+                            return "technician/test-report-details";
+                        })
+                        .switchIfEmpty(Mono.error(new RuntimeException("TestReport not found for testId: " + testId))))
+                .onErrorResume(e -> {
+                    logger.error("Error fetching report for testId {}: {}", testId, e.getMessage(), e);
+                    model.addAttribute("error", e.getMessage());
+                    return Mono.just("technician/error");
+                });
     }
-
 
     //this shows a list of test report
     @GetMapping("/test-report-dashboard")

@@ -7,19 +7,7 @@ public record ReportViewModel(String id, String expiryDate, String state, String
                               String bikeQR, String technicianName) {
 
     public static ReportViewModel from(final TestReport report) {
-        return new ReportViewModel(
-                report.getId(),
-                report.getExpiryDate(),
-                report.getState(),
-                report.getType(),
-                report.getBatteryCapacity(),
-                report.getMaxSupport(),
-                report.getEnginePowerMax(),
-                report.getEnginePowerNominal(),
-                report.getEngineTorque(),
-                report.getBikeQR(),
-                report.getTechnicianName()
-
-        );
+        return new ReportViewModel(report.getId(), report.getExpiryDate(), report.getState(), report.getType(), report.getBatteryCapacity(), report.getMaxSupport(), report.getEnginePowerMax(), report.getEnginePowerNominal(), report.getEngineTorque(), report.getBike() != null ? report.getBike().getBikeQR() : null, // Access bikeQR via Bike
+                report.getTechnicianName());
     }
 }

@@ -20,17 +20,24 @@ public class TestReportService {
     }
 
     public List<TestReport> getAllReports() {
-        return testReportRepository.findAll();
+        return testReportRepository.findAllWithBike();
     }
 
 
-    public TestReport getTestReportById(String testId) {
-        var testReport = testReportRepository.findByIdWithEntries(testId);
+    public TestReport getTestReportWithEntriesById(String testId) {
+        var testReport = testReportRepository.findEntriesByID(testId);
         if (testReport.isEmpty()) {
             throw new RuntimeException("No TestReport found for testId: " + testId);
         }
         return testReport.get();
     }
+
+
+
+
+
+
+
 
 
 }

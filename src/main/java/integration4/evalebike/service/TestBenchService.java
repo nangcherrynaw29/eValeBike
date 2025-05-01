@@ -5,8 +5,10 @@ import integration4.evalebike.controller.technician.dto.TestReportDTO;
 import integration4.evalebike.controller.technician.dto.TestReportEntryDTO;
 import integration4.evalebike.controller.technician.dto.TestRequestDTO;
 import integration4.evalebike.controller.technician.dto.TestResponseDTO;
+import integration4.evalebike.domain.Bike;
 import integration4.evalebike.domain.TestReport;
 import integration4.evalebike.domain.TestReportEntry;
+import integration4.evalebike.repository.BikeRepository;
 import integration4.evalebike.repository.TestReportRepository;
 import io.netty.handler.timeout.TimeoutException;
 import org.slf4j.Logger;
@@ -30,14 +32,16 @@ public class TestBenchService {
 
     private final WebClient testBenchClient;
     private final TestReportRepository testReportRepository;
+    private final BikeRepository bikeRepository;
     private final String apiKey = "9e8dffd7-f6e1-45b4-b4aa-69fd257ca200";
 
-    public TestBenchService(WebClient.Builder webClientBuilder, TestReportRepository testReportRepository) {
+    public TestBenchService(WebClient.Builder webClientBuilder, TestReportRepository testReportRepository, BikeRepository bikeRepository) {
         this.testBenchClient = webClientBuilder
                 .baseUrl("https://testbench.raoul.dev")
                 .defaultHeader("X-Api-Key", apiKey)
                 .build();
         this.testReportRepository = testReportRepository;
+        this.bikeRepository = bikeRepository;
     }
 
     public Mono<TestResponseDTO> processTest(TestRequestDTO request, String technicianUsername, String bikeQR) {
@@ -69,7 +73,7 @@ public class TestBenchService {
                             .flatMap(status -> getTestReportById(response.getId()))
                             .doOnNext(report -> logger.info("Fetched and saved report for testId: {}", response.getId()))
                             .subscribe(
-                                    result -> logger.info("Background task completed: {}", result.id()),
+                                    result -> logger.info("Background task completed: {}", result.getId()),
                                     error -> logger.error("Background task failed: {}", error.getMessage())
                             );
                 });
@@ -84,7 +88,7 @@ public class TestBenchService {
                                         .flatMap(errorBody -> Mono.error(new RuntimeException("Failed to fetch test status: " + errorBody))))
                         .bodyToMono(TestResponseDTO.class))
                 .doOnNext(status -> logger.info("Test {} status: {}", testId, status.getState()))
-                .repeatWhen(flux -> flux.delayElements(Duration.ofSeconds(5)))
+                .repeatWhen(flux -> flux.delayElements(Duration.ofSeconds(2)))
                 .takeUntil(status -> "COMPLETED".equalsIgnoreCase(status.getState()))
                 .timeout(Duration.ofMinutes(30))
                 .onErrorResume(TimeoutException.class, e -> Mono.error(new RuntimeException("Test timed out")));
@@ -109,15 +113,15 @@ public class TestBenchService {
     public Mono<TestReportDTO> getTestReportById(String testId) {
         logger.info("Fetching report for testId: {}", testId);
 
-        return Mono.fromCallable(() -> testReportRepository.findById(testId))
+        return Mono.fromCallable(() -> testReportRepository.findBikeByID(testId))
                 .flatMap(optionalReport -> {
                     if (optionalReport.isEmpty()) {
-                        logger.error("No partial TestReport found for testId: {}", testId);
-                        return Mono.error(new RuntimeException("No partial TestReport found for testId: " + testId));
+                        logger.error("No TestReport found for testId: {}", testId);
+                        return Mono.error(new RuntimeException("No TestReport found for testId: " + testId));
                     }
-                    TestReport partialReport = optionalReport.get();
-                    String bikeQR = partialReport.getBikeQR();
-                    String technicianUsername = partialReport.getTechnicianName();
+                    TestReport report = optionalReport.get();
+                    String bikeQR = report.getBike() != null ? report.getBike().getBikeQR() : null;
+                    String technicianUsername = report.getTechnicianName();
                     return fetchCsvReport(testId)
                             .flatMap(csv -> parseCsvToEntries(csv, testId))
                             .flatMap(entries -> {
@@ -127,22 +131,20 @@ public class TestBenchService {
                                 }
                                 return fetchAndValidateTest(testId)
                                         .flatMap(test -> saveTestReport(test, entries, bikeQR, technicianUsername))
-                                        .map(testReportDTO -> {
-                                            return new TestReportDTO(
-                                                    testReportDTO.id(),
-                                                    testReportDTO.expiryDate(),
-                                                    testReportDTO.state(),
-                                                    testReportDTO.type(),
-                                                    testReportDTO.batteryCapacity(),
-                                                    testReportDTO.maxSupport(),
-                                                    testReportDTO.enginePowerMax(),
-                                                    testReportDTO.enginePowerNominal(),
-                                                    testReportDTO.engineTorque(),
-                                                    entries,
-                                                    testReportDTO.bikeQR(),
-                                                    testReportDTO.technicianName()
-                                            );
-                                        });
+                                        .map(testReportDTO -> new TestReportDTO(
+                                                testReportDTO.getId(),
+                                                testReportDTO.getExpiryDate(),
+                                                testReportDTO.getState(),
+                                                testReportDTO.getType(),
+                                                testReportDTO.getBatteryCapacity(),
+                                                testReportDTO.getMaxSupport(),
+                                                testReportDTO.getEnginePowerMax(),
+                                                testReportDTO.getEnginePowerNominal(),
+                                                testReportDTO.getEngineTorque(),
+                                                entries,
+                                                bikeQR,
+                                                testReportDTO.getTechnicianName()
+                                        ));
                             });
                 })
                 .doOnError(e -> logger.error("Error fetching report for testId {}: {}", testId, e.getMessage()));
@@ -188,72 +190,85 @@ public class TestBenchService {
                 });
     }
 
-    public Mono<TestReportDTO> saveTestReport(TestResponseDTO test, List<TestReportEntryDTO> entryDTOs, String bikeQR, String technicianUsername) {
-        TestReport testReport = new TestReport(
-                test.getId(),
-                test.getExpiryDate(),
-                test.getState(),
-                test.getType(),
-                test.getBatteryCapacity(),
-                test.getMaxSupport(),
-                test.getEnginePowerMax(),
-                test.getEnginePowerNominal(),
-                test.getEngineTorque(),
-                null
-        );
-        testReport.setBikeQR(bikeQR);
-        testReport.setTechnicianName(technicianUsername);
 
-        List<TestReportEntry> entries = entryDTOs.stream()
-                .map(dto -> new TestReportEntry(
-                        testReport,
-                        dto.timestamp(),
-                        dto.batteryVoltage(),
-                        dto.batteryCurrent(),
-                        dto.batteryCapacity(),
-                        dto.batteryTemperatureCelsius(),
-                        dto.chargeStatus(),
-                        dto.assistanceLevel(),
-                        dto.torqueCrankNm(),
-                        dto.bikeWheelSpeedKmh(),
-                        dto.cadanceRpm(),
-                        dto.engineRpm(),
-                        dto.enginePowerWatt(),
-                        dto.wheelPowerWatt(),
-                        dto.rollTorque(),
-                        dto.loadcellN(),
-                        dto.rolHz(),
-                        dto.horizontalInclination(),
-                        dto.verticalInclination(),
-                        dto.loadPower(),
-                        dto.statusPlug()
-                ))
-                .collect(Collectors.toList());
+        public Mono<TestReportDTO> saveTestReport(TestResponseDTO test, List<TestReportEntryDTO> entryDTOs, String bikeQR, String technicianUsername) {
+            return Mono.fromCallable(() -> bikeRepository.findByBikeQR(bikeQR)) // Fetch Bike by bikeQR
+                    .flatMap(optionalBike -> {
+                        if (optionalBike.isEmpty()) {
+                            logger.error("No Bike found for bikeQR: {}", bikeQR);
+                            return Mono.error(new RuntimeException("No Bike found for bikeQR: " + bikeQR));
+                        }
+                        Bike bike = optionalBike.get();
 
-        testReport.setReportEntries(entries);
+                        TestReport testReport = new TestReport(
+                                test.getId(),
+                                test.getExpiryDate(),
+                                test.getState(),
+                                test.getType(),
+                                test.getBatteryCapacity(),
+                                test.getMaxSupport(),
+                                test.getEnginePowerMax(),
+                                test.getEnginePowerNominal(),
+                                test.getEngineTorque()
+                        );
+                        testReport.setBike(bike); // Set the Bike entity
+                        testReport.setTechnicianName(technicianUsername);
 
-        try {
-            TestReport saved = testReportRepository.save(testReport);
-            logger.info("Saved TestReport with ID: {} for testId {}", saved.getId(), test.getId());
-            return Mono.just(new TestReportDTO(
-                    test.getId(),
-                    test.getExpiryDate(),
-                    test.getState(),
-                    test.getType(),
-                    test.getBatteryCapacity(),
-                    test.getMaxSupport(),
-                    test.getEnginePowerMax(),
-                    test.getEnginePowerNominal(),
-                    test.getEngineTorque(),
-                    entryDTOs,
-                    saved.getBikeQR(),
-                    saved.getTechnicianName()
-            ));
-        } catch (Exception e) {
-            logger.error("Failed to save report for testId {}: {}", test.getId(), e.getMessage());
-            return Mono.error(new RuntimeException("Failed to save TestReport", e));
+                        List<TestReportEntry> entries = entryDTOs.stream()
+                                .map(dto -> new TestReportEntry(
+                                        testReport,
+                                        dto.timestamp(),
+                                        dto.batteryVoltage(),
+                                        dto.batteryCurrent(),
+                                        dto.batteryCapacity(),
+                                        dto.batteryTemperatureCelsius(),
+                                        dto.chargeStatus(),
+                                        dto.assistanceLevel(),
+                                        dto.torqueCrankNm(),
+                                        dto.bikeWheelSpeedKmh(),
+                                        dto.cadanceRpm(),
+                                        dto.engineRpm(),
+                                        dto.enginePowerWatt(),
+                                        dto.wheelPowerWatt(),
+                                        dto.rollTorque(),
+                                        dto.loadcellN(),
+                                        dto.rolHz(),
+                                        dto.horizontalInclination(),
+                                        dto.verticalInclination(),
+                                        dto.loadPower(),
+                                        dto.statusPlug()
+                                ))
+                                .collect(Collectors.toList());
+
+                        testReport.setReportEntries(entries);
+
+                        try {
+                            TestReport saved = testReportRepository.save(testReport);
+                            logger.info("Saved TestReport with ID: {} for testId {}", saved.getId(), test.getId());
+                            return Mono.just(new TestReportDTO(
+                                    test.getId(),
+                                    test.getExpiryDate(),
+                                    test.getState(),
+                                    test.getType(),
+                                    test.getBatteryCapacity(),
+                                    test.getMaxSupport(),
+                                    test.getEnginePowerMax(),
+                                    test.getEnginePowerNominal(),
+                                    test.getEngineTorque(),
+                                    entryDTOs,
+                                    bikeQR, // Use the provided bikeQR
+                                    saved.getTechnicianName()
+                            ));
+                        } catch (Exception e) {
+                            logger.error("Failed to save report for testId {}: {}", test.getId(), e.getMessage());
+                            return Mono.error(new RuntimeException("Failed to save TestReport", e));
+                        }
+                    })
+                    .switchIfEmpty(Mono.error(new RuntimeException("No Bike found for bikeQR: " + bikeQR)));
         }
-    }
+
+        // Other methods...
+
 
     public List<TestReportEntryDTO> parseCsvToReportEntries(String csvData) {
         String[] lines = csvData.trim().split("\n");
@@ -289,7 +304,6 @@ public class TestBenchService {
                     }
                 })
                 .collect(Collectors.toList());
-    }
+    }}
 
 
-}
