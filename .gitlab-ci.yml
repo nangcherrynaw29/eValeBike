@@ -1,9 +1,9 @@
 image: gradle:8-jdk21
 
 services:
-  - name: postgres:17.2-alpine
-    alias: db
-  - docker: dind #docker in docker; building docker images
+  - docker:20.10.24-dind
+  - postgres:17.2-alpine
+  #strings are correct syntax fir gitlab
 
 variables:
   POSTGRES_DB: eValeBike
