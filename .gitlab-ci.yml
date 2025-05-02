@@ -35,6 +35,7 @@ build_job:
       - build/libs/*.jar
     expire_in: 1 week
 
+
 test_job:
   stage: test
   script:
