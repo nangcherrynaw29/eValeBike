@@ -1,0 +1,8 @@
+#chart-container {
+    position: relative;
+    height: 600px;
+}
+
+.form-check {
+    margin-bottom: 10px;
+}

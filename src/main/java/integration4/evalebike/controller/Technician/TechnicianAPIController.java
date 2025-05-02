@@ -2,16 +2,14 @@ package integration4.evalebike.controller.technician;
 
 import integration4.evalebike.controller.technician.dto.*;
 import integration4.evalebike.controller.technician.dto.TestRequestDTO;
+import integration4.evalebike.controller.viewModel.TestReportEntryViewModel;
 import integration4.evalebike.domain.Bike;
 import integration4.evalebike.domain.BikeOwner;
 import integration4.evalebike.domain.TestReport;
 import integration4.evalebike.repository.TestReportRepository;
 import integration4.evalebike.domain.*;
 import integration4.evalebike.security.CustomUserDetails;
-import integration4.evalebike.service.BikeOwnerService;
-import integration4.evalebike.service.BikeService;
-import integration4.evalebike.service.RecentActivityService;
-import integration4.evalebike.service.TestBenchService;
+import integration4.evalebike.service.*;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +24,10 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/api/technician")
@@ -39,11 +41,12 @@ public class TechnicianAPIController {
     private final TestReportRepository testReportRepository;
     private static final Logger logger = LoggerFactory.getLogger(TechnicianAPIController.class);
     private final RecentActivityService recentActivityService;
+    private final TestReportEntryService testReportEntryService;
 
 
     public TechnicianAPIController(BikeService bikeService, BikeOwnerService bikeOwnerService, BikeMapper bikeMapper,
                                    BikeOwnerMapper bikeOwnerMapper, TestBenchService testBenchService,
-                                   TestReportRepository testReportRepository, RecentActivityService recentActivityService) {
+                                   TestReportRepository testReportRepository, RecentActivityService recentActivityService, TestReportEntryService testReportEntryService) {
         this.bikeService = bikeService;
         this.bikeOwnerService = bikeOwnerService;
         this.bikeMapper = bikeMapper;
@@ -51,6 +54,7 @@ public class TechnicianAPIController {
         this.bikeOwnerMapper = bikeOwnerMapper;
         this.testReportRepository = testReportRepository;
         this.recentActivityService = recentActivityService;
+        this.testReportEntryService = testReportEntryService;
     }
 
     @PostMapping("/bikes")
@@ -130,6 +134,37 @@ public class TechnicianAPIController {
                     return Mono.just("redirect:/technician/bikes?error=" + encodedError);
                 });
     }
+
+    @GetMapping("/test-report-entries/{testId}")
+    public ResponseEntity<List<TestReportEntryDTO>> getTestReport(@PathVariable String testId) {
+        // Assuming service returns entities; map to DTO
+        List<TestReportEntryDTO> entries = testReportEntryService.getEntriesByReportId(testId).stream()
+                .map(entity -> new TestReportEntryDTO(
+                        entity.getTimestamp(),
+                        entity.getBatteryVoltage(),
+                        entity.getBatteryCurrent(),
+                        entity.getBatteryCapacity(),
+                        entity.getBatteryTemperatureCelsius(),
+                        entity.getChargeStatus(),
+                        entity.getAssistanceLevel(),
+                        entity.getTorqueCrankNm(),
+                        entity.getBikeWheelSpeedKmh(),
+                        entity.getCadanceRpm(),
+                        entity.getEngineRpm(),
+                        entity.getEnginePowerWatt(),
+                        entity.getWheelPowerWatt(),
+                        entity.getRollTorque(),
+                        entity.getLoadcellN(),
+                        entity.getRolHz(),
+                        entity.getHorizontalInclination(),
+                        entity.getVerticalInclination(),
+                        entity.getLoadPower(),
+                        entity.isStatusPlug()
+                ))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(entries);
+    }
+
 
 
 

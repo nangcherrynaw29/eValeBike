@@ -20,9 +20,6 @@
     </div>
   </div>
 
-  <!-- Optional: Stats Row -->
-  <!-- <div class="row mb-4"> ... </div> -->
-
   <!-- Report Table -->
   <div class="table-container">
     <div class="table-responsive">
@@ -47,6 +44,14 @@
               <i class="fas fa-eye me-1"></i> Details
             </a>
           </td>
+          <td>
+            <a th:href="@{/technician/visualization-for-test-entry/{testId}(testId=${report.id()})}" class="btn btn-sm btn-outline-secondary">
+              <i class="fas fa-chart-line me-1"></i> Visuals
+            </a>
+
+          </td>
+
+
         </tr>
         </tbody>
       </table>
@@ -54,5 +59,6 @@
   </div>
 </div>
 </body>
+
 
 </html>
