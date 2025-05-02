@@ -1,0 +1,98 @@
+/* Full width container */
+.container-fluid {
+    max-width: none;
+    width: 100%;
+    margin: 0;
+    padding: 20px 30px;
+}
+
+/* Card adjustments */
+.card {
+    margin: 0;
+    width: 100%;
+    border: none;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.card-body {
+    padding: 2rem;
+    overflow: visible;
+}
+
+/* Table width */
+.table {
+    width: 100%;
+    margin: 0;
+    border: 2px solid #dee2e6;
+}
+
+/* Table cells and headers */
+.table th,
+.table td {
+    padding: 1rem;
+    border: 2px solid #dee2e6;
+    min-width: auto;
+    white-space: nowrap;
+}
+
+/* Header styling */
+.table thead th {
+    background-color: #f8f9fa;
+    border-bottom: 3px solid #dee2e6;
+    font-weight: 600;
+}
+
+/* Column widths */
+.table th:nth-child(1) {
+    width: 20%;
+}
+
+.table th:nth-child(2) {
+    width: 30%;
+}
+
+.table th:nth-child(3) {
+    width: 15%;
+}
+
+.table th:nth-child(4) {
+    width: 15%;
+}
+
+.table th:nth-child(5) {
+    width: 20%;
+}
+
+/* Cell content */
+.table td {
+    word-wrap: break-word;
+    min-width: 100px;
+}
+
+/* Action buttons column */
+.table td:last-child {
+    white-space: nowrap;
+    text-align: center;
+}
+
+/* Button spacing */
+.table .btn {
+    margin: 0 3px;
+}
+
+/* Remove responsive wrapping */
+.table-responsive {
+    overflow: visible;
+}
+
+/* Remove horizontal scroll */
+.card-body {
+    overflow-x: visible;
+}
+
+/* Remove Bootstrap's default container max-width */
+@media (min-width: 1200px) {
+    .container-fluid {
+        max-width: none;
+    }
+}
