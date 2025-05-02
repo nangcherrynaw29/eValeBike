@@ -38,20 +38,31 @@ build_job:
 
 test_job:
   stage: test
+  image: gradle:8-jdk21
+  services:
+    - name: postgres:17.2-alpine
+      alias: db  # Makes sure PostgreSQL is reachable at 'db'
   script:
-    - apt-get update && apt-get install -y postgresql-client #install postgres client
+    - echo "Checking if PostgreSQL is ready..."
     - |
-      export PGPASSWORD=$POSTGRES_PASSWORD
-      until psql -h db -U $POSTGRES_USER -d $POSTGRES_DB -c '\q'; do
-        echo "Waiting for PostgreSQL to be ready..."
-        sleep 5
+      for i in {1..30}; do
+        if psql -h db -U $POSTGRES_USER -d $POSTGRES_DB -c '\q' 2>/dev/null; then
+          echo "PostgreSQL is ready!"
+          break
+        fi
+        echo "Waiting for PostgreSQL (attempt $i/30)..."
+        sleep 2
       done
-    #to see if postgresl is ready
-    - gradle test
+      if [ $i -eq 30 ]; then
+        echo "Error: PostgreSQL not ready after 60 seconds"
+        exit 1
+      fi
+    - echo "Running tests..."
+    - gradle test --info  # Runs tests with detailed output
   artifacts:
     when: always
     reports:
-      junit: build/test-results/test/TEST-*.xml #post junit results to gitlab
+      junit: build/test-results/test/TEST-*.xml
     paths:
       - build/test-results/test/
 
