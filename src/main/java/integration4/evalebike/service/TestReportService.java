@@ -1,37 +1,48 @@
 package integration4.evalebike.service;
 
-import integration4.evalebike.domain.TestEvent;
 import integration4.evalebike.domain.TestReport;
-import integration4.evalebike.domain.TestReportEntry;
-import integration4.evalebike.repository.TestEventRepository;
 import integration4.evalebike.repository.TestReportEntryRepository;
 import integration4.evalebike.repository.TestReportRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
 @Service
+@Transactional
 public class TestReportService {
-    private final TestReportRepository repo;
-    private final TestEventRepository repoTestEvent;
+    private final TestReportRepository testReportRepository;
     private final TestReportEntryRepository repoTestReportEntry;
 
-    public TestReportService(TestReportRepository repo, TestEventRepository repoTestEvent, TestReportEntryRepository repoTestReportEntry) {
-        this.repo = repo;
-        this.repoTestEvent = repoTestEvent;
+    public TestReportService(TestReportRepository testReportRepository, TestReportEntryRepository repoTestReportEntry) {
+        this.testReportRepository = testReportRepository;
         this.repoTestReportEntry = repoTestReportEntry;
     }
 
-    public List<TestReport> getAll(){
-        return repo.findAll();
+    public List<TestReport> getAllReports() {
+        return testReportRepository.findAllWithBike();
     }
 
-    public List<TestReportEntry> getEntriesByTestReportId(String testReportId) {
-        var entries = repoTestReportEntry.findByTestReportId(testReportId);
-        return entries;
+
+    public TestReport getTestReportWithEntriesById(String testId) {
+        var testReport = testReportRepository.findEntriesByID(testId);
+        if (testReport.isEmpty()) {
+            throw new RuntimeException("No TestReport found for testId: " + testId);
+        }
+        return testReport.get();
     }
+
+
+
+
 
 
 
 
 
 }
+
+
+
+
+

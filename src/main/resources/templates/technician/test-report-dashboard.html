@@ -3,67 +3,56 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Report Dashboard</title>
+  <title>Test Report Dashboard</title>
   <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}">
+  <link rel="stylesheet" href="/css/dashboard.css">
+
 </head>
 <body>
-
-<!-- Navigation/Menu -->
 <div th:insert="~{fragments/menu.html}"></div>
 
-<!-- Main Container -->
-<div class="container py-4">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="fw-bold">Report Dashboard</h2>
-    <div class="d-flex align-items-center">
-      <span class="me-3">Welcome, <strong>Technician</strong>!</span>
-      <div class="rounded-circle bg-primary text-white d-flex justify-content-center align-items-center" style="width: 40px; height: 40px;">
-        T
-      </div>
+<div class="dashboard-container">
+  <div class="dashboard-header">
+    <h2 class="dashboard-title">Report Dashboard</h2>
+    <div class="user-info">
+      <span>Welcome, <strong><span sec:authentication="name"></span></strong>!</span>
+      <div class="user-avatar">T</div>
     </div>
   </div>
 
+  <!-- Optional: Stats Row -->
+  <!-- <div class="row mb-4"> ... </div> -->
+
   <!-- Report Table -->
-  <div class="card shadow-sm">
-    <div class="card-header bg-light">
-      <h5 class="mb-0">Test Reports</h5>
-    </div>
-    <div class="card-body p-0">
-      <div class="table-responsive">
-        <table class="table table-hover table-bordered align-middle mb-0">
-          <thead class="table-light">
-          <tr>
-            <th>Test ID</th>
-            <th>Expiry Date</th>
-            <th>State</th>
-            <th>Type</th>
-            <th>Battery Capacity (Ah)</th>
-            <th>Max Support (%)</th>
-            <th>Engine Power Max (W)</th>
-            <th>Engine Power Nominal (W)</th>
-            <th>Engine Torque (Nm)</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr th:each="report : ${reports.reportViewModels()}">
-            <td>
-              <a th:href="@{/technician/report/entries/{id}(id=${report.id})}" th:text="${report.id}"></a>
-            </td>
-            <td th:text="${report.expiryDate}"></td>
-            <td th:text="${report.state}"></td>
-            <td th:text="${report.type}"></td>
-            <td th:text="${report.batteryCapacity}"></td>
-            <td th:text="${report.maxSupport}"></td>
-            <td th:text="${report.enginePowerMax}"></td>
-            <td th:text="${report.enginePowerNominal}"></td>
-            <td th:text="${report.engineTorque}"></td>
-          </tr>
-          </tbody>
-        </table>
-      </div>
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="table table-borderless">
+        <thead>
+        <tr>
+          <th>Bike QR</th>
+          <th>Test Run By</th>
+          <th>State</th>
+          <th>Type</th>
+          <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="report : ${reports.reportViewModels()}">
+          <td th:text="${report.bikeQR()}"></td>
+          <td th:text="${report.technicianName()}"></td>
+          <td th:text="${report.state}"></td>
+          <td th:text="${report.type}"></td>
+          <td>
+            <a th:href="@{/technician/report/{testId}(testId=${report.id()})}" class="btn btn-sm btn-outline-primary">
+              <i class="fas fa-eye me-1"></i> Details
+            </a>
+          </td>
+        </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </div>
-
 </body>
+
 </html>

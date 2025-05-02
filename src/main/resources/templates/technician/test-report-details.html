@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Test Report Detail</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="/js/technician/download-pdf.js"></script>
+
+</head>
+<body>
+<div th:insert="~{fragments/menu.html}"></div>
+
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h2 class="dashboard-title">Test Report Details</h2>
+        <div class="user-info">
+            <span>Welcome, <strong>Technician</strong>!</span>
+            <div class="user-avatar">T</div>
+        </div>
+    </div>
+
+    <!-- Test Details Section -->
+    <div class="card shadow-sm mt-4">
+        <div class="card-header bg-primary text-white">
+            Test Info
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <tbody>
+                    <tr>
+                        <th>Bike QR</th><td th:text="${report.bikeQR}">-</td>
+                        <th>Test Run By</th><td th:text="${report.technicianName}">-</td>
+                    </tr>
+                    <tr>
+                        <th>Type</th><td th:text="${report.type}">-</td>
+                        <th>Status</th><td th:text="${report.state}">-</td>
+                    </tr>
+                    <tr>
+                        <th>Expiry Date</th>
+                        <td><span th:text="${#strings.replace(#strings.substring(report.expiryDate, 0, 19), 'T', ' ')}">-</span></td>
+                        <th>Battery Capacity</th><td th:text="${report.batteryCapacity}">-</td>
+                    </tr>
+                    <tr>
+                        <th>Max Support</th><td th:text="${report.maxSupport}">-</td>
+                        <th>Engine Power Max</th><td th:text="${report.enginePowerMax}">-</td>
+                    </tr>
+                    <tr>
+                        <th>Nominal Engine Power</th><td th:text="${report.enginePowerNominal}">-</td>
+                        <th>Engine Torque</th><td th:text="${report.engineTorque}">-</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Summary Section -->
+    <div class="card shadow-sm mt-4">
+        <div class="card-header bg-primary text-white">
+            Report Summary
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <tbody>
+                    <tr>
+                        <th>Avg Battery Voltage</th><td th:text="${summary.batteryVoltage}">-</td>
+                        <th>Avg Battery Current</th><td th:text="${summary.batteryCurrent}">-</td>
+                    </tr>
+                    <tr>
+                        <th>Avg Battery Capacity</th><td th:text="${summary.batteryCapacity}">-</td>
+                        <th>Battery Temp (°C)</th><td th:text="${summary.batteryTemperatureCelsius}">-</td>
+                    </tr>
+                    <tr>
+                        <th>Charge Status</th><td th:text="${summary.chargeStatus}">-</td>
+                        <th>Assistance Level</th><td th:text="${summary.assistanceLevel}">-</td>
+                    </tr>
+                    <tr>
+                        <th>Torque Crank (Nm)</th><td th:text="${summary.torqueCrankNm}">-</td>
+                        <th>Wheel Speed (km/h)</th><td th:text="${summary.bikeWheelSpeedKmh}">-</td>
+                    </tr>
+                    <tr>
+                        <th>Cadence (RPM)</th><td th:text="${summary.cadanceRpm}">-</td>
+                        <th>Engine RPM</th><td th:text="${summary.engineRpm}">-</td>
+                    </tr>
+                    <tr>
+                        <th>Engine Power (W)</th><td th:text="${summary.enginePowerWatt}">-</td>
+                        <th>Wheel Power (W)</th><td th:text="${summary.wheelPowerWatt}">-</td>
+                    </tr>
+                    <tr>
+                        <th>Roll Torque</th><td th:text="${summary.rollTorque}">-</td>
+                        <th>Loadcell (N)</th><td th:text="${summary.loadcellN}">-</td>
+                    </tr>
+                    <tr>
+                        <th>Rol Hz</th><td th:text="${summary.rolHz}">-</td>
+                        <th>Horizontal Inclination</th><td th:text="${summary.horizontalInclination}">-</td>
+                    </tr>
+                    <tr>
+                        <th>Vertical Inclination</th><td th:text="${summary.verticalInclination}">-</td>
+                        <th>Load Power</th><td th:text="${summary.loadPower}">-</td>
+                    </tr>
+                    <tr>
+                        <th>Status Plug</th><td th:text="${summary.statusPlug}">-</td>
+                        <th></th><td></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="text-center mt-4">
+        <a th:href="@{/technician/test-report-dashboard}" class="btn btn-primary">Back to Test Report Dashboard</a>
+            <button id="downloadPdfBtn" class="btn btn-success">Save as PDF</button>
+
+    </div>
+</div>
+
+<script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

@@ -1,19 +1,24 @@
 package integration4.evalebike.controller.technician;
 
 import integration4.evalebike.controller.technician.dto.BikeDto;
-import integration4.evalebike.controller.testBench.dto.TestReportDTO;
-import integration4.evalebike.controller.testBench.dto.TestResponseDTO;
+import integration4.evalebike.controller.technician.dto.TestResponseDTO;
+import integration4.evalebike.controller.viewModel.ReportViewModel;
+import integration4.evalebike.controller.viewModel.ReportsViewModel;
+import integration4.evalebike.controller.viewModel.TestReportEntryViewModel;
 import integration4.evalebike.domain.Bike;
 import integration4.evalebike.domain.BikeOwner;
-import integration4.evalebike.service.BikeOwnerService;
-import integration4.evalebike.service.BikeService;
-import integration4.evalebike.service.QrCodeService;
-import integration4.evalebike.service.TestBenchService;
+import integration4.evalebike.domain.TestReport;
+import integration4.evalebike.domain.TestReportEntry;
+import integration4.evalebike.service.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Controller
@@ -23,11 +28,15 @@ public class TechnicianController {
     private final BikeService bikeService;
     private final QrCodeService qrCodeService;
     private final TestBenchService testBenchService;
-    public TechnicianController(BikeOwnerService bikeOwnerService, BikeService bikeService, QrCodeService qrCodeService, TestBenchService testBenchService) {
+    private final TestReportService testReportService;
+    private static final Logger logger = LoggerFactory.getLogger(TechnicianController.class);
+
+    public TechnicianController(BikeOwnerService bikeOwnerService, BikeService bikeService, QrCodeService qrCodeService, TestBenchService testBenchService, TestReportService testReportService) {
         this.bikeOwnerService = bikeOwnerService;
         this.bikeService = bikeService;
         this.qrCodeService = qrCodeService;
         this.testBenchService = testBenchService;
+        this.testReportService = testReportService;
     }
 
     // Show all bikes owned by a specific bike owner
@@ -87,7 +96,7 @@ public class TechnicianController {
     }
 
     @GetMapping("bikes/test-types/{bikeQR}")
-    public String testTypes(@PathVariable String bikeQR,Model model) {
+    public String testTypes(@PathVariable String bikeQR, Model model) {
         Bike bike = bikeService.getByQR(bikeQR);
         model.addAttribute("bike", bike);
         return "technician/test-types";
@@ -99,20 +108,55 @@ public class TechnicianController {
         return "technician/loading";
     }
 
-    @GetMapping("/test-status/{testId}")
-    public Mono<TestResponseDTO> getTestResultById(@PathVariable String testId) {
-        return testBenchService.getTestResultById(testId);
+
+    @GetMapping("/status/{testId}")
+    @ResponseBody
+    public Mono<TestResponseDTO> getTestStatus(@PathVariable String testId) {
+        logger.info("Fetching status for testId: {}", testId);
+        return testBenchService.getTestStatusById(testId)
+                .doOnNext(response -> logger.debug("Status for testId {}: {}", testId, response.getState()))
+                .doOnError(e -> logger.error("Error fetching status for testId {}: {}", testId, e.getMessage()));
     }
 
-    @GetMapping("/test-result/{testId}")
-    public String getTestResult(@PathVariable String testId, Model model) {
-        TestReportDTO report = testBenchService.getTestReportById(testId).block(); // Blocking for simplicity
-        if (report == null) {
-            return "redirect:/technician/bike-dashboard?error=No+report+found+for+test+ID+" + testId;
-        }
-        model.addAttribute("report", report);
-        return "report";
+    @GetMapping("/report/{testId}")
+    public Mono<String> showReportByTestId(@PathVariable("testId") String testId, Model model) {
+        logger.info("Fetching report for testId: {}", testId);
+
+        return Mono.fromCallable(() -> testReportService.getTestReportWithEntriesById(testId))
+                .flatMap(optionalReport -> Mono.justOrEmpty(optionalReport)
+                        .map(report -> {
+                            ReportViewModel reportVm = ReportViewModel.from(report);
+                            List<TestReportEntry> entries = report.getReportEntries();
+                            TestReportEntryViewModel summaryVm = entries != null && !entries.isEmpty()
+                                    ? TestReportEntryViewModel.summarize(entries)
+                                    : null;
+
+                            model.addAttribute("report", reportVm);
+                            model.addAttribute("summary", summaryVm);
+                            return "technician/test-report-details";
+                        })
+                        .switchIfEmpty(Mono.error(new RuntimeException("TestReport not found for testId: " + testId))))
+                .onErrorResume(e -> {
+                    logger.error("Error fetching report for testId {}: {}", testId, e.getMessage(), e);
+                    model.addAttribute("error", e.getMessage());
+                    return Mono.just("technician/error");
+                });
     }
 
+    //this shows a list of test report
+    @GetMapping("/test-report-dashboard")
+    public ModelAndView showReportDashboard(Model model) {
+        final ModelAndView modelAndView = new ModelAndView("technician/test-report-dashboard");
+        modelAndView.addObject("reports", ReportsViewModel.from(testReportService.getAllReports()));
+        return modelAndView;
+    }
 }
+
+
+
+
+
+
+
+
 

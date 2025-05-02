@@ -5,38 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Test in Progress</title>
   <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}">
+  <script src="/js/technician/pollTestStatus.js" type="module" defer></script>
 </head>
 <body>
 <div class="container mt-5">
   <h2 class="text-center">Test in Progress</h2>
   <p class="text-center">Test ID: <span th:text="${param.testId[0]}"></span></p>
-  <p class="text-center" id="status">Status: Waiting...</p>
+  <p class="text-center" id="status">Status: </p>
   <div class="text-center">
     <div class="spinner-border" role="status">
       <span class="visually-hidden">Loading...</span>
     </div>
   </div>
 </div>
-<script>
-  const testId = new URLSearchParams(window.location.search).get('testId');
-  function checkStatus() {
-    fetch('/api/technician/status/' + testId)
-            .then(response => response.json())
-            .then(data => {
-              document.getElementById('status').innerText = 'Status: ' + data.state;
-              if (data.state.toLowerCase() === 'completed') {
-                window.location.href = '/technician/report?testId=' + testId;
-              } else {
-                setTimeout(checkStatus, 5000); // Poll every 5 seconds
-              }
-            })
-            .catch(error => {
-              console.error('Error fetching status:', error);
-              document.getElementById('status').innerText = 'Error fetching status';
-            });
-  }
-  checkStatus();
-</script>
+
 <script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>

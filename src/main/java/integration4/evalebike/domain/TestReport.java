@@ -31,20 +31,38 @@ public class TestReport {
     @Column(name = "engine_torque")
     private double engineTorque;
 
-    @OneToMany(mappedBy = "testReport", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "testReport", fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     private List<TestReportEntry> reportEntries;
-//    @ManyToOne(mappedBy ="")
-    private String bikeQR;
 
-    private  Integer techinianId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "bike_QR", referencedColumnName = "bikeqr")
+    private Bike bike;
+
+    @Column(name = "technician_username")
+    private  String technicianName;
 
     // Default constructor for JPA
     public TestReport() {}
 
     // Constructor for mapping from DTO
-    public TestReport(String id, String expiryDate, String state, String type, double batteryCapacity,
-                      double maxSupport, double enginePowerMax, double enginePowerNominal, double engineTorque,
-                      List<TestReportEntry> reportEntries) {
+
+
+    public TestReport(double batteryCapacity, Bike bike, double enginePowerMax, double enginePowerNominal, double engineTorque, String expiryDate, String id, double maxSupport, List<TestReportEntry> reportEntries, String state, String technicianName, String type) {
+        this.batteryCapacity = batteryCapacity;
+        this.bike = bike;
+        this.enginePowerMax = enginePowerMax;
+        this.enginePowerNominal = enginePowerNominal;
+        this.engineTorque = engineTorque;
+        this.expiryDate = expiryDate;
+        this.id = id;
+        this.maxSupport = maxSupport;
+        this.reportEntries = reportEntries;
+        this.state = state;
+        this.technicianName = technicianName;
+        this.type = type;
+    }
+
+    public TestReport(String id, String expiryDate, String state, String type, double batteryCapacity, double maxSupport, double enginePowerMax, double enginePowerNominal, double engineTorque) {
         this.id = id;
         this.expiryDate = expiryDate;
         this.state = state;
@@ -54,7 +72,7 @@ public class TestReport {
         this.enginePowerMax = enginePowerMax;
         this.enginePowerNominal = enginePowerNominal;
         this.engineTorque = engineTorque;
-        this.reportEntries = reportEntries;
+
     }
 
     // Getters and setters
@@ -76,6 +94,13 @@ public class TestReport {
     public void setEnginePowerNominal(double enginePowerNominal) { this.enginePowerNominal = enginePowerNominal; }
     public double getEngineTorque() { return engineTorque; }
     public void setEngineTorque(double engineTorque) { this.engineTorque = engineTorque; }
-    public List<TestReportEntry> getReportEntries() { return reportEntries; }
+    public List<TestReportEntry>  getReportEntries() { return reportEntries; }
     public void setReportEntries(List<TestReportEntry> reportEntries) { this.reportEntries = reportEntries; }
+    public Bike getBike() {return bike;}
+
+    public void setBike(Bike bike) {this.bike = bike;}
+
+    public String getTechnicianName() {return technicianName;}
+
+    public void setTechnicianName(String technianName) {this.technicianName = technianName;}
 }

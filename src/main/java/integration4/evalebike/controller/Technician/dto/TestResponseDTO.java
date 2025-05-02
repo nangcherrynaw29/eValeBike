@@ -1,4 +1,4 @@
-package integration4.evalebike.controller.testBench.dto;
+package integration4.evalebike.controller.technician.dto;
 
 
 public class TestResponseDTO {

@@ -33,5 +33,20 @@ GET http://127.0.0.1:8080/api/test/9eb9dd74-4fd8-4d0a-8d42-1bec0375010f/report
 Content-Type: application/json
 Cookie: JSESSIONID=49AF404CC3C5663FC0A3EAB20298ED58
 
-//GET http://127.0.0.1:8080/api/tests/b09910ee-dbe2-4365-b9ff-80b588cfc19e/raw-report
+###
+
+# curl http://localhost:8080/technician/report/edad117b-99ad-48d9-8a32-724207c32da8
+GET http://localhost:8080/technician/report/edad117b-99ad-48d9-8a32-724207c32da8
+
+###
+
+# curl -H "Cookie: JSESSIONID=16E9F7EEE02FB8850D7355DA7910B0BD"
+# curl http://localhost:8080/technician/report/edad117b-99ad-48d9-8a32-724207c32da8
+GET http://localhost:8080/technician/report/edad117b-99ad-48d9-8a32-724207c32da8
+Cookie: JSESSIONID=16E9F7EEE02FB8850D7355DA7910B0BD
+
+###
+
+
+
 
