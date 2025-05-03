@@ -2,6 +2,7 @@ plugins {
     id("java")
     id("org.springframework.boot") version "3.4.2"
     id("io.spring.dependency-management") version "1.1.7"
+    id ("com.github.spotbugs") version "6.0.26"
 }
 
 group = "integration4"
@@ -31,6 +32,13 @@ dependencies {
     implementation("org.postgresql:postgresql")
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.testcontainers:postgresql")
+    testImplementation ("org.springframework.boot:spring-boot-starter-test")
+    testImplementation ("org.junit.jupiter:junit-jupiter:5.9.2")
+    testImplementation ("org.testcontainers:testcontainers:1.20.4")
+    testImplementation ("org.testcontainers:postgresql:1.20.4")
+    testImplementation ("org.testcontainers:junit-jupiter:1.20.4")
+    testImplementation ("net.bytebuddy:byte-buddy:1.15.11")
+    testImplementation ("net.bytebuddy:byte-buddy-agent:1.15.11")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     implementation("org.webjars:bootstrap:5.3.3")
     implementation("org.webjars.npm:bootstrap-icons:1.11.1")
@@ -50,6 +58,25 @@ dependencies {
 
 }
 
+//spotbugs {
+//    effort = 'max'  // Maximum analysis effort for thorough scanning
+//    reportLevel = 'high'  // Report high-confidence security issues
+//}
+//
+//tasks.named('spotbugsMain') {
+//    reports {
+//        xml {
+//            enabled = true
+//            destination = file("$buildDir/reports/spotbugs/main.xml")
+//        }
+//        html {
+//            enabled = true
+//            destination = file("$buildDir/reports/spotbugs/main.html")
+//        }
+//    }
+//}
+
 tasks.withType<Test> {
     useJUnitPlatform()
 }
+

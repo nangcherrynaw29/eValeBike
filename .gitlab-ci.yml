@@ -68,15 +68,23 @@ test_job:
 sast_job:
   stage: sast
   image: gradle:8-jdk21
+  dependencies:
+    - build_job
+  before_script:
+    - apt-get update && apt-get install -y unzip
   script:
-    #SpotBugs integrated with Gradle
-    - gradle spotbugsMain
+    - echo "Running SpotBugs SAST analysis..."
+    - gradle spotbugsMain --info
+    - echo "Listing SAST report..."
+    - ls -la build/reports/spotbugs/
   artifacts:
     when: always
     paths:
-      - build/reports/spotbugs/main.xml
+      - build/reports/spotbugs/
     reports:
       sast: build/reports/spotbugs/main.xml
+  needs:
+    - build_job
 
 deploy_job:
   stage: deploy
