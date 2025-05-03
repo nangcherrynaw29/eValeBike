@@ -7,7 +7,6 @@ import integration4.evalebike.controller.viewModel.ReportsViewModel;
 import integration4.evalebike.controller.viewModel.TestReportEntryViewModel;
 import integration4.evalebike.domain.Bike;
 import integration4.evalebike.domain.BikeOwner;
-import integration4.evalebike.domain.TestReport;
 import integration4.evalebike.domain.TestReportEntry;
 import integration4.evalebike.service.*;
 import org.slf4j.Logger;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import reactor.core.publisher.Mono;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Controller
@@ -61,7 +59,12 @@ public class TechnicianController {
     @GetMapping("/bike-owners")
     public String logBikeOwners(Model model) {
         List<BikeOwner> bikeOwners = bikeOwnerService.getAll();
+        long totalBikes = bikeService.countAllBikes();
+        long birthdayCount = bikeOwnerService.countOwnersWithBirthdayToday();
+
         model.addAttribute("bikeOwners", bikeOwners);
+        model.addAttribute("totalBikes", totalBikes);
+        model.addAttribute("birthdayCount", birthdayCount);
         return "technician/bike-owner-dashboard";
     }
 

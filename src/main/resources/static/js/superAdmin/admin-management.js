@@ -1,91 +1,130 @@
-// Add a new admin from admin-management page
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
     const addAdminBtn = document.querySelector("#add-admin-btn");
+    const adminTableBody = document.getElementById("admin-table-body");
+    const paginationContainer = document.querySelector(".pagination");
+
+    const adminsPerPage = 5;
+    let currentPage = 1;
+    let adminData = [];
 
     if (addAdminBtn) {
-        addAdminBtn.addEventListener("click", async (e) => {
+        addAdminBtn.addEventListener("click", (e) => {
             e.preventDefault();
-
-            try {
-                window.location.href = "/super-admin/admins/add";
-            } catch (error) {
-                console.error("Error navigating:", error);
-                alert("Something went wrong while redirecting.");
-            }
+            window.location.href = "/super-admin/admins/add";
         });
     }
-});
 
-//load the admin table using ajax
-document.addEventListener("DOMContentLoaded", async () => {
-    const adminTableBody = document.getElementById("admin-table-body");
+    async function loadAdminData() {
+        try {
+            const response = await fetch("/api/super-admin/admins");
+            if (!response.ok) throw new Error("Failed to fetch admins");
 
-    try {
-        // Fetch admin data from API
-        const response = await fetch("/api/super-admin/admins");
-        if (!response.ok) throw new Error("Failed to fetch admins");
+            adminData = await response.json();
+            renderTable();
+            renderPagination();
+        } catch (error) {
+            console.error("Error loading admins:", error);
+        }
+    }
 
-        const admins = await response.json();
-        adminTableBody.innerHTML = ""; // Clear table body
+    function renderTable() {
+        adminTableBody.innerHTML = "";
 
-        // Loop through the admins and insert rows dynamically
-        admins.forEach(admin => {
+        const start = (currentPage - 1) * adminsPerPage;
+        const end = start + adminsPerPage;
+        const currentAdmins = adminData.slice(start, end);
+
+        currentAdmins.forEach(admin => {
             const row = document.createElement("tr");
             row.dataset.id = admin.id;
-        //please note that I am using dataset here
             row.innerHTML = `
                 <td>${admin.name}</td>
                 <td>${admin.email}</td>
                 <td>${admin.companyName}</td>
                 <td>
-                    <button class="btn btn-outline-danger delete-btn" data-id="${admin.id}"><i class="fa-solid fa-trash"></i></button>
+                    <button class="btn btn-outline-danger delete-btn" data-id="${admin.id}">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
                 </td>
             `;
-
             adminTableBody.appendChild(row);
         });
-
-        // Attach event listeners to delete buttons
         attachDeleteEventListeners();
-    } catch (error) {
-        console.error("Error loading admins:", error);
+    }
+
+    function renderPagination() {
+        paginationContainer.innerHTML = "";
+
+        const totalPages = Math.ceil(adminData.length / adminsPerPage);
+
+        const createPageItem = (label, page, disabled = false, active = false) => {
+            const li = document.createElement("li");
+            li.className = `page-item ${disabled ? "disabled" : ""} ${active ? "active" : ""}`;
+
+            const a = document.createElement("a");
+            a.className = "page-link";
+            a.href = "#";
+            a.textContent = label;
+
+            a.addEventListener("click", (e) => {
+                e.preventDefault();
+                if (!disabled && currentPage !== page) {
+                    currentPage = page;
+                    renderTable();
+                    renderPagination();
+                }
+            });
+
+            li.appendChild(a);
+            return li;
+        };
+
+        paginationContainer.appendChild(createPageItem("Previous", currentPage - 1, currentPage === 1));
+
+        for (let i = 1; i <= totalPages; i++) {
+            paginationContainer.appendChild(createPageItem(i, i, false, currentPage === i));
+        }
+
+        paginationContainer.appendChild(createPageItem("Next", currentPage + 1, currentPage === totalPages));
+    }
+
+    loadAdminData();
+
+    function attachDeleteEventListeners() {
+        document.querySelectorAll(".delete-btn").forEach(button => {
+            button.addEventListener("click", async (e) => {
+                e.preventDefault();
+
+                const btn = e.currentTarget;
+                const adminRow = btn.closest("tr");
+                const adminId = btn.dataset.id;
+
+                if (!adminId || !adminRow) {
+                    alert("Admin ID or row not found.");
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`/api/super-admin/admins/${adminId}`, {
+                        method: "DELETE",
+                        headers: {
+                            "Accept": "application/json"
+                        }
+                    });
+
+                    if (response.ok) {
+                        loadAdminData();
+                    } else {
+                        alert("Failed to delete admin.");
+                    }
+                } catch (error) {
+                    console.error("Error deleting admin:", error);
+                    alert("An error occurred while deleting.");
+                }
+            });
+        });
     }
 });
-
-// Function to add event listeners to delete buttons
-function attachDeleteEventListeners() {
-    document.querySelectorAll(".delete-btn").forEach(button => {
-        button.addEventListener("click", async (e) => {
-            e.preventDefault();
-
-            const adminRow = e.target.closest("tr");
-            const adminId = adminRow.dataset.id;
-
-            if (!adminId) {
-                alert("Admin ID not found.");
-                return;
-            }
-
-            try {
-                const response = await fetch(`/api/super-admin/admins/${adminId}`, {
-                    method: "DELETE",
-                    headers: {
-                        "Accept": "application/json"
-                    }
-                });
-
-                if (response.ok) {
-                    adminRow.remove(); // Remove the row from the table
-                } else {
-                    alert("Failed to delete admin.");
-                }
-            } catch (error) {
-                console.error("Error deleting admin:", error);
-                alert("An error occurred while deleting.");
-            }
-        });
-    });
-}
 
 
 ///Need to implement edit button

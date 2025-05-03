@@ -21,3 +21,13 @@ form.addEventListener('submit', async e => {
         alert('Something went wrong while creating the bike owner');
     }
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+    const backToDashboardBtn = document.getElementById("back-to-dashboard-btn");
+    if (backToDashboardBtn) {
+        backToDashboardBtn.addEventListener("click", function () {
+            console.log("Back to dashboard button clicked!");
+            window.location.href = "/technician/bike-owners";
+        });
+    }
+});

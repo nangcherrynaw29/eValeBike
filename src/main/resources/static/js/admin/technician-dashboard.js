@@ -1,46 +1,93 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const technicianTableBody = document.getElementById("technician-table-body");
     const addTechnicianBtn = document.getElementById("add-technician-btn");
 
-    // Load technicians when the page loads
-    loadTechnicians();
-
-    // Redirect to the "Add Technician" page
     if (addTechnicianBtn) {
-        addTechnicianBtn.addEventListener("click", (e) => {
-            e.preventDefault();
+        addTechnicianBtn.addEventListener("click", () => {
             window.location.href = "/admin/technicians/add";
         });
     }
 
-    // Function to load technicians
+    const technicianTableBody = document.getElementById("technician-table-body");
+    const paginationContainer = document.getElementById("pagination");
+
+    const techniciansPerPage = 5;
+    let currentPage = 1;
+    let techniciansData = [];
+
     async function loadTechnicians() {
         try {
             const response = await fetch("/api/admin/technicians");
             if (!response.ok) throw new Error("Failed to fetch technicians");
 
-            const technicians = await response.json();
-            technicianTableBody.innerHTML = ""; // Clear the table
-
-            // Populate the table with technician data
-            technicians.forEach(technician => {
-                const row = document.createElement("tr");
-                row.dataset.id = technician.id; // Store technician ID in the row
-                row.innerHTML = `
-                    <td>${technician.name}</td>
-                    <td>${technician.email}</td>
-                    <td>
-                        <button class="btn btn-outline-danger delete-btn" data-id="${technician.id}"><i class="fa-solid fa-trash"></i></button>
-                    </td>
-                `;
-                technicianTableBody.appendChild(row);
-            });
-
-            // Attach event listeners to delete buttons
-            attachDeleteEventListeners();
+            techniciansData = await response.json();
+            renderTable();
+            renderPagination();
         } catch (error) {
             console.error("Error loading technicians:", error);
         }
+    }
+
+    function renderTable() {
+        technicianTableBody.innerHTML = "";
+        const start = (currentPage - 1) * techniciansPerPage;
+        const end = start + techniciansPerPage;
+        const currentTechnicians = techniciansData.slice(start, end);
+
+        currentTechnicians.forEach(technician => {
+            const row = document.createElement("tr");
+            row.dataset.id = technician.id;
+            row.innerHTML = `
+            <td>${technician.name}</td>
+            <td>${technician.email}</td>
+            <td>
+                <button class="btn btn-outline-danger delete-btn" data-id="${technician.id}">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+            </td>
+        `;
+            technicianTableBody.appendChild(row);
+        });
+
+        attachDeleteEventListeners();
+    }
+
+    function renderPagination() {
+        paginationContainer.innerHTML = "";
+
+        const totalPages = Math.ceil(techniciansData.length / techniciansPerPage);
+
+        const createPageItem = (text, page, disabled = false, active = false) => {
+            const li = document.createElement("li");
+            li.className = `page-item ${disabled ? "disabled" : ""} ${active ? "active" : ""}`;
+            const a = document.createElement("a");
+            a.className = "page-link";
+            a.href = "#";
+            a.textContent = text;
+            a.addEventListener("click", (e) => {
+                e.preventDefault();
+                if (!disabled) {
+                    currentPage = page;
+                    renderTable();
+                    renderPagination();
+                }
+            });
+            li.appendChild(a);
+            return li;
+        };
+
+        paginationContainer.appendChild(
+            createPageItem("Previous", currentPage - 1, currentPage === 1)
+        );
+
+        for (let i = 1; i <= totalPages; i++) {
+            paginationContainer.appendChild(
+                createPageItem(i, i, false, currentPage === i)
+            );
+        }
+
+        paginationContainer.appendChild(
+            createPageItem("Next", currentPage + 1, currentPage === totalPages)
+        );
     }
 
     // Function to attach event listeners to delete buttons
@@ -76,6 +123,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         });
     }
+    loadTechnicians();
 });
 
 // Add Technician Form Submission

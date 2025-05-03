@@ -53,4 +53,8 @@ public class BikeService {
         bikeOwnerBikeRepository.deleteByBikeQr(id);
         bikeRepository.delete(bike);
     }
+
+    public long countAllBikes() {
+        return bikeRepository.count();
+    }
 }

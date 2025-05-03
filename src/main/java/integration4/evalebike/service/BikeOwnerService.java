@@ -62,4 +62,9 @@ public class BikeOwnerService {
         bikeOwnerBikeRepository.deleteByBikeOwnerId(id);
         bikeOwnerRepository.delete(bikeOwner);
     }
+
+    public long countOwnersWithBirthdayToday() {
+        LocalDate today = LocalDate.now();
+        return bikeOwnerRepository.countByBirthdayToday(today.getMonthValue(), today.getDayOfMonth());
+    }
 }

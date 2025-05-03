@@ -1,5 +1,6 @@
 package integration4.evalebike.controller.technician;
 
+import integration4.evalebike.controller.superAdmin.dto.AdministratorDto;
 import integration4.evalebike.controller.technician.dto.*;
 import integration4.evalebike.controller.technician.dto.TestRequestDTO;
 import integration4.evalebike.domain.Bike;
@@ -26,6 +27,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Controller
 @RequestMapping("/api/technician")
@@ -51,6 +53,14 @@ public class TechnicianAPIController {
         this.bikeOwnerMapper = bikeOwnerMapper;
         this.testReportRepository = testReportRepository;
         this.recentActivityService = recentActivityService;
+    }
+
+    @GetMapping("/bikeOwners")
+    public ResponseEntity<List<BikeOwnerDto>> getAllAdmins() {
+        final List<BikeOwnerDto> bikeOwners = bikeOwnerService.getAll()
+                .stream().map(bikeOwnerMapper :: toBikeOwnerDto)
+                .toList();
+        return ResponseEntity.ok(bikeOwners);
     }
 
     @PostMapping("/bikes")

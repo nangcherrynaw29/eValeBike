@@ -50,7 +50,7 @@ public class AdminApiController {
     }
 
     // Retrieve all technicians
-    @GetMapping
+    @GetMapping()
     public ResponseEntity<List<TechnicianResponseDTO>> getAllTechnicians() {
         List<TechnicianResponseDTO> technicians = technicianService.getAll()
                 .stream()

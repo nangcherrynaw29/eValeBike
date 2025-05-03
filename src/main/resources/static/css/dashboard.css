@@ -15,7 +15,14 @@ body {
     color: var(--text-dark);
 }
 
+.main-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
 .dashboard-container {
+    flex-grow: 1;
     padding: 2rem;
     max-width: 1200px;
     margin: 0 auto;
@@ -196,6 +203,10 @@ body {
 
 .table-striped tbody tr:nth-of-type(odd) {
     background-color: rgba(74, 107, 255, 0.05);
+}
+
+footer {
+    margin-top: auto;
 }
 
 @media (max-width: 992px) {
