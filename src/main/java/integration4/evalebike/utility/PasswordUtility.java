@@ -47,4 +47,16 @@ public class PasswordUtility {
             throw new RuntimeException("Failed to send email to " + toEmail, e);
         }
     }
+
+    public void sendStatusNotificationEmail(String toEmail, String statusMessage) {
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(toEmail);
+            message.setSubject("Account Status Update");
+            message.setText(statusMessage);
+            mailSender.send(message);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to send status notification to " + toEmail, e);
+        }
+    }
 }

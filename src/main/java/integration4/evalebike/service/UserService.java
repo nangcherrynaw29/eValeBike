@@ -37,7 +37,7 @@ public class UserService {
 
         // Send email notification
         String statusNotification = generateStatusNotification(newStatus);
-        passwordUtility.sendPasswordEmail(user.getEmail(), statusNotification);
+        passwordUtility.sendStatusNotificationEmail(user.getEmail(), statusNotification);
     }
 
     private String generateStatusNotification(UserStatus newStatus) {
