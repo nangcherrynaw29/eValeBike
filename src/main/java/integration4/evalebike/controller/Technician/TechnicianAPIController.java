@@ -175,6 +175,14 @@ public class TechnicianAPIController {
     }
 
 
+    @GetMapping("/normalized-test-report-entries/{testId}")
+    @ResponseBody
+    public List<NormalizedTestReportEntryDTO> getNormalizedTestReportEntries(@PathVariable String testId) {
+        return testReportEntryService.getNormalizedEntriesByReportId(testId);
+    }
+
+
+
 
 
 }
