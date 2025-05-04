@@ -1,3 +1,4 @@
+
 const metricDefinitions = [
     { label: "Battery Voltage", field: "batteryVoltage", color: "#3B82F6" }, // Blue
     { label: "Battery Current", field: "batteryCurrent", color: "#F59E0B" }, // Amber
@@ -11,6 +12,8 @@ const metricDefinitions = [
     { label: "Cadance RPM", field: "cadanceRpm", color: "#EAB308" }, // Yellow
     { label: "Plug Status", field: "statusPlug", color: "#06B6D4" } // Cyan
 ];
+
+
 
 
 
@@ -38,7 +41,7 @@ function createChart(data, selectedFields) {
     }
 
     const labels = data.map(e => new Date(e.timestamp).toLocaleTimeString());
-
+//create a dataset for each metric ( label and its related data)
     const datasets = metricDefinitions
         .filter(metric => selectedFields.includes(metric.field))
         .map(metric => ({
@@ -50,17 +53,27 @@ function createChart(data, selectedFields) {
             tension: 0.1,
             pointRadius: 3 // Make points visible
         }));
+    //creating yaxis for dataset
 
     const yAxes = {};
+    let left = true;
+
     datasets.forEach(ds => {
         yAxes[ds.yAxisID] = {
             type: 'linear',
-            position: datasets.length > 6 ? 'left' : 'right', // Alternate sides for many axes
-            display: false, //remove the axis.
-            title: { display: false, text: ds.label }, //hide title
-            grid: { drawOnChartArea: false }
+            position: left ? 'left' : 'right',
+            display: true,
+            title: {
+                display: true,
+                text: ds.label
+            },
+            grid: {
+                drawOnChartArea: false
+            }
         };
+        left = !left;
     });
+
 
     if (chartInstance) chartInstance.destroy();
 
@@ -96,38 +109,7 @@ function createChart(data, selectedFields) {
     });
 }
 
-function renderToggles(allFields, selectedFields, onChange) {
-
-
-    allFields.forEach(metric => {
-        const col = document.createElement("div");
-        col.className = "col-md-3 form-check";
-
-        const checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        checkbox.className = "form-check-input";
-        checkbox.id = metric.field;
-        checkbox.checked = selectedFields.includes(metric.field);
-        checkbox.addEventListener("change", () => onChange(metric.field, checkbox.checked));
-
-        const label = document.createElement("label");
-        label.className = "form-check-label ms-2";
-        label.htmlFor = metric.field;
-        label.textContent = metric.label;
-
-        col.appendChild(checkbox);
-        col.appendChild(label);
-    });
-}
 
 fetchData().then(data => {
     createChart(data, selectedFields);
-    renderToggles(metricDefinitions, selectedFields, (field, isChecked) => {
-        if (isChecked && !selectedFields.includes(field)) {
-            selectedFields.push(field);
-        } else {
-            selectedFields = selectedFields.filter(f => f !== field);
-        }
-        createChart(data, selectedFields);
-    });
 });
