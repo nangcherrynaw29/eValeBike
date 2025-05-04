@@ -98,7 +98,7 @@ sast_job:
     - ls -ld /tmp/dependency-check/data
     - export JAVA_OPTS="-Xmx6g -Xms1g"
     - echo "Running OWASP Dependency-Check SAST analysis..."
-    - timeout 5m ./dependency-check/bin/dependency-check.sh --project "eValeBike" --scan "$(pwd)/build/libs/*.jar" --format XML --out "$OUTPUT_DIR" --failOnCVSS 0 --data /tmp/dependency-check --enableExperimental --nvdApiKey "$NVD_API_KEY" > sast.log 2>&1 || true
+    - timeout 5m ./dependency-check/bin/dependency-check.sh --project "eValeBike" --scan "$(pwd)/build/libs/*.jar" --format XML --out "$OUTPUT_DIR" --failOnCVSS 0 --data /tmp/dependency-check --enableExperimental --nvdApiKey "$NVD_API_KEY" --connectionString "jdbc:h2:/tmp/dependency-check/data/dc;DB_CLOSE_DELAY=-1;MULTI_THREADED=0;CACHE_SIZE=65536" > sast.log 2>&1 || true
     - echo "Dependency-Check output (last 20 lines):"
     - tail -n 20 sast.log || echo "Failed to read sast.log"
     - echo "Listing SAST reports..."
