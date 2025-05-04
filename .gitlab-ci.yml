@@ -73,7 +73,7 @@ sast_job:
     - echo "Checking current working directory..."
     - pwd
     - echo "Checking for build_job artifacts..."
-    - ls -la build/libs/ || echo "No JAR files found, continuing..."
+    - ls -la build/libs/ || echo "No JAR files found"
     - echo "Setting up OWASP Dependency-Check..."
     - if [ ! -d "dependency-check" ]; then apt-get update && apt-get install -y wget unzip && wget https://github.com/jeremylong/DependencyCheck/releases/download/v9.0.9/dependency-check-9.0.9-release.zip && unzip dependency-check-9.0.9-release.zip; fi
     - chmod +x dependency-check/bin/dependency-check.sh
@@ -86,20 +86,19 @@ sast_job:
     - echo "Verifying output directory..."
     - ls -ld "$OUTPUT_DIR"
     - '[ -z "$NVD_API_KEY" ] && { echo "ERROR: NVD_API_KEY is not set. Please set it in GitLab CI/CD variables."; exit 1; }'
-    - echo "NVD_API_KEY is set (value masked for security)"
+    - echo "NVD_API_KEY is set (masked)"
     - echo "Running OWASP Dependency-Check SAST analysis..."
-    - set -x
     - ./dependency-check/bin/dependency-check.sh \
       --project "eValeBike" \
       --scan "build/libs" \
       --format XML \
       --out "$OUTPUT_DIR" \
       --failOnCVSS 0 \
-      --nvdApiKey "$NVD_API_KEY" > sast.log 2>&1 || { echo "Dependency-Check failed"; tail -n 40 sast.log; exit 1; }
-    - echo "Listing SAST reports..."
-    - ls -la "$OUTPUT_DIR"
+      --nvdApiKey "$NVD_API_KEY" || { echo "Dependency-Check failed"; exit 1; }
     - echo "Checking output directory contents recursively:"
     - find "$OUTPUT_DIR"
+    - echo "Dependency-Check log output:"
+    - cat sast.log || echo "No sast.log file found"
   artifacts:
     when: always
     paths:
