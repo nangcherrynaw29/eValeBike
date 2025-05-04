@@ -80,25 +80,32 @@ sast_job:
     - if [ ! -d "dependency-check" ]; then apt-get update && apt-get install -y wget unzip && wget https://github.com/jeremylong/DependencyCheck/releases/download/v10.0.4/dependency-check-10.0.4-release.zip && unzip dependency-check-10.0.4-release.zip; fi
     - chmod +x dependency-check/bin/dependency-check.sh
   script:
-    # Create output directory
-    - echo "Creating output directory..."
+    - echo "Creating output directory..."  # Setup
     - export OUTPUT_DIR="$(pwd)/build/reports/dependency-check"
     - mkdir -p "$OUTPUT_DIR"
     - chmod -R 777 "$OUTPUT_DIR"
     - chown -R $(whoami) "$OUTPUT_DIR"
     - echo "Verifying output directory..."
     - ls -ld "$OUTPUT_DIR"
-    # Verify NVD API Key
+
+    - echo "Checking NVD API Key..."  # API key check
     - bash -c 'if [ -z "$NVD_API_KEY" ]; then echo "ERROR: NVD_API_KEY is not set. Please set it in GitLab CI/CD variables."; exit 1; fi'
     - export nvdApiKey="$NVD_API_KEY"
-    # Run OWASP Dependency-Check
-    - echo "Running OWASP Dependency-Check SAST analysis..."
+
+    - echo "Running OWASP Dependency-Check SAST analysis..."  # Run SAST
     - export JAVA_OPTS="-Xmx6g -Xms1g"
-    - timeout 5m ./dependency-check/bin/dependency-check.sh --project "eValeBike" --scan "$(pwd)/build/libs/*.jar" --format XML --out "$OUTPUT_DIR" --failOnCVSS 0 --data /cache/dependency-check --enableExperimental > sast.log 2>&1 || true
-    # Log tail of sast.log
-    - echo "Dependency-Check output (last 20 lines):"
+    - >
+      timeout 5m ./dependency-check/bin/dependency-check.sh
+      --project "eValeBike"
+      --scan "$(pwd)/build/libs/*.jar"
+      --format XML
+      --out "$OUTPUT_DIR"
+      --failOnCVSS 0
+      --data /cache/dependency-check
+      --enableExperimental > sast.log 2>&1 || true
+
+    - echo "Dependency-Check output (last 20 lines):"  # Output logs
     - tail -n 20 sast.log || echo "Failed to read sast.log"
-    # List generated reports
     - echo "Listing SAST reports..."
     - ls -la "$OUTPUT_DIR" || echo "No reports generated in $OUTPUT_DIR"
   artifacts:
