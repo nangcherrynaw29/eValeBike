@@ -104,6 +104,7 @@ sast_job:
       --out build/reports/dependency-check
       --failOnCVSS 0
       --nvdApiKey "$NVD_API_KEY"
+      --nvdApiDelay 2000
       --log build/reports/dependency-check/dependency-check.log
 
     - echo "Output directory contents:"
