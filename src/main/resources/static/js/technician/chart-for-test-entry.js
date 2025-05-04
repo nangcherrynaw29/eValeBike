@@ -18,6 +18,8 @@ let chartInstance = null;
 let selectedFields = metricDefinitions.map(metric => metric.field);
 const testId = window.location.pathname.split('/').filter(Boolean).pop();
 let isNormalized = false; // ← Toggle flag
+document.getElementById("intervalSelector").addEventListener("change", updateChart);
+
 
 // Fetch data from API
 async function fetchData(normalized) {
@@ -115,19 +117,69 @@ function createChart(data, selectedFields) {
     });
 }
 
+function resampleData(data, intervalSeconds) {
+    if (intervalSeconds <= 1) return data;
+
+    const resampled = [];
+    let bucket = [];
+    let lastTime = null;
+
+    for (const point of data) {
+        const currentTime = new Date(point.timestamp).getTime();
+
+        if (lastTime === null) {
+            lastTime = currentTime;
+        }
+
+        if ((currentTime - lastTime) / 1000 >= intervalSeconds) {
+            if (bucket.length > 0) {
+                const averaged = averageBucket(bucket);
+                resampled.push(averaged);
+            }
+            bucket = [point];
+            lastTime = currentTime;
+        } else {
+            bucket.push(point);
+        }
+    }
+
+    // Add final bucket
+    if (bucket.length > 0) {
+        resampled.push(averageBucket(bucket));
+    }
+
+    return resampled;
+}
+
+function averageBucket(bucket) {
+    const avg = {};
+    const fields = Object.keys(bucket[0]).filter(k => k !== "timestamp");
+    avg.timestamp = bucket[0].timestamp; // Use first timestamp or midpoint
+
+    for (const field of fields) {
+        const sum = bucket.reduce((acc, item) => acc + (item[field] ?? 0), 0);
+        avg[field] = sum / bucket.length;
+    }
+    return avg;
+}
+
+
 // Update chart data when toggling normalization
 async function updateChart() {
-    const data = await fetchData(isNormalized);
+    const interval = parseInt(document.getElementById("intervalSelector").value);
+    let data = await fetchData(isNormalized);
+    data = resampleData(data, interval);
     createChart(data, selectedFields);
 }
 
-// Toggle normalization on button click
+
+// Initial load
 document.getElementById("toggleNormalizationBtn").addEventListener("click", () => {
     isNormalized = !isNormalized;
-    document.getElementById("toggleNormalizationBtn").textContent =
-        isNormalized ? "Show Raw Data" : "Show Normalized Data";
+    document.getElementById("toggleNormalizationBtn").textContent = isNormalized
+        ? "Show Raw Data"
+        : "Show Normalized Data";
     updateChart();
 });
 
-// Initial load
-updateChart();
+updateChart()
