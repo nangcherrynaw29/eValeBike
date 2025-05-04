@@ -71,6 +71,9 @@ sast_job:
     - build_job
   before_script:
     # Pre-flight checks
+    #debug log current working directory
+    - echo "check current working directory"
+    - pwd
     - echo "Checking for build_job artifacts..."
     - ls -la build/libs/ || echo "No JAR files found, continuing..."
     # Install OWASP Dependency-Check CLI
@@ -83,6 +86,10 @@ sast_job:
     # Make directory for dependcy Check results
     - echo "Making directory for dependency check results"
     - mkdir p build/reports/dependency-check/ || echo "Failed to create dependency check directory, continuing..."
+    - echo "Verifying output directory..."
+    - ls -ld ./build/reports/dependency-check/ || echo "Output directory not found"
+    - echo "Checking write permissions..."
+    - touch ./build/reports/dependency-check/testfile || echo "Cannot write to output directory"
     # Run OWASP Dependency-Check SAST analysis
     - echo "Running OWASP Dependency-Check SAST analysis..."
     - ./dependency-check/bin/dependency-check.sh --project "eValeBike" --scan build/libs/*.jar --format XML --format HTML --out build/reports/dependency-check/ --failOnCVSS 0 --data /cache/dependency-check > sast.log 2>&1 || true
