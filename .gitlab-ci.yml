@@ -87,18 +87,19 @@ sast_job:
     - ls -ld "$OUTPUT_DIR"
     - "[ -z \"$NVD_API_KEY\" ] && { echo \"ERROR: NVD_API_KEY is not set. Please set it in GitLab CI/CD variables.\"; exit 1; }"
     - echo "NVD_API_KEY is set (value masked for security)"
-    - echo "Checking disk space for database..."
-    - df -h /tmp
-    - echo "Setting up temporary H2 database directory..."
-    - mkdir -p /tmp/dependency-check/data
-    - chmod -R 777 /tmp/dependency-check/data
-    - chown -R $(whoami) /tmp/dependency-check/data
-    - echo "Clearing temporary H2 database..."
-    - rm -rf /tmp/dependency-check/data/dc.h2.db
-    - ls -ld /tmp/dependency-check/data
+    - echo "Checking disk space and inodes for database..."
+    - df -h "$(pwd)"
+    - df -i "$(pwd)"
+    - echo "Setting up local H2 database directory..."
+    - mkdir -p "$(pwd)/dependency-check/data"
+    - chmod -R 777 "$(pwd)/dependency-check/data"
+    - chown -R $(whoami) "$(pwd)/dependency-check/data"
+    - echo "Clearing local H2 database..."
+    - rm -rf "$(pwd)/dependency-check/data/dc.h2.db"
+    - ls -ld "$(pwd)/dependency-check/data"
     - export JAVA_OPTS="-Xmx6g -Xms1g"
     - echo "Running OWASP Dependency-Check SAST analysis..."
-    - timeout 5m ./dependency-check/bin/dependency-check.sh --project "eValeBike" --scan "$(pwd)/build/libs/*.jar" --format XML --out "$OUTPUT_DIR" --failOnCVSS 0 --data /tmp/dependency-check --enableExperimental --nvdApiKey "$NVD_API_KEY" --connectionString "jdbc:h2:/tmp/dependency-check/data/dc;DB_CLOSE_DELAY=-1;MULTI_THREADED=0;CACHE_SIZE=65536" > sast.log 2>&1 || true
+    - timeout 5m ./dependency-check/bin/dependency-check.sh --project "eValeBike" --scan "$(pwd)/build/libs/*.jar" --format XML --out "$OUTPUT_DIR" --failOnCVSS 0 --data "$(pwd)/dependency-check" --enableExperimental --nvdApiKey "$NVD_API_KEY" > sast.log 2>&1 || true
     - echo "Dependency-Check output (last 20 lines):"
     - tail -n 20 sast.log || echo "Failed to read sast.log"
     - echo "Listing SAST reports..."
