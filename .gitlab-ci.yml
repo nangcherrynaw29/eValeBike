@@ -92,12 +92,12 @@ sast_job:
     - ./dependency-check/bin/dependency-check.sh \
       --project "eValeBike" \
       --scan "build/libs" \
-      --format "ALL" \
+      --format XML \
       --out "$OUTPUT_DIR" \
       --failOnCVSS 0 \
       --nvdApiKey "$NVD_API_KEY" > sast.log 2>&1 || { echo "Dependency-Check failed"; tail -n 40 sast.log; exit 1; }
     - echo "Listing SAST reports..."
-    - ls -la "$OUTPUT_DIR" || echo "No reports generated in $OUTPUT_DIR"
+    - ls -la "$OUTPUT_DIR"
     - echo "Checking output directory contents recursively:"
     - find "$OUTPUT_DIR"
   artifacts:
