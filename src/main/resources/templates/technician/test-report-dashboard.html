@@ -5,60 +5,63 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Test Report Dashboard</title>
   <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}">
-  <link rel="stylesheet" href="/css/dashboard.css">
-
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
 <body>
+
+<!-- Navigation/Menu (Consistent with Test Report Detail) -->
 <div th:insert="~{fragments/menu.html}"></div>
 
-<div class="dashboard-container">
-  <div class="dashboard-header">
-    <h2 class="dashboard-title">Report Dashboard</h2>
-    <div class="user-info">
-      <span>Welcome, <strong><span sec:authentication="name"></span></strong>!</span>
-      <div class="user-avatar">T</div>
-    </div>
+<!-- Main Container (Matching padding and layout) -->
+<div class="container-fluid px-4 py-4">
+
+  <!-- Page Header (Matching style with Test Report Detail) -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Test Report Dashboard</h2>
   </div>
 
-  <!-- Report Table -->
-  <div class="table-container">
-    <div class="table-responsive">
-      <table class="table table-borderless">
-        <thead>
-        <tr>
-          <th>Bike QR</th>
-          <th>Test Run By</th>
-          <th>State</th>
-          <th>Type</th>
-          <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="report : ${reports.reportViewModels()}">
-          <td th:text="${report.bikeQR()}"></td>
-          <td th:text="${report.technicianName()}"></td>
-          <td th:text="${report.state}"></td>
-          <td th:text="${report.type}"></td>
-          <td>
-            <a th:href="@{/technician/report/{testId}(testId=${report.id()})}" class="btn btn-sm btn-outline-primary">
-              <i class="fas fa-eye me-1"></i> Details
-            </a>
-          </td>
-          <td>
-            <a th:href="@{/technician/visualization-for-test-entry/{testId}(testId=${report.id()})}" class="btn btn-sm btn-outline-secondary">
-              <i class="fas fa-chart-line me-1"></i> Visuals
-            </a>
+  <!-- Report Table Card (Matching shadow and styling) -->
+  <div class="card shadow-sm w-100">
+    <div class="card-header bg-primary text-white">
+      Test Reports
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle">
+          <thead>
+          <tr>
+            <th>Bike QR</th>
+            <th>Test Run By</th>
+            <th>State</th>
+            <th>Type</th>
 
-          </td>
-
-
-        </tr>
-        </tbody>
-      </table>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="report : ${reports.reportViewModels()}">
+            <td th:text="${report.bikeQR()}">QR</td>
+            <td th:text="${report.technicianName()}">Technician</td>
+            <td th:text="${report.state}">State</td>
+            <td th:text="${report.type}">Type</td>
+            <td>
+              <a th:href="@{/technician/report/{testId}(testId=${report.id()})}" class="btn btn-sm btn-outline-primary me-2">
+                <i class="fas fa-eye me-1"></i> Details
+              </a>
+              <a th:href="@{/technician/visualization-for-test-entry/{testId}(testId=${report.id()})}" class="btn btn-sm btn-outline-secondary">
+                <i class="fas fa-chart-line me-1"></i> Visuals
+              </a>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </div>
+
+<!-- Footer & Scripts (Matching Test Report Detail) -->
+<script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}"></script>
+<div th:insert="~{fragments/footer.html}"></div>
+
 </body>
-
-
 </html>

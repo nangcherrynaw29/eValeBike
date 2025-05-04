@@ -4,33 +4,68 @@ document.addEventListener('DOMContentLoaded', function () {
         button.addEventListener('click', downloadPDF);
     }
 });
+
 async function downloadPDF() {
     const { jsPDF } = window.jspdf;
-    const element = document.querySelector('.dashboard-container');
+    const button = document.getElementById('downloadPdfBtn');
+    const originalButtonText = button.textContent;
 
-    html2canvas(element, { scale: 2 }).then(canvas => {
-        const imgData = canvas.toDataURL('image/png');
+    // Set loading state
+    button.disabled = true;
+    button.textContent = 'Generating PDF...';
+
+    // Target the card elements containing the tables
+    const cards = document.querySelectorAll('.row .card');
+    if (!cards.length) {
+        console.error('No tables found');
+        button.disabled = false;
+        button.textContent = originalButtonText;
+        alert('Error: No tables found to generate PDF.');
+        return;
+    }
+
+    try {
         const pdf = new jsPDF('p', 'mm', 'a4');
         const pageWidth = pdf.internal.pageSize.getWidth();
         const pageHeight = pdf.internal.pageSize.getHeight();
+        const margin = 10;
+        const contentWidth = pageWidth - 2 * margin;
+        let currentY = margin;
 
-        const imgProps = pdf.getImageProperties(imgData);
-        const imgWidth = pageWidth;
-        const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
+        // Process each card (table) sequentially
+        for (let i = 0; i < cards.length; i++) {
+            const card = cards[i];
+            const canvas = await html2canvas(card, {
+                scale: 2,
+                useCORS: true,
+                backgroundColor: '#ffffff',
+                windowWidth: card.scrollWidth,
+                windowHeight: card.scrollHeight,
+            });
 
-        let heightLeft = imgHeight;
-        let position = 0;
+            const imgData = canvas.toDataURL('image/png');
+            const imgProps = pdf.getImageProperties(imgData);
+            const imgWidth = contentWidth;
+            const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
 
-        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
+            // Check if adding the image exceeds the page height
+            if (currentY + imgHeight > pageHeight - margin) {
+                pdf.addPage();
+                currentY = margin;
+            }
 
-        while (heightLeft > 0) {
-            position = heightLeft - imgHeight;
-            pdf.addPage();
-            pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-            heightLeft -= pageHeight;
+            // Add the image to the PDF
+            pdf.addImage(imgData, 'PNG', margin, currentY, imgWidth, imgHeight);
+            currentY += imgHeight + 5; // Add small gap between tables
         }
 
-        pdf.save('test-report.pdf');
-    });
+        pdf.save('test-report-tables.pdf');
+    } catch (error) {
+        console.error('Error generating PDF:', error);
+        alert('Failed to generate PDF. Please try again.');
+    } finally {
+        // Restore button state
+        button.disabled = false;
+        button.textContent = originalButtonText;
+    }
 }
