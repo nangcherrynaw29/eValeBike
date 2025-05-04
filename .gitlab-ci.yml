@@ -130,17 +130,6 @@ sast_job:
       - stuck_or_timeout_failure
   timeout: 5m
 
-deploy_job:
-  stage: deploy
-  when: manual
-  script:
-    - echo "Deploying manually after approval"
-    - ssh user@your-server-ip 'docker stop myapp || true && docker rm myapp || true'
-    - ssh user@your-server-ip 'docker pull registry.gitlab.com/kdg-ti/integration-4/2024-2025/team-4/team-4:latest'
-    - ssh user@your-server-ip 'docker run -d --name myapp -p 8080:8080 registry.gitlab.com/kdg-ti/integration-4/2024-2025/team-4/team-4:latest'
-  only:
-    - main
-
 destroy_job:
   stage: destroy
   when: manual
