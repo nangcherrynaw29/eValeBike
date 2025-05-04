@@ -40,6 +40,8 @@ dependencies {
     implementation ("org.springframework.boot:spring-boot-starter-security")
     implementation ("org.thymeleaf.extras:thymeleaf-extras-springsecurity6")
 
+    testImplementation("org.testcontainers:junit-jupiter:1.19.7")
+    testImplementation("org.testcontainers:postgresql:1.19.7")
 }
 
 tasks.withType<Test> {
