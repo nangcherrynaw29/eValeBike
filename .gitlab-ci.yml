@@ -87,10 +87,7 @@ sast_job:
     - chmod +x dependency-check/bin/dependency-check.sh
 
     - mkdir -p build/reports/dependency-check
-    - echo "Created output directory: build/reports/dependency-check"
-
-    - echo "Verifying output directory..."
-    - ls -ld build/reports/dependency-check
+    - ls -ld build/reports/dependency-check  # This will confirm the directory is created.
 
     - '[ -z "$NVD_API_KEY" ] && { echo "ERROR: NVD_API_KEY is not set. Please set it in GitLab CI/CD variables."; exit 1; }'
     - echo "NVD_API_KEY is set (masked)"
@@ -121,6 +118,7 @@ sast_job:
     key: dependency-check-cache-non_protected
     paths:
       - dependency-check/
+
 
 destroy_job:
   stage: destroy
