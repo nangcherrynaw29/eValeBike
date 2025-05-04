@@ -86,7 +86,7 @@ sast_job:
     - chown -R $(whoami) "$OUTPUT_DIR"
     - echo "Verifying output directory..."
     - ls -ld "$OUTPUT_DIR"
-    - if [ -z "$NVD_API_KEY" ]; then echo "ERROR: NVD_API_KEY is not set. Please set it in GitLab CI/CD variables."; exit 1; fi
+    - "if [ -z \"$NVD_API_KEY\" ]; then echo \"ERROR: NVD_API_KEY is not set. Please set it in GitLab CI/CD variables.\"; exit 1; fi"
     - echo "Running OWASP Dependency-Check SAST analysis..."
     - export JAVA_OPTS="-Xmx6g -Xms1g"
     - bash -c 'timeout 5m ./dependency-check/bin/dependency-check.sh --project "eValeBike" --scan "$(pwd)/build/libs/*.jar" --format XML --out "$OUTPUT_DIR" --failOnCVSS 0 --data /cache/dependency-check --enableExperimental > sast.log 2>&1 || true'
