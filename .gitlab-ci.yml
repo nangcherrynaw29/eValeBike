@@ -70,44 +70,33 @@ sast_job:
   dependencies:
     - build_job
   before_script:
-    # Minimal checks
     - echo "Checking current working directory..."
     - pwd
     - echo "Checking for build_job artifacts..."
     - ls -la build/libs/ || echo "No JAR files found, continuing..."
-    # Check for cached Dependency-Check or install
     - echo "Setting up OWASP Dependency-Check..."
     - if [ ! -d "dependency-check" ]; then apt-get update && apt-get install -y wget unzip && wget https://github.com/jeremylong/DependencyCheck/releases/download/v10.0.4/dependency-check-10.0.4-release.zip && unzip dependency-check-10.0.4-release.zip; fi
     - chmod +x dependency-check/bin/dependency-check.sh
+
   script:
-    - echo "Creating output directory..."  # Setup
+    - echo "Creating output directory..."
     - export OUTPUT_DIR="$(pwd)/build/reports/dependency-check"
     - mkdir -p "$OUTPUT_DIR"
     - chmod -R 777 "$OUTPUT_DIR"
     - chown -R $(whoami) "$OUTPUT_DIR"
     - echo "Verifying output directory..."
     - ls -ld "$OUTPUT_DIR"
-
-    - echo "Checking NVD API Key..."  # API key check
+    - echo "Checking NVD API Key..."
     - bash -c 'if [ -z "$NVD_API_KEY" ]; then echo "ERROR: NVD_API_KEY is not set. Please set it in GitLab CI/CD variables."; exit 1; fi'
     - export nvdApiKey="$NVD_API_KEY"
-
-    - echo "Running OWASP Dependency-Check SAST analysis..."  # Run SAST
+    - echo "Running OWASP Dependency-Check SAST analysis..."
     - export JAVA_OPTS="-Xmx6g -Xms1g"
-    - >
-      timeout 5m ./dependency-check/bin/dependency-check.sh
-      --project "eValeBike"
-      --scan "$(pwd)/build/libs/*.jar"
-      --format XML
-      --out "$OUTPUT_DIR"
-      --failOnCVSS 0
-      --data /cache/dependency-check
-      --enableExperimental > sast.log 2>&1 || true
-
-    - echo "Dependency-Check output (last 20 lines):"  # Output logs
+    - timeout 5m ./dependency-check/bin/dependency-check.sh --project "eValeBike" --scan "$(pwd)/build/libs/*.jar" --format XML --out "$OUTPUT_DIR" --failOnCVSS 0 --data /cache/dependency-check --enableExperimental > sast.log 2>&1 || true
+    - echo "Dependency-Check output (last 20 lines):"
     - tail -n 20 sast.log || echo "Failed to read sast.log"
     - echo "Listing SAST reports..."
     - ls -la "$OUTPUT_DIR" || echo "No reports generated in $OUTPUT_DIR"
+
   artifacts:
     when: always
     paths:
@@ -116,19 +105,23 @@ sast_job:
     reports:
       sast: build/reports/dependency-check/dependency-check-report.xml
     expire_in: 1 week
+
   cache:
     key: dependency-check-cache
     paths:
       - /cache/dependency-check/
       - dependency-check/
     policy: pull-push
+
   needs:
     - build_job
+
   retry:
     max: 2
     when:
       - runner_system_failure
       - stuck_or_timeout_failure
+
   timeout: 5m
 
 deploy_job:
