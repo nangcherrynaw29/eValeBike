@@ -91,7 +91,7 @@ sast_job:
     - set -x
     - ./dependency-check/bin/dependency-check.sh \
       --project "eValeBike" \
-      --scan $(echo build/libs/*.jar)\
+      --scan "build/libs" \
       --format XML \
       --out "$OUTPUT_DIR" \
       --failOnCVSS 0 \
