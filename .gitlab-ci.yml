@@ -75,7 +75,10 @@ sast_job:
     - echo "Checking for build_job artifacts..."
     - ls -la build/libs/ || echo "No JAR files found, continuing..."
     - echo "Setting up OWASP Dependency-Check..."
-    - if [ ! -d "dependency-check" ]; then apt-get update && apt-get install -y wget unzip && wget https://github.com/jeremylong/DependencyCheck/releases/download/v10.0.4/dependency-check-10.0.4-release.zip && unzip dependency-check-10.0.4-release.zip; fi
+    - >
+      if [ ! -d "dependency-check" ]; then apt-get update && apt-get install -y wget unzip &&
+      wget https://github.com/jeremylong/DependencyCheck/releases/download/v10.0.4/dependency-check-10.0.4-release.zip &&
+      unzip dependency-check-10.0.4-release.zip; fi
     - chmod +x dependency-check/bin/dependency-check.sh
 
   script:
@@ -86,7 +89,6 @@ sast_job:
     - chown -R $(whoami) "$OUTPUT_DIR"
     - echo "Verifying output directory..."
     - ls -ld "$OUTPUT_DIR"
-    - echo "Checking NVD API Key..."
     - bash -c 'if [ -z "$NVD_API_KEY" ]; then echo "ERROR: NVD_API_KEY is not set. Please set it in GitLab CI/CD variables."; exit 1; fi'
     - export nvdApiKey="$NVD_API_KEY"
     - echo "Running OWASP Dependency-Check SAST analysis..."
