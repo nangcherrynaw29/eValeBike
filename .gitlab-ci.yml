@@ -80,18 +80,17 @@ sast_job:
       if [ ! -d "dependency-check" ]; then
         apt-get update && apt-get install -y wget unzip
         wget https://github.com/jeremylong/DependencyCheck/releases/download/v9.0.9/dependency-check-9.0.9-release.zip
-        unzip dependency-check-9.0.9-release.zip
+        unzip dependency-check-9.0.9-release.zip -d .
+        mv dependency-check-9.0.9 dependency-check
       fi
 
     - chmod +x dependency-check/bin/dependency-check.sh
 
-    - echo "Creating output directory..."
-    - mkdir -p "$OUTPUT_DIR"
-    - chmod -R 777 "$OUTPUT_DIR"
-    - chown -R $(whoami) "$OUTPUT_DIR"
+    - echo "Creating output directory: build/reports/dependency-check"
+    - mkdir -p "build/reports/dependency-check"
 
     - echo "Verifying output directory..."
-    - ls -ld "$OUTPUT_DIR"
+    - ls -ld "build/reports/dependency-check"
 
     - '[ -z "$NVD_API_KEY" ] && { echo "ERROR: NVD_API_KEY is not set. Please set it in GitLab CI/CD variables."; exit 1; }'
     - echo "NVD_API_KEY is set (masked)"
@@ -102,16 +101,16 @@ sast_job:
       --project "eValeBike"
       --scan build/libs
       --format XML
-      --out "$OUTPUT_DIR"
+      --out build/reports/dependency-check
       --failOnCVSS 0
       --nvdApiKey "$NVD_API_KEY"
-      --log "$OUTPUT_DIR/dependency-check.log"
+      --log build/reports/dependency-check/dependency-check.log
 
-    - echo "Checking output directory contents recursively:"
-    - find "$OUTPUT_DIR"
+    - echo "Output directory contents:"
+    - find "build/reports/dependency-check"
 
-    - echo "Dependency-Check log output (last 50 lines):"
-    - tail -n 50 "$OUTPUT_DIR/dependency-check.log" || echo "No log found"
+    - echo "Dependency-Check log (tail):"
+    - tail -n 50 "build/reports/dependency-check/dependency-check.log" || echo "No log found"
 
   artifacts:
     paths:
