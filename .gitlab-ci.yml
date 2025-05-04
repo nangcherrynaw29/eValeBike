@@ -89,8 +89,7 @@ sast_job:
     - echo "Verifying output directory..."
     - ls -ld "$OUTPUT_DIR"
     # Verify NVD API Key
-    - echo "Checking NVD_API_KEY..."
-    - if [ -z "$NVD_API_KEY" ]; then echo "ERROR: NVD_API_KEY is not set. Please set it in GitLab CI/CD variables."; exit 1; fi
+    - bash -c 'if [ -z "$NVD_API_KEY" ]; then echo "ERROR: NVD_API_KEY is not set. Please set it in GitLab CI/CD variables."; exit 1; fi'
     - export nvdApiKey="$NVD_API_KEY"
     # Run OWASP Dependency-Check
     - echo "Running OWASP Dependency-Check SAST analysis..."
