@@ -1,7 +1,7 @@
 plugins {
     java
-    id("org.springframework.boot") version "3.4.2"
-    id("io.spring.dependency-management") version "1.1.7"
+    id("org.springframework.boot") version "3.2.5"
+    id("io.spring.dependency-management") version "1.1.4"
 }
 
 group = "integration4"
@@ -9,16 +9,18 @@ version = "0.0.1-SNAPSHOT"
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion.set(JavaLanguageVersion.of(21))
     }
 }
 
 repositories {
     mavenCentral()
+    maven {
+        url = uri("https://jitpack.io")
+    }
 }
 
 dependencies {
-    // Core Spring Boot dependencies
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-security")
@@ -26,25 +28,20 @@ dependencies {
     implementation("org.thymeleaf.extras:thymeleaf-extras-springsecurity6:3.1.2.RELEASE")
     implementation("org.springframework.boot:spring-boot-starter-validation")
 
-    // Database dependencies
     runtimeOnly("org.postgresql:postgresql:42.7.5")
-    testImplementation("com.h2database:h2:2.3.232")
+    testImplementation("com.h2database:h2:2.2.232")
 
-    // Mapping
     implementation("org.mapstruct:mapstruct:1.6.3")
     annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
 
-    // QR Code and Webjars
     implementation("com.google.zxing:core:3.5.0")
     implementation("com.google.zxing:javase:3.5.0")
     implementation("org.webjars:bootstrap:5.3.3")
     implementation("org.webjars.npm:bootstrap-icons:1.11.1")
     implementation("org.webjars.npm:html5-qrcode:2.3.8")
 
-    // Development tools
     developmentOnly("org.springframework.boot:spring-boot-devtools")
 
-    // Test dependencies
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.testcontainers:junit-jupiter:1.20.4")
     testImplementation("org.testcontainers:postgresql:1.20.4")
@@ -55,7 +52,7 @@ dependencies {
 }
 
 tasks.named("build") {
-    dependsOn(tasks.named("bootJar"))
+    dependsOn("bootJar")
 }
 
 tasks.withType<Test> {
