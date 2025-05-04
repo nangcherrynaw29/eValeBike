@@ -75,7 +75,7 @@ sast_job:
     - echo "Checking for build_job artifacts..."
     - ls -la build/libs/ || echo "No JAR files found, continuing..."
     - echo "Setting up OWASP Dependency-Check..."
-    - if [ ! -d "dependency-check" ]; then apt-get update && apt-get install -y wget unzip && wget https://github.com/jeremylong/DependencyCheck/releases/download/v10.0.4/dependency-check-10.0.4-release.zip && unzip dependency-check-10.0.4-release.zip; fi
+    - if [ ! -d "dependency-check" ]; then apt-get update && apt-get install -y wget unzip && wget https://github.com/jeremylong/DependencyCheck/releases/download/v9.0.9/dependency-check-9.0.9-release.zip && unzip dependency-check-9.0.9-release.zip; fi
     - chmod +x dependency-check/bin/dependency-check.sh
   script:
     - echo "Creating output directory..."
@@ -85,27 +85,17 @@ sast_job:
     - chown -R $(whoami) "$OUTPUT_DIR"
     - echo "Verifying output directory..."
     - ls -ld "$OUTPUT_DIR"
-    - "[ -z \"$NVD_API_KEY\" ] && { echo \"ERROR: NVD_API_KEY is not set. Please set it in GitLab CI/CD variables.\"; exit 1; }"
+    - '[ -z "$NVD_API_KEY" ] && { echo "ERROR: NVD_API_KEY is not set. Please set it in GitLab CI/CD variables."; exit 1; }'
     - echo "NVD_API_KEY is set (value masked for security)"
-    - echo "Checking disk space and inodes for database..."
-    - df -h /tmp
-    - df -i /tmp
-    - echo "Checking open file limits..."
-    - ulimit -n
-    - echo "Increasing open file limits..."
-    - ulimit -n 65536
-    - echo "Setting up temporary H2 database directory..."
-    - mkdir -p /tmp/dependency-check/data
-    - chmod -R 777 /tmp/dependency-check/data
-    - chown -R $(whoami) /tmp/dependency-check/data
-    - echo "Clearing temporary H2 database..."
-    - rm -rf /tmp/dependency-check/data/dc.h2.db
-    - ls -ld /tmp/dependency-check/data
-    - export JAVA_OPTS="-Xmx6g -Xms1g"
     - echo "Running OWASP Dependency-Check SAST analysis..."
-    - timeout 5m ./dependency-check/bin/dependency-check.sh --project "eValeBike" --scan "$(pwd)/build/libs/*.jar" --format XML --out "$OUTPUT_DIR" --failOnCVSS 0 --data /tmp/dependency-check --enableExperimental --nvdApiKey "$NVD_API_KEY" --disableKnownExploited > sast.log 2>&1 || true
-    - echo "Dependency-Check output (last 20 lines):"
-    - tail -n 20 sast.log || echo "Failed to read sast.log"
+    - set -x
+    - ./dependency-check/bin/dependency-check.sh \
+      --project "eValeBike" \
+      --scan "$(pwd)/build/libs/*.jar" \
+      --format XML \
+      --out "$OUTPUT_DIR" \
+      --failOnCVSS 0 \
+      --nvdApiKey "$NVD_API_KEY" > sast.log 2>&1 || { echo "Dependency-Check failed"; tail -n 40 sast.log; exit 1; }
     - echo "Listing SAST reports..."
     - ls -la "$OUTPUT_DIR" || echo "No reports generated in $OUTPUT_DIR"
   artifacts:
@@ -128,7 +118,7 @@ sast_job:
     when:
       - runner_system_failure
       - stuck_or_timeout_failure
-  timeout: 5m
+  timeout: 10m
 
 destroy_job:
   stage: destroy
