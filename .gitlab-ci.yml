@@ -70,34 +70,38 @@ sast_job:
   dependencies:
     - build_job
   before_script:
-    # Pre-flight checks
-    #debug log current working directory
-    - echo "check current working directory"
+    # Minimal checks for speed
+    - echo "Checking current working directory..."
     - pwd
     - echo "Checking for build_job artifacts..."
     - ls -la build/libs/ || echo "No JAR files found, continuing..."
     # Install OWASP Dependency-Check CLI
     - echo "Installing OWASP Dependency-Check..."
-    - apt-get update && apt-get install -y wget unzip || echo "Failed to install wget/unzip, continuing..."
-    - wget https://github.com/jeremylong/DependencyCheck/releases/download/v10.0.4/dependency-check-10.0.4-release.zip || echo "Failed to download Dependency-Check, continuing..."
-    - unzip dependency-check-10.0.4-release.zip || echo "Failed to unzip Dependency-Check, continuing..."
-    - chmod +x dependency-check/bin/dependency-check.sh || echo "Failed to make Dependency-Check executable, continuing..."
+    - apt-get update && apt-get install -y wget unzip
+    - wget https://github.com/jeremylong/DependencyCheck/releases/download/v10.0.4/dependency-check-10.0.4-release.zip
+    - unzip dependency-check-10.0.4-release.zip
+    - chmod +x dependency-check/bin/dependency-check.sh
   script:
-    # Make directory for dependcy Check results
-    - echo "Checking build directory..."
-    - ls -ld build/ || echo "build/ directory not found"
-    - echo "Making directory for dependency check results"
-    - mkdir -p build/reports/dependency-check/ || echo "Failed to create dependency check directory, continuing..."
+    # Create output directory
+    - echo "Creating output directory..."
+    - export OUTPUT_DIR="$(pwd)/build/reports/dependency-check"
+    - mkdir -p "$OUTPUT_DIR"
+    - chmod -R 777 "$OUTPUT_DIR"
+    - chown -R $(whoami) "$OUTPUT_DIR"
     - echo "Verifying output directory..."
-    - ls -ld ./build/reports/dependency-check/ || echo "Output directory not found"
-    - echo "Checking write permissions..."
-    - touch ./build/reports/dependency-check/testfile || echo "Cannot write to output directory"
-    # Run OWASP Dependency-Check SAST analysis
+    - ls -ld "$OUTPUT_DIR"
+    # Set NVD API Key (required for 5-minute limit)
+    - export nvdApiKey="$NVD_API_KEY"
+    # Run OWASP Dependency-Check
     - echo "Running OWASP Dependency-Check SAST analysis..."
-    - ./dependency-check/bin/dependency-check.sh --project "eValeBike" --scan build/libs/*.jar --format XML --format HTML --out build/reports/dependency-check/ --failOnCVSS 0 --data /cache/dependency-check > sast.log 2>&1 || true
+    - export JAVA_OPTS="-Xmx6g -Xms1g"
+    - timeout 5m ./dependency-check/bin/dependency-check.sh --project "eValeBike" --scan "$(pwd)/build/libs/*.jar" --format XML --format HTML --out "$OUTPUT_DIR" --failOnCVSS 0 --data /cache/dependency-check > sast.log 2>&1 || true
+    # Log tail of sast.log
+    - echo "Dependency-Check output (last 20 lines):"
+    - tail -n 20 sast.log || echo "Failed to read sast.log"
     # List generated reports
-    - echo "Listing SAST report..."
-    - ls -la build/reports/dependency-check/ || echo "No reports generated, continuing..."
+    - echo "Listing SAST reports..."
+    - ls -la "$OUTPUT_DIR" || echo "No reports generated in $OUTPUT_DIR"
   artifacts:
     when: always
     paths:
@@ -110,6 +114,7 @@ sast_job:
     key: dependency-check-cache
     paths:
       - /cache/dependency-check/
+    policy: pull-push
   needs:
     - build_job
   retry:
@@ -117,6 +122,7 @@ sast_job:
     when:
       - runner_system_failure
       - stuck_or_timeout_failure
+  timeout: 5m
 
 deploy_job:
   stage: deploy
