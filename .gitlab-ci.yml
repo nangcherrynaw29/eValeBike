@@ -64,25 +64,31 @@ test_job:
     paths:
       - build/test-results/test/
 
-# Static Application Security Testing (SAST)
 sast_job:
   stage: sast
   image: gradle:8-jdk21
   dependencies:
     - build_job
   before_script:
-    - apt-get update && apt-get install -y unzip
+    # Install OWASP Dependency-Check CLI
+    - echo "Installing OWASP Dependency-Check..."
+    - apt-get update && apt-get install -y wget unzip
+    - wget https://github.com/jeremylong/DependencyCheck/releases/download/v10.0.4/dependency-check-10.0.4-release.zip
+    - unzip dependency-check-10.0.4-release.zip
+    - chmod +x dependency-check/bin/dependency-check.sh
   script:
-    - echo "Running SpotBugs SAST analysis..."
-    - gradle spotbugsMain --info
+    # Run OWASP Dependency-Check SAST analysis
+    - echo "Running OWASP Dependency-Check SAST analysis..."
+    - ./dependency-check/bin/dependency-check.sh --project "eValeBike" --scan build/libs/*.jar --format XML --format HTML --out build/reports/dependency-check/ --failOnCVSS 0
+    # List generated reports
     - echo "Listing SAST report..."
-    - ls -la build/reports/spotbugs/
+    - ls -la build/reports/dependency-check/
   artifacts:
     when: always
     paths:
-      - build/reports/spotbugs/
+      - build/reports/dependency-check/
     reports:
-      sast: build/reports/spotbugs/main.xml
+      sast: build/reports/dependency-check/dependency-check-report.xml
   needs:
     - build_job
 
