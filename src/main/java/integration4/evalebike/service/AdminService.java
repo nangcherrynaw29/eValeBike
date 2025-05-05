@@ -3,6 +3,7 @@ package integration4.evalebike.service;
 import integration4.evalebike.domain.Administrator;
 import integration4.evalebike.exception.NotFoundException;
 import integration4.evalebike.repository.AdminRepository;
+import integration4.evalebike.utility.PasswordUtility;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,33 +11,38 @@ import java.util.List;
 @Service
 public class AdminService {
     private final AdminRepository adminRepository;
+    private final PasswordUtility passwordUtility;
 
-    public AdminService(AdminRepository adminRepository) {
+    public AdminService(AdminRepository adminRepository, PasswordUtility passwordUtility) {
         this.adminRepository = adminRepository;
+        this.passwordUtility = passwordUtility;
     }
 
-    public List<Administrator>  getAllAdmins() {
+    public List<Administrator> getAllAdmins() {
         return adminRepository.findAll();
     }
 
     public Administrator getAdminById(final Integer id) {
-        return adminRepository.findById(id).orElseThrow(()->NotFoundException.forAdmin(id));
+        return adminRepository.findById(id).orElseThrow(() -> NotFoundException.forAdmin(id));
     }
-
 
     public Administrator saveAdmin(final String name, final String email, final String companyName) {
-        final Administrator admin = new Administrator();
-        admin.setName(name);
-        admin.setEmail(email);
-        admin.setCompanyName(companyName);
-        return adminRepository.save(admin);
+        // Generate and hash the password using PasswordUtility
+        String rawPassword = passwordUtility.generateRandomPassword(8);
+        String hashedPassword = passwordUtility.hashPassword(rawPassword);
 
+        // Create and save the Administrator
+        final Administrator admin = new Administrator(name, email, companyName);
+        admin.setPassword(hashedPassword);
+        passwordUtility.sendPasswordEmail(email, rawPassword);
+        return adminRepository.save(admin);
     }
+
     public Administrator updateAdmin(Integer id, Administrator adminDetails) {
         Administrator existingAdmin = adminRepository.findById(id).orElseThrow(() -> new RuntimeException("Admin not found"));
         existingAdmin.setName(adminDetails.getName());
         existingAdmin.setEmail(adminDetails.getEmail());
-//        existingAdmin.setRole(adminDetails.getRole());
+//      existingAdmin.setRole(adminDetails.getRole());
         existingAdmin.setCompanyName(adminDetails.getCompanyName());
         return adminRepository.save(existingAdmin);
     }
@@ -45,5 +51,4 @@ public class AdminService {
         Administrator admin = adminRepository.findById(id).orElseThrow(() -> new RuntimeException("Admin not found"));
         adminRepository.deleteById(id);
     }
-
 }

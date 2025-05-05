@@ -8,12 +8,13 @@ import jakarta.persistence.PrimaryKeyJoinColumn;
 public class Administrator extends User {
     private String companyName;
 
-    public Administrator(Integer id, String name, String email, String password, String companyName) {
-        super(id, name, email, password);
+    public Administrator(String name, String email, String companyName) {
+        super(name, email);
         this.companyName = companyName;
     }
 
-    public Administrator() {}
+    public Administrator() {
+    }
 
     public String getCompanyName() {
         return companyName;

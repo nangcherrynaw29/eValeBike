@@ -11,9 +11,8 @@ public class Technician extends User {
     @OneToMany(mappedBy = "technician")
     private List<TestBench> assignedTestBench = new ArrayList<>();
 
-    public Technician(Integer id, String name, String email, String password, List<TestBench> assignedTestBench) {
-        super(id, name, email, password);
-        this.assignedTestBench = assignedTestBench;
+    public Technician(String name, String email) {
+        super(name, email);
     }
 
     public Technician() {

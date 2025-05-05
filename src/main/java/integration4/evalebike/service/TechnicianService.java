@@ -5,6 +5,7 @@ import integration4.evalebike.exception.NotFoundException;
 import integration4.evalebike.repository.TechnicianRepository;
 import integration4.evalebike.repository.TestBenchRepository;
 import jakarta.transaction.Transactional;
+import integration4.evalebike.utility.PasswordUtility;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,10 +13,12 @@ import java.util.List;
 @Service
 public class TechnicianService {
     private final TechnicianRepository technicianRepository;
+    private final PasswordUtility passwordUtility;
     private final TestBenchRepository testBenchRepository;
 
-    public TechnicianService(TechnicianRepository technicianRepository, TestBenchRepository testBenchRepository) {
+    public TechnicianService(TechnicianRepository technicianRepository, PasswordUtility passwordUtility, TestBenchRepository testBenchRepository) {
         this.technicianRepository = technicianRepository;
+        this.passwordUtility = passwordUtility;
         this.testBenchRepository = testBenchRepository;
     }
 
@@ -29,9 +32,12 @@ public class TechnicianService {
     }
 
     public Technician saveTechnician(final String name, final String email) {
-        Technician technician = new Technician();
-        technician.setName(name);
-        technician.setEmail(email);
+        String rawPassword = passwordUtility.generateRandomPassword(8);
+        String hashedPassword = passwordUtility.hashPassword(rawPassword);
+
+        Technician technician = new Technician(name, email);
+        technician.setPassword(hashedPassword);
+        passwordUtility.sendPasswordEmail(email, rawPassword);
         return technicianRepository.save(technician);
     }
 
@@ -41,7 +47,6 @@ public class TechnicianService {
         technician.setName(updatedTechnician.getName());
         technician.setEmail(updatedTechnician.getEmail());
         technician.setPassword(updatedTechnician.getPassword());
-
         return technicianRepository.save(technician);
     }
 

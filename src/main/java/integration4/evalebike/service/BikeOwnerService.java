@@ -9,6 +9,7 @@ import integration4.evalebike.exception.NotFoundException;
 import integration4.evalebike.repository.BikeOwnerBikeRepository;
 import integration4.evalebike.repository.BikeOwnerRepository;
 import integration4.evalebike.repository.BikeRepository;
+import integration4.evalebike.utility.PasswordUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,16 +22,18 @@ import java.util.stream.Collectors;
 @Service
 public class BikeOwnerService {
     private final BikeOwnerRepository bikeOwnerRepository;
-    private  final BikeOwnerBikeRepository bikeOwnerBikeRepository;
+    private final BikeOwnerBikeRepository bikeOwnerBikeRepository;
     private final BikeRepository bikeRepository;
     private final QrCodeService qrCodeService;
+    private final PasswordUtility passwordUtility;
 
     @Autowired
-    public BikeOwnerService(BikeOwnerRepository bikeOwnerRepository, BikeOwnerBikeRepository bikeOwnerBikeRepository, BikeRepository bikeRepository, QrCodeService qrCodeService) {
+    public BikeOwnerService(BikeOwnerRepository bikeOwnerRepository, BikeOwnerBikeRepository bikeOwnerBikeRepository, BikeRepository bikeRepository, QrCodeService qrCodeService, PasswordUtility passwordUtility) {
         this.bikeOwnerRepository = bikeOwnerRepository;
         this.bikeOwnerBikeRepository = bikeOwnerBikeRepository;
         this.bikeRepository = bikeRepository;
         this.qrCodeService = qrCodeService;
+        this.passwordUtility = passwordUtility;
     }
 
     public List<BikeOwner> getAll() {
@@ -38,7 +41,12 @@ public class BikeOwnerService {
     }
 
     public BikeOwner add(String name, String email, String phoneNumber, LocalDate birthDate) {
+        String rawPassword = passwordUtility.generateRandomPassword(8);
+        String hashedPassword = passwordUtility.hashPassword(rawPassword);
+
         BikeOwner bikeOwner = new BikeOwner(name, email, phoneNumber, birthDate);
+        bikeOwner.setPassword(hashedPassword);
+        passwordUtility.sendPasswordEmail(email, rawPassword);
         return bikeOwnerRepository.save(bikeOwner);
     }
 

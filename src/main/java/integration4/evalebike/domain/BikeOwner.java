@@ -17,12 +17,6 @@ public class BikeOwner extends User {
     @OneToMany(mappedBy = "bikeOwner", fetch = FetchType.LAZY)
     private List<BikeOwnerBike> bikeList;
 
-    public BikeOwner(Integer id, String name, String email, String password, String phoneNumber, LocalDate birthDate) {
-        super(id, name, email, password);
-        this.phoneNumber = phoneNumber;
-        this.birthDate = birthDate;
-    }
-
     public BikeOwner(String name, String email, String phoneNumber, LocalDate birthDate) {
         super(name, email);
         this.phoneNumber = phoneNumber;
