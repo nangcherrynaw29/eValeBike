@@ -1,50 +1,56 @@
 -- Insert into the app_user table if the id doesn't already exist
-INSERT INTO app_user (id, name, email, password, role)
+INSERT INTO app_user (id, name, email, password, role, user_status)
 SELECT 1,
        'John Doe',
        'john.doe@example.com',
        '$2a$10$kU6clDpBtcQAiul4xa9GP.Liy2GmP3QCPXHeZNjBSLj240YukGx7K',
-       'BIKE_OWNER'
+       'BIKE_OWNER',
+       'APPROVED'
 WHERE NOT EXISTS (SELECT 1 FROM app_user WHERE id = 1);
 
-INSERT INTO app_user (id, name, email, password, role)
+INSERT INTO app_user (id, name, email, password, role, user_status)
 SELECT 2,
        'Jane Smith',
        'jane.smith@example.com',
        '$2a$10$kU6clDpBtcQAiul4xa9GP.Liy2GmP3QCPXHeZNjBSLj240YukGx7K',
-       'TECHNICIAN'
+       'TECHNICIAN',
+       'APPROVED'
 WHERE NOT EXISTS (SELECT 1 FROM app_user WHERE id = 2);
 
-INSERT INTO app_user (id, name, email, password, role)
+INSERT INTO app_user (id, name, email, password, role, user_status)
 SELECT 3,
        'Alice Johnson',
        'alice.johnson@example.com',
        '$2a$10$kU6clDpBtcQAiul4xa9GP.Liy2GmP3QCPXHeZNjBSLj240YukGx7K',
-       'ADMIN'
+       'ADMIN',
+       'APPROVED'
 WHERE NOT EXISTS (SELECT 1 FROM app_user WHERE id = 3);
 
-INSERT INTO app_user (id, name, email, password, role)
+INSERT INTO app_user (id, name, email, password, role, user_status)
 SELECT 4,
        'Bob Brown',
        'bob.brown@example.com',
        '$2a$10$kU6clDpBtcQAiul4xa9GP.Liy2GmP3QCPXHeZNjBSLj240YukGx7K',
-       'SUPER_ADMIN'
+       'SUPER_ADMIN',
+       'APPROVED'
 WHERE NOT EXISTS (SELECT 1 FROM app_user WHERE id = 4);
 
-INSERT INTO app_user (id, name, email, password, role)
+INSERT INTO app_user (id, name, email, password, role, user_status)
 SELECT 5,
        'Michael Green',
        'michael.green@example.com',
        '$2a$10$kU6clDpBtcQAiul4xa9GP.Liy2GmP3QCPXHeZNjBSLj240YukGx7K',
-       'BIKE_OWNER'
+       'BIKE_OWNER',
+       'APPROVED'
 WHERE NOT EXISTS (SELECT 1 FROM app_user WHERE id = 5);
 
-INSERT INTO app_user (id, name, email, password, role)
+INSERT INTO app_user (id, name, email, password, role, user_status)
 SELECT 6,
        'Sarah White',
        'sarah.white@example.com',
        '$2a$10$kU6clDpBtcQAiul4xa9GP.Liy2GmP3QCPXHeZNjBSLj240YukGx7K',
-       'BIKE_OWNER'
+       'BIKE_OWNER',
+       'APPROVED'
 WHERE NOT EXISTS (SELECT 1 FROM app_user WHERE id = 6);
 
 -- Insert into the bike_owner table
