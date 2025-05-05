@@ -1,6 +1,5 @@
 package integration4.evalebike.controller.technician;
 
-import integration4.evalebike.controller.superAdmin.dto.AdministratorDto;
 import integration4.evalebike.controller.technician.dto.*;
 import integration4.evalebike.controller.technician.dto.TestRequestDTO;
 import integration4.evalebike.domain.Bike;
@@ -9,10 +8,7 @@ import integration4.evalebike.domain.TestReport;
 import integration4.evalebike.repository.TestReportRepository;
 import integration4.evalebike.domain.*;
 import integration4.evalebike.security.CustomUserDetails;
-import integration4.evalebike.service.BikeOwnerService;
-import integration4.evalebike.service.BikeService;
-import integration4.evalebike.service.RecentActivityService;
-import integration4.evalebike.service.TestBenchService;
+import integration4.evalebike.service.*;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +24,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/api/technician")
@@ -37,15 +34,16 @@ public class TechnicianAPIController {
     private final BikeOwnerService bikeOwnerService;
     private final BikeMapper bikeMapper;
     private final BikeOwnerMapper bikeOwnerMapper;
-    private final TestBenchService  testBenchService;
+    private final TestBenchService testBenchService;
     private final TestReportRepository testReportRepository;
     private static final Logger logger = LoggerFactory.getLogger(TechnicianAPIController.class);
     private final RecentActivityService recentActivityService;
+    private final TestReportEntryService testReportEntryService;
 
 
     public TechnicianAPIController(BikeService bikeService, BikeOwnerService bikeOwnerService, BikeMapper bikeMapper,
                                    BikeOwnerMapper bikeOwnerMapper, TestBenchService testBenchService,
-                                   TestReportRepository testReportRepository, RecentActivityService recentActivityService) {
+                                   TestReportRepository testReportRepository, RecentActivityService recentActivityService, TestReportEntryService testReportEntryService) {
         this.bikeService = bikeService;
         this.bikeOwnerService = bikeOwnerService;
         this.bikeMapper = bikeMapper;
@@ -53,12 +51,13 @@ public class TechnicianAPIController {
         this.bikeOwnerMapper = bikeOwnerMapper;
         this.testReportRepository = testReportRepository;
         this.recentActivityService = recentActivityService;
+        this.testReportEntryService = testReportEntryService;
     }
 
     @GetMapping("/bikeOwners")
     public ResponseEntity<List<BikeOwnerDto>> getAllAdmins() {
         final List<BikeOwnerDto> bikeOwners = bikeOwnerService.getAll()
-                .stream().map(bikeOwnerMapper :: toBikeOwnerDto)
+                .stream().map(bikeOwnerMapper::toBikeOwnerDto)
                 .toList();
         return ResponseEntity.ok(bikeOwners);
     }
@@ -97,8 +96,9 @@ public class TechnicianAPIController {
     }
 
     @PostMapping("/start/{bikeQR}")
-    public Mono<String> startTest(@PathVariable String bikeQR, @RequestParam("testType") String testType, Principal principal) {
+    public Mono<String> startTest(@PathVariable String bikeQR, @RequestParam("testType") String testType, Principal principal, @AuthenticationPrincipal final CustomUserDetails userDetails) {
 
+        recentActivityService.save(new RecentActivity(Activity.INITIALIZED_TEST, "Test started successfully.", LocalDateTime.now(), userDetails.getUserId()));
         String technicianUsername = principal != null ? principal.getName() : "anonymous";
 
         return Mono.fromCallable(() -> bikeService.findById(bikeQR)) // Convert Optional to Mono
@@ -141,6 +141,42 @@ public class TechnicianAPIController {
                 });
     }
 
+    @GetMapping("/test-report-entries/{testId}")
+    public ResponseEntity<List<TestReportEntryDTO>> getTestReport(@PathVariable String testId) {
+        // Assuming service returns entities; map to DTO
+        List<TestReportEntryDTO> entries = testReportEntryService.getEntriesByReportId(testId).stream()
+                .map(entity -> new TestReportEntryDTO(
+                        entity.getTimestamp(),
+                        entity.getBatteryVoltage(),
+                        entity.getBatteryCurrent(),
+                        entity.getBatteryCapacity(),
+                        entity.getBatteryTemperatureCelsius(),
+                        entity.getChargeStatus(),
+                        entity.getAssistanceLevel(),
+                        entity.getTorqueCrankNm(),
+                        entity.getBikeWheelSpeedKmh(),
+                        entity.getCadanceRpm(),
+                        entity.getEngineRpm(),
+                        entity.getEnginePowerWatt(),
+                        entity.getWheelPowerWatt(),
+                        entity.getRollTorque(),
+                        entity.getLoadcellN(),
+                        entity.getRolHz(),
+                        entity.getHorizontalInclination(),
+                        entity.getVerticalInclination(),
+                        entity.getLoadPower(),
+                        entity.isStatusPlug()
+                ))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(entries);
+    }
+
+
+    @GetMapping("/normalized-test-report-entries/{testId}")
+    @ResponseBody
+    public List<NormalizedTestReportEntryDTO> getNormalizedTestReportEntries(@PathVariable String testId) {
+        return testReportEntryService.getNormalizedEntriesByReportId(testId);
+    }
 
 
 }

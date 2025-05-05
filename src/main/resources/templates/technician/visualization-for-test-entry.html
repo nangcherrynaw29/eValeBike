@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Metric Chart with Toggle</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Bootstrap Icons (optional, for prettier icons) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+
+    <!-- Custom CSS (if needed) -->
+    <link href="/css/visuals-test-entry.css" rel="stylesheet" />
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Your JavaScript (loaded after DOM) -->
+    <script defer src="/js/technician/chart-for-test-entry.js"></script>
+</head>
+
+<body class="bg-light">
+
+<div class="container mt-5">
+    <div class="card shadow">
+        <div class="card-header bg-white d-flex align-items-center">
+            <i class="bi bi-bar-chart-line-fill me-2 fs-4 text-primary"></i>
+            <h5 class="mb-0 fw-semibold">Test Report Metrics</h5>
+        </div>
+
+        <div class="card-body">
+            <!-- Controls Row -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="d-flex align-items-center gap-2">
+                    <!-- Toggle Normalization Button -->
+                    <button id="toggleNormalizationBtn" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-toggle-on me-2"></i>Show Normalized Data
+                    </button>
+
+                    <!-- Interval Dropdown -->
+                    <select id="intervalSelector" class="form-select form-select-sm" style="width: auto;">
+                        <option value="1">Per Second</option>
+                        <option value="10">Every 10 Seconds</option>
+                        <option value="60">Per Minute</option>
+                        <option value="300">Every 5 Minutes</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Chart Canvas -->
+            <div id="chart-container">
+                <canvas id="metricsChart" height="400"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Back Button -->
+    <div class="text-center mt-4">
+        <a href="/technician/test-report-dashboard" class="btn btn-primary">
+            <i class="bi bi-arrow-left-circle me-2"></i>Back to Test Report Dashboard
+        </a>
+    </div>
+</div>
+
+</body>
+</html>
