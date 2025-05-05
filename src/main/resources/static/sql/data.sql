@@ -373,3 +373,9 @@ VALUES (1, 'CREATED_USER', 'Created technician Mike', '2025-04-26', 4),
        (3, 'INITIALIZED_TEST', 'All tests started successfully', '2025-04-28 14:45', 4),
        (4, 'INITIALIZED_TEST', 'All tests started successfully', '2025-04-23 15:09', 4)
 ON CONFLICT (id) DO NOTHING;
+
+-- Reset app_user sequence
+SELECT setval('app_user_id_seq', COALESCE((SELECT MAX(id) FROM app_user), 0) + 1, false);
+
+-- Reset recent_activity sequence
+SELECT setval('recent_activity_id_seq', COALESCE((SELECT MAX(id) FROM recent_activity), 0) + 1, false);
