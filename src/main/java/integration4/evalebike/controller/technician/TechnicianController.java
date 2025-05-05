@@ -18,6 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/technician")
@@ -27,14 +28,16 @@ public class TechnicianController {
     private final QrCodeService qrCodeService;
     private final TestBenchService testBenchService;
     private final TestReportService testReportService;
+    private final TestReportEntryService testReportEntryService;
     private static final Logger logger = LoggerFactory.getLogger(TechnicianController.class);
 
-    public TechnicianController(BikeOwnerService bikeOwnerService, BikeService bikeService, QrCodeService qrCodeService, TestBenchService testBenchService, TestReportService testReportService) {
+    public TechnicianController(BikeOwnerService bikeOwnerService, BikeService bikeService, QrCodeService qrCodeService, TestBenchService testBenchService, TestReportService testReportService, TestReportEntryService testReportEntryService) {
         this.bikeOwnerService = bikeOwnerService;
         this.bikeService = bikeService;
         this.qrCodeService = qrCodeService;
         this.testBenchService = testBenchService;
         this.testReportService = testReportService;
+        this.testReportEntryService = testReportEntryService;
     }
 
     // Show all bikes owned by a specific bike owner
@@ -153,6 +156,25 @@ public class TechnicianController {
         modelAndView.addObject("reports", ReportsViewModel.from(testReportService.getAllReports()));
         return modelAndView;
     }
+
+    @GetMapping("/visualization-for-test-entry/{testId}")
+    public ModelAndView showVisualizationForTestEntry(@PathVariable("testId") String testId, Model model) {
+        final ModelAndView modelAndView = new ModelAndView("technician/visualization-for-test-entry");
+
+        // Convert the entries into the view model format
+        List<TestReportEntryViewModel> entryViewModels =
+                testReportEntryService.getEntriesByReportId(testId).stream()
+                        .map(TestReportEntryViewModel::from)
+                        .collect(Collectors.toList());
+
+        modelAndView.addObject("entries", entryViewModels);
+
+        return modelAndView;
+    }
+
+
+
+
 }
 
 
