@@ -1,6 +1,7 @@
 package integration4.evalebike.service;
 
 import integration4.evalebike.domain.Administrator;
+import integration4.evalebike.domain.UserStatus;
 import integration4.evalebike.exception.NotFoundException;
 import integration4.evalebike.repository.AdminRepository;
 import integration4.evalebike.utility.PasswordUtility;
@@ -19,7 +20,7 @@ public class AdminService {
     }
 
     public List<Administrator> getAllAdmins() {
-        return adminRepository.findAll();
+        return adminRepository.findByUserStatus(UserStatus.APPROVED);
     }
 
     public Administrator getAdminById(final Integer id) {

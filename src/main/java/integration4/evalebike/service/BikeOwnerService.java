@@ -5,6 +5,7 @@ import integration4.evalebike.domain.Bike;
 import integration4.evalebike.domain.BikeOwner;
 import integration4.evalebike.domain.BikeOwnerBike;
 
+import integration4.evalebike.domain.UserStatus;
 import integration4.evalebike.exception.NotFoundException;
 import integration4.evalebike.repository.BikeOwnerBikeRepository;
 import integration4.evalebike.repository.BikeOwnerRepository;
@@ -37,7 +38,7 @@ public class BikeOwnerService {
     }
 
     public List<BikeOwner> getAll() {
-        return bikeOwnerRepository.findAll();
+        return bikeOwnerRepository.findByUserStatus(UserStatus.APPROVED);
     }
 
     public BikeOwner add(String name, String email, String phoneNumber, LocalDate birthDate) {

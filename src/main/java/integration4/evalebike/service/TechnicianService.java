@@ -1,6 +1,7 @@
 package integration4.evalebike.service;
 
 import integration4.evalebike.domain.Technician;
+import integration4.evalebike.domain.UserStatus;
 import integration4.evalebike.exception.NotFoundException;
 import integration4.evalebike.repository.TechnicianRepository;
 import integration4.evalebike.repository.TestBenchRepository;
@@ -23,7 +24,7 @@ public class TechnicianService {
     }
 
     public List<Technician> getAll() {
-        return technicianRepository.findAll();
+        return technicianRepository.findByUserStatus(UserStatus.APPROVED);
     }
 
     public Technician getTechnicianById(Integer id) {
