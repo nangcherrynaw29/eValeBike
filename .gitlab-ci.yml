@@ -81,14 +81,14 @@ sast:
     expire_in: 1 week
   allow_failure: false
 
-destroy_job:
-  stage: destroy
-  when: manual
-  script:
-    - echo "Destroying application manually"
-    - ssh user@your-server-ip 'docker stop myapp && docker rm myapp'
-  only:
-    - main
+#destroy_job:
+#  stage: destroy
+#  when: manual
+#  script:
+#    - echo "Destroying application manually"
+#    - ssh user@your-server-ip 'docker stop myapp && docker rm myapp'
+#  only:
+#    - main
 
 # Deploy job added
 deploy_job:
@@ -106,5 +106,4 @@ deploy_job:
   script:
     - echo "Deploying to Azure VM..."
     - ssh team4@4.180.13.98 'bash -s' < scripts/setup_script.sh
-  only:
-    - main
+
