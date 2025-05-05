@@ -4,3 +4,9 @@ body {
     background-position: center;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
+
+@media (max-width: 576px) {
+    .form-container {
+        padding: 0 10px;
+    }
+}
