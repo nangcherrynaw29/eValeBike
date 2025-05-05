@@ -1,9 +1,7 @@
 package integration4.evalebike.controller.technician;
 
-import integration4.evalebike.controller.superAdmin.dto.AdministratorDto;
 import integration4.evalebike.controller.technician.dto.*;
 import integration4.evalebike.controller.technician.dto.TestRequestDTO;
-import integration4.evalebike.controller.viewModel.TestReportEntryViewModel;
 import integration4.evalebike.domain.Bike;
 import integration4.evalebike.domain.BikeOwner;
 import integration4.evalebike.domain.TestReport;
@@ -25,9 +23,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Controller
@@ -100,8 +96,9 @@ public class TechnicianAPIController {
     }
 
     @PostMapping("/start/{bikeQR}")
-    public Mono<String> startTest(@PathVariable String bikeQR, @RequestParam("testType") String testType, Principal principal) {
+    public Mono<String> startTest(@PathVariable String bikeQR, @RequestParam("testType") String testType, Principal principal,  @AuthenticationPrincipal final CustomUserDetails userDetails) {
 
+        recentActivityService.save(new RecentActivity(Activity.INITIALIZED_TEST, "Test started successfully.", LocalDateTime.now(), userDetails.getUserId()));
         String technicianUsername = principal != null ? principal.getName() : "anonymous";
 
         return Mono.fromCallable(() -> bikeService.findById(bikeQR)) // Convert Optional to Mono
