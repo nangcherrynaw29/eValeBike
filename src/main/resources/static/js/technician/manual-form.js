@@ -1,29 +1,73 @@
 document.addEventListener('DOMContentLoaded', function () {
     const saveAndStartButton = document.querySelector('button[type="submit"].btn-primary');
     const manualTestForm = document.getElementById('manualTestForm');
-    const successMessageDiv = document.createElement('div');
-    successMessageDiv.className = 'alert alert-success mt-3';
-    successMessageDiv.style.display = 'none';
-    successMessageDiv.textContent = 'Bike details updated successfully! Starting test...';
-    manualTestForm.appendChild(successMessageDiv);
-    const errorMessageDiv = document.createElement('div');
-    errorMessageDiv.className = 'alert alert-danger mt-3';
-    errorMessageDiv.style.display = 'none';
-    manualTestForm.appendChild(errorMessageDiv);
+    const maxLimit = 2000;
+    const minLimit = 1;
 
     saveAndStartButton.addEventListener('click', function (event) {
         event.preventDefault(); // Prevent the default form submission
-        errorMessageDiv.style.display = 'none'; // Hide any previous error messages
-        successMessageDiv.style.display = 'none'; // Hide any previous success messages
-        saveAndStartButton.disabled = true; // Disable the button
+
+        // Create success and error message divs
+        const successMessageDiv = document.createElement('div');
+        successMessageDiv.className = 'alert alert-success mt-3';
+        successMessageDiv.style.display = 'none';
+        successMessageDiv.innerHTML = '<i class="bi bi-check-circle"></i> Bike details updated successfully! Starting test...';
+        manualTestForm.appendChild(successMessageDiv);
+
+        const errorMessageDiv = document.createElement('div');
+        errorMessageDiv.className = 'alert alert-danger mt-3';
+        errorMessageDiv.style.display = 'none';
+        manualTestForm.appendChild(errorMessageDiv);
+
+        // Remove previous error messages if any
+        const errorMessages = manualTestForm.querySelectorAll('.error-message');
+        errorMessages.forEach(msg => msg.remove());
+
+        // Define fields to validate
+        const fieldNames = [
+            { field: "accuCapacity", label: "Battery Capacity" },
+            { field: "maxSupport", label: "Max Support" },
+            { field: "maxEnginePower", label: "Engine Power Max" },
+            { field: "nominalEnginePower", label: "Engine Power Nominal" },
+            { field: "engineTorque", label: "Engine Torque" }
+        ];
+
+        let isValid = true;
+
+        // Check each field
+        fieldNames.forEach(({ field, label }) => {
+            const input = document.querySelector(`[name="${field}"]`);
+            if (!input) {
+                console.warn(`Field ${field} not found`);
+                return;
+            }
+
+            const value = parseFloat(input.value);
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message text-danger mt-2';
+
+            // Validation check
+            if (isNaN(value) || value < minLimit || value > maxLimit) {
+                errorDiv.innerHTML = `<i class="bi bi-x-circle"></i> <strong>${label}</strong> must be between <strong>${minLimit}</strong> and <strong>${maxLimit}</strong>.`;
+                input.parentElement.appendChild(errorDiv); // Add error message below the input
+                isValid = false;
+            }
+        });
+
+        if (!isValid) {
+            return; // Stop further execution if validation fails
+        }
+
+        // All fields are valid — proceed with form submission
+        saveAndStartButton.disabled = true;
 
         const formData = new FormData(manualTestForm);
-        const bikeQR = manualTestForm.dataset.bikeQr; // Get bikeQR from data attribute
+        const bikeQR = manualTestForm.dataset.bikeQr;
 
-        // First API call: POST to update manual test fields
+        // First API call to update bike
         fetch(`/api/technician/manual-test-form/${bikeQR}`, {
             method: 'POST',
-            body: new URLSearchParams(formData), // Encode form data
+            body: new URLSearchParams(formData),
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
@@ -31,17 +75,13 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(response => {
                 if (response.ok) {
                     successMessageDiv.style.display = 'block';
-
-                    // Second API call: POST to start the test
                     const startTestUrl = `/api/technician/start/${bikeQR}?testType=MANUAL`;
-                    return fetch(startTestUrl, {
-                        method: 'POST'
-                    });
+                    return fetch(startTestUrl, { method: 'POST' });
                 } else {
                     return response.text().then(text => {
-                        errorMessageDiv.textContent = 'Failed to update bike: ' + text;
+                        errorMessageDiv.innerHTML = `<i class="bi bi-x-circle"></i> <strong>Failed to update bike:</strong> ${text}`;
                         errorMessageDiv.style.display = 'block';
-                        saveAndStartButton.disabled = false; // Re-enable the button
+                        saveAndStartButton.disabled = false;
                         throw new Error('Failed to update bike: ' + text);
                     });
                 }
@@ -49,12 +89,12 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(startResponse => {
                 if (startResponse) {
                     if (startResponse.redirected) {
-                        window.location.href = startResponse.url; // Follow the redirect
+                        window.location.href = startResponse.url;
                     } else if (!startResponse.ok) {
                         return startResponse.text().then(text => {
-                            errorMessageDiv.textContent = 'Failed to start test: ' + text;
+                            errorMessageDiv.innerHTML = `<i class="bi bi-x-circle"></i> <strong>Failed to start test:</strong> ${text}`;
                             errorMessageDiv.style.display = 'block';
-                            saveAndStartButton.disabled = false; // Re-enable the button
+                            saveAndStartButton.disabled = false;
                             successMessageDiv.style.display = 'none';
                             throw new Error('Failed to start test: ' + text);
                         });
@@ -64,11 +104,11 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(error => {
                 console.error('Error during API calls:', error);
                 if (!errorMessageDiv.textContent) {
-                    errorMessageDiv.textContent = 'An error occurred: ' + error.message;
+                    errorMessageDiv.innerHTML = `<i class="bi bi-x-circle"></i> <strong>An error occurred:</strong> ${error.message}`;
                     errorMessageDiv.style.display = 'block';
                 }
-                saveAndStartButton.disabled = false; // Re-enable the button
+                saveAndStartButton.disabled = false;
                 successMessageDiv.style.display = 'none';
             });
-    })
+    });
 });
