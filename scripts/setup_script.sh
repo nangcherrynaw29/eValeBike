@@ -8,7 +8,12 @@ set -euo pipefail
 
 log() {
   echo -e "\n ->  \033[1;32m$1\033[0m\n"
-}l
+}
+
+if [[ "$EUID" -ne 0 ]]; then
+  echo "Please run as root or with sudo."
+  exit 1
+fi
 
 log "Updating sustem…"
 sudo dnf -y update
