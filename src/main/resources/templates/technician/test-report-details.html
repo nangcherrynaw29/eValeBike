@@ -72,43 +72,43 @@
                             <table class="table table-bordered table-striped">
                                 <tbody>
                                 <tr>
-                                    <th>Avg Battery Voltage</th><td th:text="${summary.batteryVoltage}">-</td>
-                                    <th>Avg Battery Current</th><td th:text="${summary.batteryCurrent}">-</td>
+                                    <th>Avg Battery Voltage</th><td th:text="${summary != null ? summary.batteryVoltage : 'N/A'}">-</td>
+                                    <th>Avg Battery Current</th><td th:text="${summary != null ? summary.batteryCurrent : 'N/A'}">-</td>
                                 </tr>
                                 <tr>
-                                    <th>Avg Battery Capacity</th><td th:text="${summary.batteryCapacity}">-</td>
-                                    <th>Battery Temp (°C)</th><td th:text="${summary.batteryTemperatureCelsius}">-</td>
+                                    <th>Avg Battery Capacity</th><td th:text="${summary != null ? summary.batteryCapacity : 'N/A'}">-</td>
+                                    <th>Battery Temp (°C)</th><td th:text="${summary != null ? summary.batteryTemperatureCelsius : 'N/A'}">-</td>
                                 </tr>
                                 <tr>
-                                    <th>Charge Status</th><td th:text="${summary.chargeStatus}">-</td>
-                                    <th>Assistance Level</th><td th:text="${summary.assistanceLevel}">-</td>
+                                    <th>Charge Status</th><td th:text="${summary != null ? summary.chargeStatus : 'N/A'}">-</td>
+                                    <th>Assistance Level</th><td th:text="${summary != null ? summary.assistanceLevel : 'N/A'}">-</td>
                                 </tr>
                                 <tr>
-                                    <th>Torque Crank (Nm)</th><td th:text="${summary.torqueCrankNm}">-</td>
-                                    <th>Wheel Speed (km/h)</th><td th:text="${summary.bikeWheelSpeedKmh}">-</td>
+                                    <th>Torque Crank (Nm)</th><td th:text="${summary != null ? summary.torqueCrankNm : 'N/A'}">-</td>
+                                    <th>Wheel Speed (km/h)</th><td th:text="${summary != null ? summary.bikeWheelSpeedKmh : 'N/A'}">-</td>
                                 </tr>
                                 <tr>
-                                    <th>Cadence (RPM)</th><td th:text="${summary.cadanceRpm}">-</td>
-                                    <th>Engine RPM</th><td th:text="${summary.engineRpm}">-</td>
+                                    <th>Cadence (RPM)</th><td th:text="${summary != null ? summary.cadanceRpm : 'N/A'}">-</td>
+                                    <th>Engine RPM</th><td th:text="${summary != null ? summary.engineRpm : 'N/A'}">-</td>
                                 </tr>
                                 <tr>
-                                    <th>Engine Power (W)</th><td th:text="${summary.enginePowerWatt}">-</td>
-                                    <th>Wheel Power (W)</th><td th:text="${summary.wheelPowerWatt}">-</td>
+                                    <th>Engine Power (W)</th><td th:text="${summary != null ? summary.enginePowerWatt : 'N/A'}">-</td>
+                                    <th>Wheel Power (W)</th><td th:text="${summary != null ? summary.wheelPowerWatt : 'N/A'}">-</td>
                                 </tr>
                                 <tr>
-                                    <th>Roll Torque</th><td th:text="${summary.rollTorque}">-</td>
-                                    <th>Loadcell (N)</th><td th:text="${summary.loadcellN}">-</td>
+                                    <th>Roll Torque</th><td th:text="${summary != null ? summary.rollTorque : 'N/A'}">-</td>
+                                    <th>Loadcell (N)</th><td th:text="${summary != null ? summary.loadcellN : 'N/A'}">-</td>
                                 </tr>
                                 <tr>
-                                    <th>Rol Hz</th><td th:text="${summary.rolHz}">-</td>
-                                    <th>Horizontal Inclination</th><td th:text="${summary.horizontalInclination}">-</td>
+                                    <th>Rol Hz</th><td th:text="${summary != null ? summary.rolHz : 'N/A'}">-</td>
+                                    <th>Horizontal Inclination</th><td th:text="${summary != null ? summary.horizontalInclination : 'N/A'}">-</td>
                                 </tr>
                                 <tr>
-                                    <th>Vertical Inclination</th><td th:text="${summary.verticalInclination}">-</td>
-                                    <th>Load Power</th><td th:text="${summary.loadPower}">-</td>
+                                    <th>Vertical Inclination</th><td th:text="${summary != null ? summary.verticalInclination : 'N/A'}">-</td>
+                                    <th>Load Power</th><td th:text="${summary != null ? summary.loadPower : 'N/A'}">-</td>
                                 </tr>
                                 <tr>
-                                    <th>Status Plug</th><td th:text="${summary.statusPlug}">-</td>
+                                    <th>Status Plug</th><td th:text="${summary != null ? summary.statusPlug : 'N/A'}">-</td>
                                     <th></th><td></td>
                                 </tr>
                                 </tbody>
