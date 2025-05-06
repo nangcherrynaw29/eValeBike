@@ -35,7 +35,7 @@ public record BikeDto(
         double nominalEnginePower,
         @NotNull(message = "Engine torque is required")
         @DecimalMin(value = "0.01", message = "Engine torque must be at least 1")
-        @DecimalMax(value = "2000", message = "Engine torque cannot exceed 150")
+        @DecimalMax(value = "2000", message = "Engine torque cannot exceed 2000")
         double engineTorque,
         LocalDate lastTestDate
 ) {
