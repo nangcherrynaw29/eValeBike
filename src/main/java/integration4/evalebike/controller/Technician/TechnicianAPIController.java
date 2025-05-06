@@ -179,7 +179,7 @@ public class TechnicianAPIController {
         return testReportEntryService.getNormalizedEntriesByReportId(testId);
     }
 
-    @PatchMapping("/manual-test-form/{bikeQR}")
+    @PostMapping("/manual-test-form/{bikeQR}")
     public ResponseEntity<String> manualInput(@PathVariable String bikeQR, @ModelAttribute Bike bike) {
         try {
             bikeService.updateManualTestFields(bikeQR, bike);

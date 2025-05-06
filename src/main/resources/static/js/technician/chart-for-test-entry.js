@@ -1,27 +1,77 @@
-
 const metricDefinitions = [
-    { label: "Battery Voltage", field: "batteryVoltage", color: "#1D4ED8" }, // Deep Blue
-    { label: "Battery Current", field: "batteryCurrent", color: "#F97316" }, // Orange
-    { label: "Battery Temp", field: "batteryTemperatureCelsius", color: "#DC2626" }, // Strong Red
-    { label: "Wheel Speed", field: "bikeWheelSpeedKmh", color: "#059669" }, // Teal Green
-    { label: "Torque Crank", field: "torqueCrankNm", color: "#7C3AED" }, // Purple
-    { label: "Engine RPM", field: "engineRpm", color: "#0EA5E9" }, // Sky Blue (kept)
-    { label: "Engine Power", field: "enginePowerWatt", color: "#16A34A" }, // Green
-    { label: "Loadcell", field: "loadcellN", color: "#DB2777" }, // Strong Pink
-    { label: "Load Power", field: "loadPower", color: "#374151" }, // Dark Gray
-    { label: "Cadance RPM", field: "cadanceRpm", color: "#D97706" }, // Dark Amber
-    { label: "Plug Status", field: "statusPlug", color: "#14B8A6" } // Cyan-Teal
+    { label: "Battery Voltage", field: "batteryVoltage", color: "#1D4ED8" },
+    { label: "Battery Current", field: "batteryCurrent", color: "#F97316" },
+    { label: "Battery Capacity", field: "batteryCapacity", color: "#8B5CF6" },
+    { label: "Battery Temp (°C)", field: "batteryTemperatureCelsius", color: "#DC2626" },
+    { label: "Charge Status", field: "chargeStatus", color: "#EA580C" },
+    { label: "Assistance Level", field: "assistanceLevel", color: "#9333EA" },
+    { label: "Torque Crank (Nm)", field: "torqueCrankNm", color: "#BCBD22" },
+    { label: "Wheel Speed (km/h)", field: "bikeWheelSpeedKmh", color: "#059669" },
+    { label: "Cadance RPM", field: "cadanceRpm", color: "#D97706" },
+    { label: "Engine RPM", field: "engineRpm", color: "#0EA5E9" },
+    { label: "Engine Power (W)", field: "enginePowerWatt", color: "#16A34A" },
+    { label: "Wheel Power (W)", field: "wheelPowerWatt", color: "#10B981" },
+    { label: "Roll Torque", field: "rollTorque", color: "#2563EB" },
+    { label: "Loadcell (N)", field: "loadcellN", color: "#DB2777" },
+    { label: "ROL (Hz)", field: "rolHz", color: "#6366F1" },
+    { label: "Inclination Horizontal", field: "horizontalInclination", color: "#FF9896" },
+    { label: "Inclination Vertical", field: "verticalInclination", color: "#8C564B" },
+    { label: "Load Power", field: "loadPower", color: "#374151" },
+    { label: "Plug Status", field: "statusPlug", color: "#14B8A6" }
 ];
 
+const defaultCheckedFields = [
+    "batteryVoltage",
+    "batteryCurrent",
+    "bikeWheelSpeedKmh",
+    "enginePowerWatt"
+];
 
+let selectedFields = [...defaultCheckedFields];
 let chartInstance = null;
-let selectedFields = metricDefinitions.map(metric => metric.field);
+let isNormalized = false;
+
 const testId = window.location.pathname.split('/').filter(Boolean).pop();
-let isNormalized = false; // ← Toggle flag
-document.getElementById("intervalSelector").addEventListener("change", updateChart);
+const metricTogglesContainer = document.getElementById("metricToggles");
 
+// Checkbox rendering
+function renderMetricCheckboxes() {
+    metricTogglesContainer.innerHTML = "";
 
-// Fetch data from API
+    metricDefinitions.forEach(metric => {
+        const wrapper = document.createElement("div");
+        wrapper.className = "form-check form-check-inline";
+
+        const checkbox = document.createElement("input");
+        checkbox.className = "form-check-input";
+        checkbox.type = "checkbox";
+        checkbox.id = `chk-${metric.field}`;
+        checkbox.checked = defaultCheckedFields.includes(metric.field);
+        checkbox.dataset.field = metric.field;
+
+        const label = document.createElement("label");
+        label.className = "form-check-label fw-semibold";
+        label.htmlFor = checkbox.id;
+        label.style.color = metric.color;
+        label.textContent = metric.label;
+
+        wrapper.appendChild(checkbox);
+        wrapper.appendChild(label);
+        metricTogglesContainer.appendChild(wrapper);
+
+        checkbox.addEventListener("change", () => {
+            if (checkbox.checked) {
+                if (!selectedFields.includes(metric.field)) {
+                    selectedFields.push(metric.field);
+                }
+            } else {
+                selectedFields = selectedFields.filter(f => f !== metric.field);
+            }
+            updateChart();
+        });
+    });
+}
+
 async function fetchData(normalized) {
     try {
         const url = normalized
@@ -36,52 +86,50 @@ async function fetchData(normalized) {
         return [];
     }
 }
-const metricTogglesContainer = document.getElementById("metricToggles");
 
-// Initialize checkboxes for each metric
-function renderMetricCheckboxes() {
-    metricTogglesContainer.innerHTML = ""; // Clear any existing checkboxes
+function resampleData(data, intervalSeconds) {
+    if (intervalSeconds <= 1) return data;
 
-    metricDefinitions.forEach(metric => {
-        const wrapper = document.createElement("div");
-        wrapper.className = "form-check form-check-inline";
+    const resampled = [];
+    let bucket = [];
+    let lastTime = null;
 
-        const checkbox = document.createElement("input");
-        checkbox.className = "form-check-input";
-        checkbox.type = "checkbox";
-        checkbox.id = `chk-${metric.field}`;
-        checkbox.checked = true;
-        checkbox.dataset.field = metric.field;
+    for (const point of data) {
+        const currentTime = new Date(point.timestamp).getTime();
+        if (lastTime === null) lastTime = currentTime;
 
-        const label = document.createElement("label");
-        label.className = "form-check-label";
-        label.htmlFor = checkbox.id;
-        label.textContent = metric.label;
-
-        wrapper.appendChild(checkbox);
-        wrapper.appendChild(label);
-        metricTogglesContainer.appendChild(wrapper);
-
-        // Add listener to update selectedFields and refresh chart
-        checkbox.addEventListener("change", () => {
-            if (checkbox.checked) {
-                if (!selectedFields.includes(metric.field)) {
-                    selectedFields.push(metric.field);
-                }
-            } else {
-                selectedFields = selectedFields.filter(f => f !== metric.field);
+        if ((currentTime - lastTime) / 1000 >= intervalSeconds) {
+            if (bucket.length > 0) {
+                resampled.push(averageBucket(bucket));
             }
-            updateChart();
-        });
-    });
+            bucket = [point];
+            lastTime = currentTime;
+        } else {
+            bucket.push(point);
+        }
+    }
+
+    if (bucket.length > 0) {
+        resampled.push(averageBucket(bucket));
+    }
+
+    return resampled;
 }
 
-// Create and render chart
-function createChart(data, selectedFields) {
-    if (!data || data.length === 0) {
-        console.warn("No data to display");
-        return;
+function averageBucket(bucket) {
+    const avg = {};
+    const fields = Object.keys(bucket[0]).filter(k => k !== "timestamp");
+    avg.timestamp = bucket[0].timestamp;
+
+    for (const field of fields) {
+        const sum = bucket.reduce((acc, item) => acc + (item[field] ?? 0), 0);
+        avg[field] = sum / bucket.length;
     }
+    return avg;
+}
+
+function createChart(data, selectedFields) {
+    if (!data || data.length === 0) return;
 
     const startTime = new Date(data[0].timestamp).getTime();
     const labels = data.map(e => {
@@ -98,7 +146,7 @@ function createChart(data, selectedFields) {
             label: metric.label,
             data: data.map(e => e[metric.field] != null ? e[metric.field] : null),
             borderColor: metric.color,
-            yAxisID: metric.field, // For raw data, it will use individual axes per field
+            yAxisID: isNormalized ? 'y' : metric.field,
             fill: false,
             tension: 0.1,
             pointRadius: 3
@@ -106,7 +154,6 @@ function createChart(data, selectedFields) {
 
     let scales;
 
-    // Normalize Y-Axis configuration
     if (isNormalized) {
         scales = {
             x: { title: { display: true, text: "Timestamp" } },
@@ -116,16 +163,10 @@ function createChart(data, selectedFields) {
                 min: -1,
                 max: 1,
                 title: { display: true, text: 'Normalized Value' },
-                ticks: { stepSize: 0.2 } // Adjust the step size
+                ticks: { stepSize: 0.2 }
             }
         };
-
-        // All datasets should use the same Y-axis for normalized data
-        datasets.forEach(ds => {
-            ds.yAxisID = 'y'; // All datasets use the same y-axis for normalized data
-        });
     } else {
-        // For raw data, use multiple Y-axes
         const yAxes = {};
         let left = true;
         datasets.forEach(ds => {
@@ -136,7 +177,7 @@ function createChart(data, selectedFields) {
                 title: { display: true, text: ds.label },
                 grid: { drawOnChartArea: false }
             };
-            left = !left; // Alternate between left and right axes
+            left = !left;
         });
         scales = {
             x: { title: { display: true, text: "Elapsed Time" } },
@@ -144,10 +185,8 @@ function createChart(data, selectedFields) {
         };
     }
 
-    // Destroy any existing chart instance to prevent overlap
     if (chartInstance) chartInstance.destroy();
 
-    // Create the new chart
     chartInstance = new Chart(document.getElementById("metricsChart"), {
         type: 'line',
         data: { labels, datasets },
@@ -156,61 +195,13 @@ function createChart(data, selectedFields) {
             maintainAspectRatio: false,
             interaction: { mode: 'index', intersect: false },
             plugins: {
-                legend: { display: true, position: 'bottom', labels: { boxWidth: 10 } }
+                legend: { display: false, position: 'bottom', labels: { boxWidth: 10 } }
             },
-            scales: scales
+            scales
         }
     });
 }
 
-function resampleData(data, intervalSeconds) {
-    if (intervalSeconds <= 1) return data;
-
-    const resampled = [];
-    let bucket = [];
-    let lastTime = null;
-
-    for (const point of data) {
-        const currentTime = new Date(point.timestamp).getTime();
-
-        if (lastTime === null) {
-            lastTime = currentTime;
-        }
-
-        if ((currentTime - lastTime) / 1000 >= intervalSeconds) {
-            if (bucket.length > 0) {
-                const averaged = averageBucket(bucket);
-                resampled.push(averaged);
-            }
-            bucket = [point];
-            lastTime = currentTime;
-        } else {
-            bucket.push(point);
-        }
-    }
-
-    // Add final bucket
-    if (bucket.length > 0) {
-        resampled.push(averageBucket(bucket));
-    }
-
-    return resampled;
-}
-
-function averageBucket(bucket) {
-    const avg = {};
-    const fields = Object.keys(bucket[0]).filter(k => k !== "timestamp");
-    avg.timestamp = bucket[0].timestamp; // Use first timestamp or midpoint
-
-    for (const field of fields) {
-        const sum = bucket.reduce((acc, item) => acc + (item[field] ?? 0), 0);
-        avg[field] = sum / bucket.length;
-    }
-    return avg;
-}
-
-
-// Update chart  when toggling normalization
 async function updateChart() {
     const interval = parseInt(document.getElementById("intervalSelector").value);
     let data = await fetchData(isNormalized);
@@ -218,8 +209,6 @@ async function updateChart() {
     createChart(data, selectedFields);
 }
 
-
-// Initial load
 document.getElementById("toggleNormalizationBtn").addEventListener("click", () => {
     isNormalized = !isNormalized;
     document.getElementById("toggleNormalizationBtn").textContent = isNormalized
@@ -227,5 +216,9 @@ document.getElementById("toggleNormalizationBtn").addEventListener("click", () =
         : "Show Normalized Data";
     updateChart();
 });
-renderMetricCheckboxes()
-updateChart()
+
+document.getElementById("intervalSelector").addEventListener("change", updateChart);
+
+// Start everything
+renderMetricCheckboxes();
+updateChart();
