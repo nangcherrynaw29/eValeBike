@@ -102,8 +102,8 @@ deploy_job:
     - echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
   script:
-    - echo "starting remote deploymnet via ssh"
-    - ssh team4@4.180.13.98 'bash -s' < scripts/deploy.sh
+    - echo "Starting remote deployment via SSH"
+    - ssh -o StrictHostKeyChecking=no team4@4.180.13.98 'bash -s' < scripts/deploy.sh
 
 
 
