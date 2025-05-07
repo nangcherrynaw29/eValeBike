@@ -1,8 +1,8 @@
 image: gradle:8-jdk21
 
-services:
-  - docker:20.10.24-dind
-  - postgres:17.2-alpine
+#services:
+#  - docker:20.10.24-dind
+#  - postgres:17.2-alpine
   #strings are correct syntax fir gitlab
 
 include:
@@ -15,11 +15,13 @@ variables:
   SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/eValeBike
   SPRING_DATASOURCE_USERNAME: user #todo make Gitlab variable
   SPRING_DATASOURCE_PASSWORD: password #todo make Gitlab variable
-  DOCKER_HOST: tcp://docker:2375  # Required for Docker-in-Docker
+  DOCKER_HOST: tcp://docker:2375  #for docker in docker
   DOCKER_TLS_CERTDIR: "" # tls disabled
-  SERVER_DEPLOY_PATH: /opt/evalebike
-  SSH_PRIVATE_KEY: $SSH_PRIVATE_KEY
-  SSH_KNOWN_HOSTS: $SSH_KNOWN_HOSTS
+  SSH_PRIVATE_KEY: $SSH_PRIVATE_KEYY
+  APP_SERVER: $APP_SERVER
+  IMAGE_NAME: $CI_REGISTRY_IMAGE
+  IMAGE_TAG: $CI_COMMIT_REF_SLUG
+
 
 stages:
   - build
@@ -30,21 +32,30 @@ stages:
 
 before_script:
   - echo "Starting CI/CD pipeline..."
-  - export GRADLE_USER_HOME=`pwd`/.gradle
+#  - export GRADLE_USER_HOME=`pwd`/.gradle
 
 build_job:
   stage: build
+  image: gradle:8-jdk21
+  tags:
+    - docker
+    - gradle
+    - java
   script:
     - gradle clean build --exclude-task test
   artifacts:
     paths:
       - build/libs/*.jar
-      - build/libs/
+#      - build/libs/
     expire_in: 1 week
 
 test_job:
   stage: test
   image: gradle:8-jdk21
+  tags:
+    - docker
+    - gradle
+    - java
   services:
     - name: docker:20.10.24-dind
       alias: docker  # Matches DOCKER_HOST
@@ -70,6 +81,8 @@ test_job:
       junit: build/test-results/test/TEST-*.xml
     paths:
       - build/test-results/test/
+  needs:
+    - build
 
 sast:
   stage: sast
@@ -93,20 +106,41 @@ sast:
 # Deploy job added
 deploy_job:
   stage: deploy
-  image: alpine:latest
+  image: docker:stable
+  services:
+    - name: docker:dind
+      alias:  docker
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_TLS_CERTDIR: ""
+    DOCKERHUB_USER: $DOCKERHUB_USERNAME
+    DOCKERHUB_PASS: $DOCKERHUB_PASSWORD
+  tags:
+    - docker
   before_script:
-    - apk add --no-cache openssh git
-    - eval $(ssh-agent -s)
-    - mkdir -p ~/.ssh
-    - chmod 700 ~/.ssh
-    - team4_deploy_key = $(cat $TEAM4_DEPLOY_KEY)
-    - cp "$team4_deploy_key" ~/.ssh/id_rsa
-    - chmod 600 ~/.ssh/id_rsa          # <<== FIX: secure the key
-    - ssh-add ~/.ssh/id_rsa
-    - ssh-keyscan -H 4.180.13.98 >> ~/.ssh/known_host
+    - |
+      echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USER" --password-stdin
+    #decode private ssh key
+    - |
+      mkdir -p ~/.ssh
+      echo "$SSH_PRIVATE_KEY" | base64 -d > ~/.ssh/gitlabrunner
+      chmod 600 ~/.ssh/gitlabrunner
+      eval "$(ssh-agent -s)"
+      ssh-add ~/.ssh/gitlabrunner
+      ssh-keyscan -H $APP_SERVER >> ~/ssh/known_host
+
   script:
     - echo "Starting remote deploy..."
-    - ssh team4@4.180.13.98 'bash -s' < scripts/deploy.sh
+    - |
+      docker build -t $IMAGE_NAME:$IMAGE_TAG .
+      docker push $IMAGE_NAME:$IMAGE_TAG
+      ssh team4@$APP_SERVER "docker pull $IMAGE_NAME:$IMAGE_TAG && docker stop spring-app || true && docker rm spring-app || true"
+      ssh team4@$APP_SERVER "docker run -d --name spring-app -p 80:8080 $IMAGE_NAME:$IMAGE_TAG"
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+      needs:
+        - test
+
 
 
 
