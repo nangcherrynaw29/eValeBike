@@ -99,8 +99,8 @@ deploy_job:
     - eval $(ssh-agent -s)
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
-    - echo $TEAM4_DEPLOY_KEY
-    - cp "$TEAM4_DEPLOY_KEY" ~/.ssh/id_rsa
+    - team4_deploy_key = $(cat $TEAM4_DEPLOY_KEY)
+    - cp "$team4_deploy_key" ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa          # <<== FIX: secure the key
     - ssh-add ~/.ssh/id_rsa
     - ssh-keyscan -H 4.180.13.98 >> ~/.ssh/known_host
