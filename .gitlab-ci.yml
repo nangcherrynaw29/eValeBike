@@ -82,7 +82,7 @@ test_job:
     paths:
       - build/test-results/test/
   needs:
-    - build
+    - build_job
 
 sast:
   stage: sast
@@ -139,7 +139,7 @@ deploy_job:
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
       needs:
-        - test
+        - test_job
 
 
 
