@@ -1,6 +1,31 @@
 const form = document.querySelector('#add-bike-form');
+const dateInput = document.querySelector('#lastTestDate');
+
+
+let dateError = document.querySelector('#date-error');
+if (!dateError) {
+    dateError = document.createElement('div');
+    dateError.id = 'date-error';
+    dateError.className = 'text-danger mt-1';
+    dateError.style.display = 'none';
+    dateInput.parentNode.appendChild(dateError);
+}
+
 form.addEventListener('submit', async e => {
     e.preventDefault();
+
+    dateError.style.display = 'none';
+    dateError.textContent = '';
+
+    const today = new Date();
+    const selectedDate = new Date(dateInput.value);
+
+    if (selectedDate > today) {
+        dateError.textContent = 'Date cannot be in the future.';
+        dateError.style.display = 'block';
+        return;
+    }
+
     const response = await fetch('/api/technician/bikes', {
         headers: {
             'Content-Type': 'application/json',
@@ -22,14 +47,17 @@ form.addEventListener('submit', async e => {
             maxEnginePower: parseFloat(document.querySelector('#maxEnginePower').value),
             nominalEnginePower: parseFloat(document.querySelector('#nominalEnginePower').value),
             engineTorque: parseFloat(document.querySelector('#engineTorque').value),
-            lastTestDate: document.querySelector('#lastTestDate').value
+            lastTestDate: dateInput.value
         })
     });
+
     if (response.status === 201) {
-        const bike = await response.json();
-        window.location = `/technician/bikes`;
+        await response.json();
+        window.history.back();
     } else {
-        alert('Something went wrong while creating the bike');
+        const errorData = await response.json().catch(() => null);
+        dateError.textContent = (errorData && errorData.message) || 'Something went wrong while creating the bike.';
+        dateError.style.display = 'block';
     }
 });
 
@@ -38,7 +66,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (backToDashboardBtn) {
         backToDashboardBtn.addEventListener("click", function () {
             console.log("Back to dashboard button clicked!");
-            window.location.href = "/technician/bikes";
+            window.history.back();
         });
     }
 });

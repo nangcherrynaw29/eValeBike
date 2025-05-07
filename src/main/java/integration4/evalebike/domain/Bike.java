@@ -65,15 +65,27 @@ public class Bike {
         this.qrCodeImage = qrCodeImage;
     }
 
-    public Bike(String brand, String model, String chassisNumber, int productionYear, BikeSize bikeSize, int mileage, String gearType, String engineType,
-                String powerTrain,
-                double accuCapacity,
-                double maxSupport,
-                double maxEnginePower,
-                double nominalEnginePower,
-                double engineTorque,
-                LocalDate lastTestDate) {
+    public Bike(String brand, String model, String chassisNumber, int productionYear, BikeSize bikeSize, int mileage,
+                String gearType, String engineType, String powerTrain,
+                double accuCapacity, double maxSupport, double maxEnginePower,
+                double nominalEnginePower, double engineTorque, LocalDate lastTestDate) {
+        this.brand = brand;
+        this.model = model;
+        this.chassisNumber = chassisNumber;
+        this.productionYear = productionYear;
+        this.bikeSize = bikeSize;
+        this.mileage = mileage;
+        this.gearType = gearType;
+        this.engineType = engineType;
+        this.powerTrain = powerTrain;
+        this.accuCapacity = accuCapacity;
+        this.maxSupport = maxSupport;
+        this.maxEnginePower = maxEnginePower;
+        this.nominalEnginePower = nominalEnginePower;
+        this.engineTorque = engineTorque;
+        this.lastTestDate = lastTestDate;
     }
+
 
     @PrePersist
     public void generateQR() {

@@ -55,8 +55,11 @@
                 <tbody>
                 <tr th:each="bike : ${bikes}" th:id="'bike-' + ${bike.bikeQR}">
                     <td>
-                        <img th:src="${bike.qrCodeImage}" alt="QR Code" width="150" height="150" class="img-thumbnail">
+                        <div class="qr-wrapper">
+                            <img th:src="${bike.qrCodeImage}" alt="QR Code" class="img-thumbnail qr-code-img">
+                        </div>
                     </td>
+
                     <td th:text="${bike.brand}"></td>
                     <td th:text="${bike.model}"></td>
                     <td th:text="${bike.chassisNumber}"></td>

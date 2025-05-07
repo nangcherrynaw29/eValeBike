@@ -8,3 +8,39 @@
     padding: 0;
     box-shadow: none;
 }
+
+.qr-wrapper {
+    width: 100px;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+}
+
+.qr-code-img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain;
+}
+
+
+@media (max-width: 850px) {
+    .table-container {
+        font-size: 0.85rem;
+    }
+
+    .qr-code-img {
+        max-width: 80px;
+    }
+}
+
+@media (min-width: 851px) and (max-width: 1200px) {
+    .table-container {
+        font-size: 0.95rem;
+    }
+
+    .qr-code-img {
+        max-width: 100px;
+    }
+}
