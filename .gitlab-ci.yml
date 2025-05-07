@@ -42,7 +42,7 @@ build_job:
     - gradle
     - java
   script:
-    - gradle **--no-daemon** clean build --exclude-task test
+    - gradle --no-daemon clean build --exclude-task test
   artifacts:
     paths:
       - build/libs/*.jar
