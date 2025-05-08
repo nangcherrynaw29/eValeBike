@@ -38,7 +38,7 @@ before_script:
 
 build_job:
   stage: build
-  image: gradle:8-jdk17
+  image: gradle:8-jdk21
   tags:
     - docker
     - gradle
@@ -53,7 +53,7 @@ build_job:
 
 test_job:
   stage: test
-  image: gradle:8-jdk17
+  image: gradle:8-jdk21
   tags:
     - docker
     - gradle
