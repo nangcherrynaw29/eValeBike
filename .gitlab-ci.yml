@@ -44,8 +44,7 @@ build_job:
     - gradle
     - java
   script:
-    - echo "Building app with Docker..."
-    - docker build -t $IMAGE_NAME:$IMAGE_TAG .
+    - gradle clean build --exclude-task test
   artifacts:
     paths:
       - build/libs/*.jar
@@ -110,9 +109,9 @@ sast:
 deploy_job:
   stage: deploy
   image: docker:stable
-#  services:
-#    - name: docker:dind
-#      alias:  docker
+  services:
+    - name: docker:20.10.24-dind
+      alias:  docker
   variables:
     DOCKER_HOST: tcp://docker:2375
   tags:
