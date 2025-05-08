@@ -1,7 +1,7 @@
 image: gradle:8-jdk21
 
-#services:
-#  - docker:20.10.24-dind
+services:
+  - docker:20.10.24-dind
 #  - postgres:17.2-alpine
   #strings are correct syntax fir gitlab
 
@@ -21,6 +21,8 @@ variables:
   APP_SERVER: $APP_SERVER
   IMAGE_NAME: $CI_REGISTRY_IMAGE
   IMAGE_TAG: $CI_COMMIT_REF_SLUG
+  DOCKERHUB_USER: $DOCKERHUB_USERNAME
+  DOCKERHUB_PASS: $DOCKERHUB_PASSWORD
 
 
 stages:
@@ -107,14 +109,11 @@ sast:
 deploy_job:
   stage: deploy
   image: docker:stable
-  services:
-    - name: docker:dind
-      alias:  docker
+#  services:
+#    - name: docker:dind
+#      alias:  docker
   variables:
     DOCKER_HOST: tcp://docker:2375
-    DOCKER_TLS_CERTDIR: ""
-    DOCKERHUB_USER: $DOCKERHUB_USERNAME
-    DOCKERHUB_PASS: $DOCKERHUB_PASSWORD
   tags:
     - docker
   before_script:
@@ -139,6 +138,10 @@ deploy_job:
       docker push $IMAGE_NAME:$IMAGE_TAG
       ssh -v team4@$APP_SERVER "docker pull $IMAGE_NAME:$IMAGE_TAG && docker stop spring-app || true && docker rm spring-app || true"
       ssh -v team4@$APP_SERVER "docker run -d --name spring-app -p 80:8080 $IMAGE_NAME:$IMAGE_TAG"
+    - echo "Checking Docker status..."
+    - docker info
+    - echo "Running Docker containers..."
+    - docker ps
   rules:
     - if: $CI_COMMIT_BRANCH
       needs:
