@@ -6,6 +6,6 @@ RUN gradle bootJar --no-daemon
 #runtime stage
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
-COPY --from=builder /app/build/libs/*.jar /app/
+COPY --from=builder /app/build/libs/eValeBike-0.0.1.jar /app/
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
