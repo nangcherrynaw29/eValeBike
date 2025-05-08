@@ -12,7 +12,7 @@ variables:
   POSTGRES_DB: eValeBike
   POSTGRES_USER: user
   POSTGRES_PASSWORD: password
-  SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/eValeBike
+  SPRING_DATASOURCE_URL: jdbc:postgresql://db:5436/eValeBike
   SPRING_DATASOURCE_USERNAME: user
   SPRING_DATASOURCE_PASSWORD: password
   DOCKER_HOST: tcp://docker:2375  #for docker in docker
