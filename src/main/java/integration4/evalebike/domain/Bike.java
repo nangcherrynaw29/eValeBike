@@ -7,9 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+
 import lombok.Getter;
 import lombok.Setter;
-
 
 
 @Entity
@@ -83,10 +83,22 @@ public class Bike {
                 double nominalEnginePower,
                 double engineTorque,
                 LocalDate lastTestDate) {
+        this.brand = brand;
+        this.model = model;
+        this.chassisNumber = chassisNumber;
+        this.productionYear = productionYear;
+        this.bikeSize = bikeSize;
+        this.mileage = mileage;
+        this.gearType = gearType;
+        this.engineType = engineType;
+        this.powerTrain = powerTrain;
+        this.accuCapacity = accuCapacity;
+        this.maxSupport = maxSupport;
+        this.maxEnginePower = maxEnginePower;
+        this.nominalEnginePower = nominalEnginePower;
+        this.engineTorque = engineTorque;
+        this.lastTestDate = lastTestDate;
     }
-
-
-
 
     @PrePersist
     public void generateQR() {
@@ -107,7 +119,6 @@ public class Bike {
     public int hashCode() {
         return Objects.hash(bikeQR);
     }
-
 
 
     @Override
