@@ -38,7 +38,7 @@ before_script:
 
 build_job:
   stage: build
-  image: gradle:8-jdk21
+#  image: gradle:8-jdk21
   tags:
     - docker
     - gradle
