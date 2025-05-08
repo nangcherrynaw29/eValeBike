@@ -40,6 +40,8 @@ dependencies {
     implementation ("org.springframework.boot:spring-boot-starter-security")
     implementation ("org.thymeleaf.extras:thymeleaf-extras-springsecurity6")
     implementation("org.springframework.boot:spring-boot-starter-mail")
+    compileOnly ("org.projectlombok:lombok:1.18.24")  // Use the latest version
+    annotationProcessor ("org.projectlombok:lombok:1.18.24")
 
 }
 

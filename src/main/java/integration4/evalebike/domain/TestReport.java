@@ -38,6 +38,8 @@ public class TestReport {
     @JoinColumn(name = "bike_QR", referencedColumnName = "bikeqr")
     private Bike bike;
 
+
+
     @Column(name = "technician_username")
     private  String technicianName;
 

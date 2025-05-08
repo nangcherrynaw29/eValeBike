@@ -123,6 +123,67 @@
             <a th:href="@{/technician/test-report-dashboard}" class="btn btn-primary">Back to Test Report Dashboard</a>
             <button id="downloadPdfBtn" class="btn btn-success">Save as PDF</button>
         </div>
+        <div class="row">
+            <div class="col-12 mb-4">
+                <div class="card shadow-sm w-100">
+                    <div class="card-header bg-primary text-white">
+                        Visual Inspection
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped">
+                                <tbody>
+                            <tr>
+                                <th>Tires</th><td th:text="${ inspection.tires() }">-</td>
+                                <th>Bell</th><td th:text="${inspection.bell()}">-</td>
+                            </tr>
+                            <tr>
+                                <th>Cranks</th><td th:text="${inspection.cranks()}">-</td>
+                                <th>Electric Wiring</th><td th:text="${inspection.electricWiring()}">-</td>
+                            </tr>
+                            <tr>
+                                <th>Front Fork</th><td th:text="${inspection.frontFork()}">-</td>
+                                <th>Handles</th><td th:text="${inspection.handles()}">-</td>
+                            </tr>
+                            <tr>
+                                <th>Chain Belt</th><td th:text="${inspection.chainBelt()}">-</td>
+                                <th>Pedals</th><td th:text="${inspection.pedals()}">-</td>
+                            </tr>
+                            <tr>
+                                <th>Reflectors</th><td th:text="${inspection.reflectors()}">-</td>
+                                <th>Brake Pads</th><td th:text="${inspection.brakePads()}">-</td>
+                            </tr>
+                            <tr>
+                                <th>Brake Handles</th><td th:text="${inspection.brakeHandles()}">-</td>
+                                <th>Brake Cables</th><td th:text="${inspection.brakeCables()}">-</td>
+                            </tr>
+                            <tr>
+                                <th>Brake Discs</th><td th:text="${inspection.brakeDiscs()}">-</td>
+                                <th>Mudguards</th><td th:text="${inspection.mudguards()}">-</td>
+                            </tr>
+                            <tr>
+                                <th>Handle Bar</th><td th:text="${inspection.handleBar()}">-</td>
+                                <th>Rear Sprocket</th><td th:text="${inspection.rearSprocket()}">-</td>
+                            </tr>
+                            <tr>
+                                <th>Front Sprocket</th><td th:text="${inspection.frontSprocket()}">-</td>
+                                <th>Rims Spokes</th><td th:text="${inspection.rimsSpokes()}">-</td>
+                            </tr>
+                            <tr>
+                                <th>Rear Suspension</th><td th:text="${inspection.rearSuspension()}">-</td>
+                                <th>Suspension Front</th><td th:text="${inspection.suspensionFront()}">-</td>
+                            </tr>
+                            <tr>
+                                <th>Saddle</th><td th:text="${inspection.saddle()}">-</td>
+                                <th></th><td></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     </div>
 
     <div th:insert="~{fragments/footer.html}"></div>

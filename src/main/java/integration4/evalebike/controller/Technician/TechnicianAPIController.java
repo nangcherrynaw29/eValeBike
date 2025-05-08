@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
@@ -39,11 +40,13 @@ public class TechnicianAPIController {
     private static final Logger logger = LoggerFactory.getLogger(TechnicianAPIController.class);
     private final RecentActivityService recentActivityService;
     private final TestReportEntryService testReportEntryService;
+    private final VisualInspectionService visualInspectionService;
+    private final TestReportService testReportService;
 
 
     public TechnicianAPIController(BikeService bikeService, BikeOwnerService bikeOwnerService, BikeMapper bikeMapper,
                                    BikeOwnerMapper bikeOwnerMapper, TestBenchService testBenchService,
-                                   TestReportRepository testReportRepository, RecentActivityService recentActivityService, TestReportEntryService testReportEntryService) {
+                                   TestReportRepository testReportRepository, RecentActivityService recentActivityService, TestReportEntryService testReportEntryService, VisualInspectionService visualInspectionService, TestReportService testReportService) {
         this.bikeService = bikeService;
         this.bikeOwnerService = bikeOwnerService;
         this.bikeMapper = bikeMapper;
@@ -52,6 +55,8 @@ public class TechnicianAPIController {
         this.testReportRepository = testReportRepository;
         this.recentActivityService = recentActivityService;
         this.testReportEntryService = testReportEntryService;
+        this.visualInspectionService = visualInspectionService;
+        this.testReportService = testReportService;
     }
 
     @GetMapping("/bikeOwners")
@@ -101,7 +106,7 @@ public class TechnicianAPIController {
         recentActivityService.save(new RecentActivity(Activity.INITIALIZED_TEST, "Test started successfully.", LocalDateTime.now(), userDetails.getUserId()));
         String technicianUsername = principal != null ? principal.getName() : "anonymous";
 
-        return Mono.fromCallable(() -> bikeService.findById(bikeQR)) // Convert Optional to Mono
+        return Mono.fromCallable(() -> bikeService.findById(bikeQR))
                 .flatMap(optionalBike -> optionalBike
                         .map(Mono::just)
                         .orElseGet(() -> Mono.error(new RuntimeException("Bike not found with QR: " + bikeQR))))
@@ -178,5 +183,27 @@ public class TechnicianAPIController {
         return testReportEntryService.getNormalizedEntriesByReportId(testId);
     }
 
+    @PostMapping("/manual-test-form/{bikeQR}")
+    public ResponseEntity<String> manualInput(@PathVariable String bikeQR, @Valid @ModelAttribute BikeDto bikeDto) {
+        try {
+            bikeService.updateManualTestFields(bikeQR, bikeDto); // pass DTO directly
+            return ResponseEntity.ok("Bike updated successfully");
+        } catch (RuntimeException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Bike not found");
+        }
+    }
 
-}
+
+    @PostMapping("/save-visual-inspection/{testId}")
+    public ResponseEntity<String> saveVisualInspection(@PathVariable String testId,@RequestBody VisualInspection visualInspection) {
+        try {
+            TestReport testReport = testReportService.getTestReportWithEntriesById(testId);
+            visualInspection.setTestReport(testReport);
+            visualInspectionService.saveInspection(visualInspection);
+
+            return ResponseEntity.ok("Inspection submitted successfully!");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Failed to submit the inspection: " + e.getMessage());
+        }
+    }
+    }

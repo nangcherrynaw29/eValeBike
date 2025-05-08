@@ -5,9 +5,8 @@ import integration4.evalebike.controller.technician.dto.TestResponseDTO;
 import integration4.evalebike.controller.viewModel.ReportViewModel;
 import integration4.evalebike.controller.viewModel.ReportsViewModel;
 import integration4.evalebike.controller.viewModel.TestReportEntryViewModel;
-import integration4.evalebike.domain.Bike;
-import integration4.evalebike.domain.BikeOwner;
-import integration4.evalebike.domain.TestReportEntry;
+import integration4.evalebike.controller.viewModel.VisualInspectionViewModel;
+import integration4.evalebike.domain.*;
 import integration4.evalebike.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +17,7 @@ import org.springframework.web.servlet.ModelAndView;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Controller
@@ -29,15 +29,17 @@ public class TechnicianController {
     private final TestBenchService testBenchService;
     private final TestReportService testReportService;
     private final TestReportEntryService testReportEntryService;
+    private final VisualInspectionService visualInspectionService;
     private static final Logger logger = LoggerFactory.getLogger(TechnicianController.class);
 
-    public TechnicianController(BikeOwnerService bikeOwnerService, BikeService bikeService, QrCodeService qrCodeService, TestBenchService testBenchService, TestReportService testReportService, TestReportEntryService testReportEntryService) {
+    public TechnicianController(BikeOwnerService bikeOwnerService, BikeService bikeService, QrCodeService qrCodeService, TestBenchService testBenchService, TestReportService testReportService, TestReportEntryService testReportEntryService, VisualInspectionService visualInspectionService) {
         this.bikeOwnerService = bikeOwnerService;
         this.bikeService = bikeService;
         this.qrCodeService = qrCodeService;
         this.testBenchService = testBenchService;
         this.testReportService = testReportService;
         this.testReportEntryService = testReportEntryService;
+        this.visualInspectionService = visualInspectionService;
     }
 
     // Show all bikes owned by a specific bike owner
@@ -124,30 +126,37 @@ public class TechnicianController {
                 .doOnError(e -> logger.error("Error fetching status for testId {}: {}", testId, e.getMessage()));
     }
 
+
+
     @GetMapping("/report/{testId}")
-    public Mono<String> showReportByTestId(@PathVariable("testId") String testId, Model model) {
+    public String showReportByTestId(@PathVariable("testId") String testId, Model model) {
         logger.info("Fetching report for testId: {}", testId);
 
-        return Mono.fromCallable(() -> testReportService.getTestReportWithEntriesById(testId))
-                .flatMap(optionalReport -> Mono.justOrEmpty(optionalReport)
-                        .map(report -> {
-                            ReportViewModel reportVm = ReportViewModel.from(report);
-                            List<TestReportEntry> entries = report.getReportEntries();
-                            TestReportEntryViewModel summaryVm = entries != null && !entries.isEmpty()
-                                    ? TestReportEntryViewModel.summarize(entries)
-                                    : null;
+        try {
+            TestReport report = testReportService.getTestReportWithEntriesById(testId);
 
-                            model.addAttribute("report", reportVm);
-                            model.addAttribute("summary", summaryVm);
-                            return "technician/test-report-details";
-                        })
-                        .switchIfEmpty(Mono.error(new RuntimeException("TestReport not found for testId: " + testId))))
-                .onErrorResume(e -> {
-                    logger.error("Error fetching report for testId {}: {}", testId, e.getMessage(), e);
-                    model.addAttribute("error", e.getMessage());
-                    return Mono.just("technician/error");
-                });
+            ReportViewModel reportVm = ReportViewModel.from(report);
+            List<TestReportEntry> entries = report.getReportEntries();
+            TestReportEntryViewModel summaryVm = (entries != null && !entries.isEmpty())
+                    ? TestReportEntryViewModel.summarize(entries)
+                    : null;
+
+            VisualInspection inspection = visualInspectionService.getInspectionByReportID(testId);
+            VisualInspectionViewModel inspectionViewModel = VisualInspectionViewModel.toViewModel(inspection);
+
+            model.addAttribute("inspection", inspectionViewModel);
+            model.addAttribute("report", reportVm);
+            model.addAttribute("summary", summaryVm);
+
+            return "technician/test-report-details";
+        } catch (RuntimeException e) {
+            logger.error("Error fetching report for testId {}: {}", testId, e.getMessage(), e);
+            model.addAttribute("error", e.getMessage());
+            return "technician/error";
+        }
     }
+
+
 
     //this shows a list of test report
     @GetMapping("/test-report-dashboard")
@@ -171,6 +180,26 @@ public class TechnicianController {
 
         return modelAndView;
     }
+
+
+    @GetMapping("/manual-test-form/{bikeQR}")
+    public String showManualTestForm(@PathVariable String bikeQR, Model model) {
+        Bike bike = bikeService.getByQR(bikeQR);
+        model.addAttribute("bike", bike);
+        return "technician/manual-test";
+    }
+
+    @GetMapping("/visual-inspection/{testId}")
+    public ModelAndView showVisualInspection(@PathVariable String testId) {
+
+        ModelAndView modelAndView = new ModelAndView("technician/visual-inspection");
+        modelAndView.addObject("testId", testId);
+        return modelAndView;
+    }
+
+
+
+
 
 
 

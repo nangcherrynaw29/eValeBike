@@ -7,8 +7,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import lombok.Getter;
+import lombok.Setter;
+
+
 
 @Entity
+@Getter
+@Setter
 @Table(name = "bike")
 public class Bike {
     @Id
@@ -44,7 +50,10 @@ public class Bike {
 
     }
 
-    public Bike(double accuCapacity, List<BikeOwnerBike> bikeList, String bikeQR, BikeSize bikeSize, String brand, String chassisNumber, double engineTorque, String engineType, String gearType, LocalDate lastTestDate, double maxEnginePower, double maxSupport, int mileage, String model, double nominalEnginePower, String powerTrain, int productionYear, String qrCodeImage) {
+    public Bike(double accuCapacity, List<BikeOwnerBike> bikeList, String bikeQR, BikeSize bikeSize,
+                String brand, String chassisNumber, double engineTorque, String engineType,
+                String gearType, LocalDate lastTestDate, double maxEnginePower, double maxSupport,
+                int mileage, String model, double nominalEnginePower, String powerTrain, int productionYear, String qrCodeImage) {
         this.accuCapacity = accuCapacity;
         this.bikeList = bikeList;
         this.bikeQR = bikeQR;
@@ -65,26 +74,18 @@ public class Bike {
         this.qrCodeImage = qrCodeImage;
     }
 
-    public Bike(String brand, String model, String chassisNumber, int productionYear, BikeSize bikeSize, int mileage,
-                String gearType, String engineType, String powerTrain,
-                double accuCapacity, double maxSupport, double maxEnginePower,
-                double nominalEnginePower, double engineTorque, LocalDate lastTestDate) {
-        this.brand = brand;
-        this.model = model;
-        this.chassisNumber = chassisNumber;
-        this.productionYear = productionYear;
-        this.bikeSize = bikeSize;
-        this.mileage = mileage;
-        this.gearType = gearType;
-        this.engineType = engineType;
-        this.powerTrain = powerTrain;
-        this.accuCapacity = accuCapacity;
-        this.maxSupport = maxSupport;
-        this.maxEnginePower = maxEnginePower;
-        this.nominalEnginePower = nominalEnginePower;
-        this.engineTorque = engineTorque;
-        this.lastTestDate = lastTestDate;
+    public Bike(String brand, String model, String chassisNumber,
+                int productionYear, BikeSize bikeSize, int mileage, String gearType, String engineType,
+                String powerTrain,
+                double accuCapacity,
+                double maxSupport,
+                double maxEnginePower,
+                double nominalEnginePower,
+                double engineTorque,
+                LocalDate lastTestDate) {
     }
+
+
 
 
     @PrePersist
@@ -107,141 +108,7 @@ public class Bike {
         return Objects.hash(bikeQR);
     }
 
-    public List<BikeOwnerBike> getBikeList() {
-        return bikeList;
-    }
 
-    public void setBikeList(List<BikeOwnerBike> bikeList) {
-        this.bikeList = bikeList;
-    }
-
-    public String getBikeQR() {
-        return bikeQR;
-    }
-
-    public void setBikeQR(String bikeQR) {
-        this.bikeQR = bikeQR;
-    }
-
-    public String getBrand() {
-        return brand;
-    }
-
-    public void setBrand(String brand) {
-        this.brand = brand;
-    }
-
-    public String getEngineType() {
-        return engineType;
-    }
-
-    public void setEngineType(String motorType) {
-        this.engineType = motorType;
-    }
-
-    public String getModel() {
-        return model;
-    }
-
-    public void setModel(String model) {
-        this.model = model;
-    }
-
-    public LocalDate getLastTestDate() {
-        return lastTestDate;
-    }
-
-    public void setLastTestDate(LocalDate lastTestDate) {
-        this.lastTestDate = lastTestDate;
-    }
-
-    public int getProductionYear() {
-        return productionYear;
-    }
-
-    public void setProductionYear(int productionYear) {
-        this.productionYear = productionYear;
-    }
-
-    public BikeSize getBikeSize() {
-        return bikeSize;
-    }
-
-    public void setBikeSize(BikeSize bikeSize) {
-        this.bikeSize = bikeSize;
-    }
-
-    public int getMileage() {
-        return mileage;
-    }
-
-    public void setMileage(int mileage) {
-        this.mileage = mileage;
-    }
-
-    public String getGearType() {
-        return gearType;
-    }
-
-    public void setGearType(String gearType) {
-        this.gearType = gearType;
-    }
-
-    public String getPowerTrain() {
-        return powerTrain;
-    }
-
-    public void setPowerTrain(String powerTrain) {
-        this.powerTrain = powerTrain;
-    }
-
-    public double getAccuCapacity() {
-        return accuCapacity;
-    }
-
-    public void setAccuCapacity(float accuCapacity) {
-        this.accuCapacity = accuCapacity;
-    }
-
-    public double getMaxSupport() {
-        return maxSupport;
-    }
-
-    public void setMaxSupport(float maxSupport) {
-        this.maxSupport = maxSupport;
-    }
-
-    public double getMaxEnginePower() {
-        return maxEnginePower;
-    }
-
-    public void setMaxEnginePower(float maxEnginePower) {
-        this.maxEnginePower = maxEnginePower;
-    }
-
-    public double getNominalEnginePower() {
-        return nominalEnginePower;
-    }
-
-    public void setNominalEnginePower(float nominalEnginePower) {
-        this.nominalEnginePower = nominalEnginePower;
-    }
-
-    public double getEngineTorque() {
-        return engineTorque;
-    }
-
-    public void setEngineTorque(float engineTorque) {
-        this.engineTorque = engineTorque;
-    }
-
-    public String getQrCodeImage() {
-        return qrCodeImage;
-    }
-
-    public void setQrCodeImage(String qrCodeImage) {
-        this.qrCodeImage = qrCodeImage;
-    }
 
     @Override
     public String toString() {
@@ -252,11 +119,5 @@ public class Bike {
                 '}';
     }
 
-    public String getChassisNumber() {
-        return chassisNumber;
-    }
 
-    public void setChassisNumber(String chassisNumber) {
-        this.chassisNumber = chassisNumber;
-    }
 }

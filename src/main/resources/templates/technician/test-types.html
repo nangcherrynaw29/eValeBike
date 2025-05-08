@@ -41,7 +41,7 @@
                 <div class="card-body">
                     <h5 class="card-title">Manual Test</h5>
                     <p class="card-text">Measures the bike's peak capabilities.</p>
-                    <form th:action="@{'/api/technician/start/' + ${bike.bikeQR}}" method="post" class="text-center">
+                    <form th:action="@{'/technician/manual-test-form/' + ${bike.bikeQR}}"  class="text-center">
                         <input type="hidden" name="testType" value="MANUAL" />
                         <button type="submit" class="btn btn-primary">Start Manual Test</button>
                     </form>
