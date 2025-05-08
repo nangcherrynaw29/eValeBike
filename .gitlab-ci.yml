@@ -105,48 +105,80 @@ sast:
 #    - main
 
 # Deploy job added
+#deploy_job:
+#  stage: deploy
+#  image: docker:stable
+#  services:
+#    - name: docker:20.10.24-dind
+#      alias:  docker
+#  variables:
+#    DOCKER_HOST: tcp://docker:2375
+#  tags:
+#    - docker
+#  before_script:
+#    - |
+#      echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USER" --password-stdin
+#    #decode private ssh key
+#    - |
+#      mkdir -p ~/.ssh
+#      echo "DEBUG base64:"
+#      echo "$SSH_PRIVATE_KEYY" | base64 -d > /dev/null && echo "✅ base64 is valid" || echo "❌ base64 is invalid"
+#      echo "$SSH_PRIVATE_KEYY" | base64 -d > ~/.ssh/gitlabrunner
+#      chmod 600 ~/.ssh/gitlabrunner
+#      eval "$(ssh-agent -s)"
+#      ssh-add ~/.ssh/gitlabrunner
+#      # Ensure known_hosts is present for the target server
+#      ssh-keyscan -H $APP_SERVER >> ~/.ssh/known_hosts
+#
+#  script:
+#    - echo "Starting remote deploy..."
+#    - |
+#      docker build -t $IMAGE_NAME:$IMAGE_TAG .
+#      docker push $IMAGE_NAME:$IMAGE_TAG
+#      ssh -v team4@$APP_SERVER "sudo docker stop spring-app || true && sudo docker rm spring-app || true"
+#      ssh -v team4@$APP_SERVER "sudo docker run -d --name spring-app -p 80:8080 $IMAGE_NAME:$IMAGE_TAG"
+#    - echo "Checking Docker status..."
+#    - docker info
+#    - echo "Running Docker containers..."
+#    - docker ps
+#  rules:
+#    - if: $CI_COMMIT_BRANCH
+#      needs:
+#        - build_job
+
 deploy_job:
   stage: deploy
-  image: docker:stable
+  image: docker:24.0.7
   services:
-    - name: docker:20.10.24-dind
-      alias:  docker
+    - name: docker:24.0.7-dind
+      alias: docker
   variables:
     DOCKER_HOST: tcp://docker:2375
+    DOCKER_TLS_CERTDIR: ""
   tags:
     - docker
   before_script:
-    - |
-      echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USER" --password-stdin
-    #decode private ssh key
+    - echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USER" --password-stdin
     - |
       mkdir -p ~/.ssh
-      echo "DEBUG base64:"
-      echo "$SSH_PRIVATE_KEYY" | base64 -d > /dev/null && echo "✅ base64 is valid" || echo "❌ base64 is invalid"
       echo "$SSH_PRIVATE_KEYY" | base64 -d > ~/.ssh/gitlabrunner
       chmod 600 ~/.ssh/gitlabrunner
       eval "$(ssh-agent -s)"
       ssh-add ~/.ssh/gitlabrunner
-      # Ensure known_hosts is present for the target server
       ssh-keyscan -H $APP_SERVER >> ~/.ssh/known_hosts
-
   script:
-    - echo "Starting remote deploy..."
+    - echo "🚀 Building Docker image for deploy..."
+    - docker build -t $IMAGE_NAME:$IMAGE_TAG .
+    - echo "📤 Pushing Docker image..."
+    - docker push $IMAGE_NAME:$IMAGE_TAG
+    - echo "🔗 Connecting to remote server..."
     - |
-      docker build -t $IMAGE_NAME:$IMAGE_TAG .
-      docker push $IMAGE_NAME:$IMAGE_TAG
-      ssh -v team4@$APP_SERVER "sudo docker stop spring-app || true && sudo docker rm spring-app || true"
-      ssh -v team4@$APP_SERVER "sudo docker run -d --name spring-app -p 80:8080 $IMAGE_NAME:$IMAGE_TAG"
-    - echo "Checking Docker status..."
-    - docker info
-    - echo "Running Docker containers..."
-    - docker ps
-  rules:
-    - if: $CI_COMMIT_BRANCH
-      needs:
-        - build_job
-
-
+      ssh team4@$APP_SERVER <<EOF
+        docker stop spring-app || true
+        docker rm spring-app || true
+        docker pull $IMAGE_NAME:$IMAGE_TAG
+        docker run -d --name spring-app -p 80:8080 $IMAGE_NAME:$IMAGE_TAG
+      EOF
 
 
 
