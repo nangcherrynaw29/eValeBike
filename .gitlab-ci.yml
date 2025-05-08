@@ -164,8 +164,8 @@ deploy_job:
     - ssh-keyscan -H $APP_SERVER >> ~/.ssh/known_hosts
   script:
     - echo "$IMAGE_NAME:$IMAGE_TAG"
-    - sudo docker build -t $IMAGE_NAME:$IMAGE_TAG .
-    - sudo docker push $IMAGE_NAME:$IMAGE_TAG
+    - docker build -t $IMAGE_NAME:$IMAGE_TAG .
+    - docker push $IMAGE_NAME:$IMAGE_TAG
     - |
       ssh -tt team4@$APP_SERVER << EOF
         sudo docker stop spring-app || true
