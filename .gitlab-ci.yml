@@ -15,6 +15,7 @@ variables:
   SPRING_DATASOURCE_URL: jdbc:postgresql://db:5436/eValeBike
   SPRING_DATASOURCE_USERNAME: user
   SPRING_DATASOURCE_PASSWORD: password
+  SPRING_PROFILES_ACTIVE: prod
   DOCKER_HOST: tcp://docker:2375  #for docker in docker
   DOCKER_TLS_CERTDIR: ""
   SSH_PRIVATE_KEY: $SSH_PRIVATE_KEYY
@@ -174,24 +175,3 @@ deploy_job:
         sudo docker run -d --name spring-app -p 80:8080 $IMAGE_NAME:$IMAGE_TAG
         exit
       EOF
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

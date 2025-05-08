@@ -11,3 +11,4 @@ WORKDIR /app
 COPY --from=builder /app/build/libs/eValeBike-0.0.1-SNAPSHOT.jar /app/
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "eValeBike-0.0.1-SNAPSHOT.jar"]
+ENV SPRING_PROFILES_ACTIVE=prod
