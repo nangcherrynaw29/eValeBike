@@ -148,36 +148,32 @@ sast:
 
 deploy_job:
   stage: deploy
-  image: docker:24.0.7
+  image: docker:stable
   services:
-    - name: docker:24.0.7-dind
+    - name: docker:20.10.24-dind
       alias: docker
-  variables:
-    DOCKER_HOST: tcp://docker:2375
-    DOCKER_TLS_CERTDIR: ""
   tags:
     - docker
   before_script:
     - echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USER" --password-stdin
-    - |
-      mkdir -p ~/.ssh
-      echo "$SSH_PRIVATE_KEYY" | base64 -d > ~/.ssh/gitlabrunner
-      chmod 600 ~/.ssh/gitlabrunner
-      eval "$(ssh-agent -s)"
-      ssh-add ~/.ssh/gitlabrunner
-      ssh-keyscan -H $APP_SERVER >> ~/.ssh/known_hosts
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEYY" | base64 -d > ~/.ssh/gitlabrunner
+    - chmod 600 ~/.ssh/gitlabrunner
+    - eval "$(ssh-agent -s)"
+    - ssh-add ~/.ssh/gitlabrunner
+    - ssh-keyscan -H $APP_SERVER >> ~/.ssh/known_hosts
   script:
-    - echo "🔗 Connecting to remote server..."
+    - echo "$IMAGE_NAME:$IMAGE_TAG"
+    - docker build -t $IMAGE_NAME:$IMAGE_TAG .
+    - docker push $IMAGE_NAME:$IMAGE_TAG
     - |
-      ssh -o StrictHostKeyChecking=no team4@$APP_SERVER <<'EOF'
-        set -e
-        echo "IMAGE_NAME: $IMAGE_NAME"
-        echo "IMAGE_TAG: $IMAGE_TAG"
+      ssh -tt team4@$APP_SERVER << EOF
         docker stop spring-app || true
         docker rm spring-app || true
         docker pull $IMAGE_NAME:$IMAGE_TAG
         docker run -d --name spring-app -p 80:8080 $IMAGE_NAME:$IMAGE_TAG
       EOF
+
 
 
 
