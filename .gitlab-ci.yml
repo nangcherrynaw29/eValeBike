@@ -10,13 +10,13 @@ include:
 
 variables:
   POSTGRES_DB: eValeBike
-  POSTGRES_USER: user #todo make Gitlab variable
-  POSTGRES_PASSWORD: password #todo make Gitlab variable
+  POSTGRES_USER: user
+  POSTGRES_PASSWORD: password
   SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/eValeBike
-  SPRING_DATASOURCE_USERNAME: user #todo make Gitlab variable
-  SPRING_DATASOURCE_PASSWORD: password #todo make Gitlab variable
+  SPRING_DATASOURCE_USERNAME: user
+  SPRING_DATASOURCE_PASSWORD: password
   DOCKER_HOST: tcp://docker:2375  #for docker in docker
-  DOCKER_TLS_CERTDIR: "" # tls disabled
+  DOCKER_TLS_CERTDIR: ""
   SSH_PRIVATE_KEY: $SSH_PRIVATE_KEYY
   APP_SERVER: $APP_SERVER
   IMAGE_NAME: $CI_REGISTRY_IMAGE
@@ -28,13 +28,12 @@ variables:
 stages:
   - build
   - test
-  - sast #static application security testing
+  - sast
   - deploy
   - destroy
 
 before_script:
   - echo "Starting CI/CD pipeline..."
-#  - export GRADLE_USER_HOME=`pwd`/.gradle
 
 build_job:
   stage: build
@@ -68,7 +67,7 @@ test_job:
     - apt-get update && apt-get install -y docker.io || echo "Docker install failed, continuing..."
   script:
     - echo "Checking Docker service..."
-    - docker info || echo "Docker info failed, continuing..."
+    - docker info || echo "Docker info failed, continuing..." #true
     - echo "Checking PostgreSQL connectivity..."
     - ping -c 4 db || echo "Ping to db failed, continuing..."
     - echo "Checking PostgreSQL service..."

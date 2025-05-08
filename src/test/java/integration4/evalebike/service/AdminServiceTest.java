@@ -1,9 +1,10 @@
 package integration4.evalebike.service;
 
 import integration4.evalebike.domain.Administrator;
-import integration4.evalebike.domain.Company;
+import integration4.evalebike.domain.UserStatus;
 import integration4.evalebike.exception.NotFoundException;
 import integration4.evalebike.repository.AdminRepository;
+import integration4.evalebike.utility.PasswordUtility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -22,6 +24,9 @@ public class AdminServiceTest {
 
     @Mock
     private AdminRepository adminRepository;
+
+    @Mock
+    private PasswordUtility passwordUtility;
 
     @InjectMocks
     private AdminService adminService;
@@ -34,126 +39,97 @@ public class AdminServiceTest {
         admin.setId(1);
         admin.setName("John Doe");
         admin.setEmail("john@example.com");
-        Company company = new Company();
-        company.setName("Bike Co.");
-        admin.setCompany(company);
+        admin.setCompanyName("Bike Co.");
+        admin.setUserStatus(UserStatus.APPROVED);
     }
 
     @Test
     public void testGetAllAdmins() {
-        // Arrange
-        when(adminRepository.findAll()).thenReturn(List.of(admin));
+        when(adminRepository.findByUserStatus(UserStatus.APPROVED)).thenReturn(List.of(admin));
 
-        // Act
-        var result = adminService.getAllAdmins();
+        List<Administrator> result = adminService.getAllAdmins();
 
-        // Assert
         assertNotNull(result);
         assertEquals(1, result.size());
         assertEquals("John Doe", result.get(0).getName());
     }
 
     @Test
-    public void testGetAdminById_WhenAdminExists() {
-        // Arrange
+    public void testGetAdminById_Found() {
         when(adminRepository.findById(1)).thenReturn(Optional.of(admin));
 
-        // Act
-        var result = adminService.getAdminById(1);
+        Administrator result = adminService.getAdminById(1);
 
-        // Assert
         assertNotNull(result);
         assertEquals("John Doe", result.getName());
     }
 
     @Test
-    public void testGetAdminById_WhenAdminDoesNotExist() {
-        // Arrange
+    public void testGetAdminById_NotFound() {
         when(adminRepository.findById(1)).thenReturn(Optional.empty());
 
-        // Act & Assert
         assertThrows(NotFoundException.class, () -> adminService.getAdminById(1));
     }
 
     @Test
     public void testSaveAdmin() {
-        // Arrange
-        Company company = new Company();
-        company.setName("Bike Co.");  // Initialize the company
+        when(passwordUtility.generateRandomPassword(8)).thenReturn("plain123");
+        when(passwordUtility.hashPassword("plain123")).thenReturn("hashed123");
+        when(adminRepository.save(any(Administrator.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        when(adminRepository.save(any(Administrator.class))).thenReturn(admin);
+        Administrator result = adminService.saveAdmin("John Doe", "john@example.com", "Bike Co.");
 
-        // Act
-        var result = adminService.saveAdmin("John Doe", "john@example.com", company, 4);
-
-        // Assert
         assertNotNull(result);
         assertEquals("John Doe", result.getName());
         assertEquals("john@example.com", result.getEmail());
-        assertEquals("Bike Co.", result.getCompany().getName());
-        assertEquals(4, result.getCreatedBy().getId());
+        assertEquals("Bike Co.", result.getCompanyName());
+        assertEquals("hashed123", result.getPassword());
+
+        verify(passwordUtility).sendPasswordEmail("john@example.com", "plain123");
     }
 
     @Test
-    public void testUpdateAdmin_WhenAdminExists() {
-        // Arrange
+    public void testUpdateAdmin_Found() {
         Administrator updatedAdmin = new Administrator();
-        updatedAdmin.setId(1);
         updatedAdmin.setName("Jane Doe");
         updatedAdmin.setEmail("jane@example.com");
-        Company company = new Company();
-        company.setName("Bike Co.");
-        updatedAdmin.setCompany(company);
+        updatedAdmin.setCompanyName("New Co.");
 
         when(adminRepository.findById(1)).thenReturn(Optional.of(admin));
-        when(adminRepository.save(any(Administrator.class))).thenReturn(updatedAdmin);
+        when(adminRepository.save(any(Administrator.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        // Act
-        var result = adminService.updateAdmin(1, updatedAdmin);
+        Administrator result = adminService.updateAdmin(1, updatedAdmin);
 
-        // Assert
         assertNotNull(result);
         assertEquals("Jane Doe", result.getName());
         assertEquals("jane@example.com", result.getEmail());
-        assertEquals("New Bike Co.", result.getCompany().getName());
+        assertEquals("New Co.", result.getCompanyName());
     }
 
     @Test
-    public void testUpdateAdmin_WhenAdminDoesNotExist() {
-        // Arrange
-        Administrator updatedAdmin = new Administrator();
-        updatedAdmin.setId(1);
-        updatedAdmin.setName("Jane Doe");
-        updatedAdmin.setEmail("jane@example.com");
-        Company company = new Company();
-        company.setName("Bike Co.");
-        updatedAdmin.setCompany(company);
-
+    public void testUpdateAdmin_NotFound() {
         when(adminRepository.findById(1)).thenReturn(Optional.empty());
 
-        // Act & Assert
+        Administrator updatedAdmin = new Administrator();
+        updatedAdmin.setName("Jane");
+
         assertThrows(RuntimeException.class, () -> adminService.updateAdmin(1, updatedAdmin));
     }
 
     @Test
-    public void testDeleteAdmin_WhenAdminExists() {
-        // Arrange
+    public void testDeleteAdmin_Found() {
         when(adminRepository.findById(1)).thenReturn(Optional.of(admin));
         doNothing().when(adminRepository).deleteById(1);
 
-        // Act
         adminService.deleteAdmin(1);
 
-        // Assert
         verify(adminRepository, times(1)).deleteById(1);
     }
 
     @Test
-    public void testDeleteAdmin_WhenAdminDoesNotExist() {
-        // Arrange
+    public void testDeleteAdmin_NotFound() {
         when(adminRepository.findById(1)).thenReturn(Optional.empty());
 
-        // Act & Assert
         assertThrows(RuntimeException.class, () -> adminService.deleteAdmin(1));
     }
 }
