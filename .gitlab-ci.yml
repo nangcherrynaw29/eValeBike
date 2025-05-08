@@ -46,7 +46,7 @@ build_job:
   artifacts:
     paths:
       - build/libs/*.jar
-#      - build/libs/
+      - build/libs/
     expire_in: 1 week
 
 test_job:
