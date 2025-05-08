@@ -171,6 +171,8 @@ deploy_job:
     - |
       ssh -o StrictHostKeyChecking=no team4@$APP_SERVER <<'EOF'
         set -e
+        echo "IMAGE_NAME: $IMAGE_NAME"
+        echo "IMAGE_TAG: $IMAGE_TAG"
         docker stop spring-app || true
         docker rm spring-app || true
         docker pull $IMAGE_NAME:$IMAGE_TAG
