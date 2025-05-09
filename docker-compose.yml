@@ -1,29 +1,9 @@
 version: "4.37"
 
 services:
-  db:
-    image: postgres:17.2-alpine
-    restart: always
-    environment:
-      POSTGRES_DB: eValeBike
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-    ports:
-      - "5436:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
   app:
     build: .
     ports:
       - "8080:8080"
-    depends_on:
-      - db
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5436/eValeBike
-      SPRING_DATASOURCE_USERNAME: user
-      SPRING_DATASOURCE_PASSWORD: password
 
-volumes:
-  postgres_data:
 
