@@ -1,9 +1,5 @@
-#image: gradle:8-jdk21
-
 services:
   - docker:20.10.24-dind
-#  - postgres:17.2-alpine
-  #strings are correct syntax fir gitlab
 
 include:
   - template: Security/SAST.gitlab-ci.yml
@@ -98,57 +94,6 @@ sast:
     expire_in: 1 week
   allow_failure: false
 
-#destroy_job:
-#  stage: destroy
-#  when: manual
-#  script:
-#    - echo "Destroying application manually"
-#    - ssh user@your-server-ip 'docker stop myapp && docker rm myapp'
-#  only:
-#    - main
-
-# Deploy job added
-#deploy_job:
-#  stage: deploy
-#  image: docker:stable
-#  services:
-#    - name: docker:20.10.24-dind
-#      alias:  docker
-#  variables:
-#    DOCKER_HOST: tcp://docker:2375
-#  tags:
-#    - docker
-#  before_script:
-#    - |
-#      echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USER" --password-stdin
-#    #decode private ssh key
-#    - |
-#      mkdir -p ~/.ssh
-#      echo "DEBUG base64:"
-#      echo "$SSH_PRIVATE_KEYY" | base64 -d > /dev/null && echo "✅ base64 is valid" || echo "❌ base64 is invalid"
-#      echo "$SSH_PRIVATE_KEYY" | base64 -d > ~/.ssh/gitlabrunner
-#      chmod 600 ~/.ssh/gitlabrunner
-#      eval "$(ssh-agent -s)"
-#      ssh-add ~/.ssh/gitlabrunner
-#      # Ensure known_hosts is present for the target server
-#      ssh-keyscan -H $APP_SERVER >> ~/.ssh/known_hosts
-#
-#  script:
-#    - echo "Starting remote deploy..."
-#    - |
-#      docker build -t $IMAGE_NAME:$IMAGE_TAG .
-#      docker push $IMAGE_NAME:$IMAGE_TAG
-#      ssh -v team4@$APP_SERVER "sudo docker stop spring-app || true && sudo docker rm spring-app || true"
-#      ssh -v team4@$APP_SERVER "sudo docker run -d --name spring-app -p 80:8080 $IMAGE_NAME:$IMAGE_TAG"
-#    - echo "Checking Docker status..."
-#    - docker info
-#    - echo "Running Docker containers..."
-#    - docker ps
-#  rules:
-#    - if: $CI_COMMIT_BRANCH
-#      needs:
-#        - build_job
-
 deploy_job:
   stage: deploy
   image: docker:stable
@@ -175,5 +120,30 @@ deploy_job:
         sudo docker rm spring-app || true
         sudo docker pull $IMAGE_NAME:$IMAGE_TAG
         sudo docker run -d --name spring-app -p 80:8080 $IMAGE_NAME:$IMAGE_TAG
+        exit
+      EOF
+
+destroy_job:
+  stage: destroy
+  when: manual
+  image: docker:stable
+  services:
+    - name: docker:20.10.24-dind
+      alias: docker
+  tags:
+    - docker
+  before_script:
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEYY" | base64 -d > ~/.ssh/gitlabrunner
+    - chmod 600 ~/.ssh/gitlabrunner
+    - eval "$(ssh-agent -s)"
+    - ssh-add ~/.ssh/gitlabrunner
+    - ssh-keyscan -H $APP_SERVER >> ~/.ssh/known_hosts
+  script:
+    - echo "Stopping and removing the container..."
+    - |
+      ssh -tt team4@$APP_SERVER << EOF
+        sudo docker stop spring-app || true
+        sudo docker rm spring-app || true
         exit
       EOF
