@@ -8,7 +8,7 @@ RUN rm -rf /home/gradle/.gradle/caches \
 #runtime stage
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
-COPY --from=builder build/libs/*.jar /app/
+COPY --from=builder /app/build/libs/*.jar /app/
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "eValeBike-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
 # ENV SPRING_PROFILES_ACTIVE=pro
