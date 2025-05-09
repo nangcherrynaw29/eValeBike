@@ -44,9 +44,16 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-mail")
     compileOnly("org.projectlombok:lombok:1.18.30")  // Use the latest version
     annotationProcessor("org.projectlombok:lombok:1.18.30")
+    // Microsoft SQL Server JDBC Driver
+    implementation("com.microsoft.sqlserver:mssql-jdbc:12.6.1.jre11") // Change jre version if needed
 
-    testImplementation("org.testcontainers:junit-jupiter:1.19.7")
-    testImplementation("org.testcontainers:postgresql:1.19.7")
+    // Testcontainers Core & SQL Server
+    testImplementation("org.testcontainers:testcontainers:1.19.3")
+    testImplementation("org.testcontainers:mssqlserver:1.19.3")
+
+    // Spring Boot Test Starter
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation ("org.testcontainers:junit-jupiter:1.19.7")
 }
 
 tasks.withType<Test> {
