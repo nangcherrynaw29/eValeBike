@@ -21,7 +21,6 @@ variables:
   DOCKERHUB_USER: $DOCKERHUB_USERNAME
   DOCKERHUB_PASS: $DOCKERHUB_PASSWORD
 
-
 stages:
   - build
   - test
