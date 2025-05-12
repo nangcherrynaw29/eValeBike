@@ -47,7 +47,6 @@ public class BikeOwnerService {
     public BikeOwner add(String name, String email, String phoneNumber, LocalDate birthDate, int createdBy) {
         String rawPassword = passwordUtility.generateRandomPassword(8);
         String hashedPassword = passwordUtility.hashPassword(rawPassword);
-
         BikeOwner bikeOwner = new BikeOwner(name, email, phoneNumber, birthDate);
         bikeOwner.setPassword(hashedPassword);
         bikeOwner.setUserStatus(UserStatus.APPROVED);
@@ -55,6 +54,11 @@ public class BikeOwnerService {
         passwordUtility.sendPasswordEmail(email, rawPassword);
         return bikeOwnerRepository.save(bikeOwner);
     }
+
+    public List<BikeOwner> getFiltered(String name, String email) {
+        return bikeOwnerRepository.findByFilters(name, email);
+    }
+
 
     public List<BikeDto> getAllBikes(Integer bikeOwnerId) {
         List<Bike> bikes = bikeOwnerBikeRepository.findByBikeOwnerId(bikeOwnerId)

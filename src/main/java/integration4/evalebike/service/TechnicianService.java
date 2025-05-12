@@ -46,6 +46,13 @@ public class TechnicianService {
         return technicianRepository.save(technician);
     }
 
+
+    public List<Technician> getFilteredTechnicians(String name, String email) {
+        return technicianRepository.findByFilters(name, email);
+    }
+
+
+
     public Technician updateTechnician(Integer id, Technician updatedTechnician) {
         Technician technician = technicianRepository.findById(id)
                 .orElseThrow(() -> NotFoundException.forTechnician(id));

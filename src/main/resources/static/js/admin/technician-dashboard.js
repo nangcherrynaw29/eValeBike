@@ -13,6 +13,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const techniciansPerPage = 5;
     let currentPage = 1;
     let techniciansData = [];
+    let allTechnicians = [];  // Store all technicians data for filtering
+
+    const filterInput = document.querySelector("#filterValue"); // Updated ID
+    const filterDropdown = document.querySelector("#filterType"); // Updated ID
+    const notFoundMessage = document.getElementById("no-results-message");
+    const searchBtn = document.querySelector("#search-btn");
 
     async function loadTechnicians() {
         try {
@@ -20,12 +26,55 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!response.ok) throw new Error("Failed to fetch technicians");
 
             techniciansData = await response.json();
+            allTechnicians = [...techniciansData];  // Store a copy for filtering
             renderTable();
             renderPagination();
         } catch (error) {
             console.error("Error loading technicians:", error);
         }
     }
+
+    // Add event listener for the search button
+    searchBtn.addEventListener("click", () => {
+        console.log("Search button clicked"); // Debugging
+        filterTechnicians(); // Call the filter function when search button is clicked
+    });
+
+    function filterTechnicians() {
+        const filterText = filterInput.value.trim().toLowerCase();
+        const filterOption = filterDropdown.value;
+
+        console.log("Filtering by:", filterOption); // Debugging
+        console.log("Search text:", filterText); // Debugging
+
+        const filteredData = allTechnicians.filter(technician => {
+            if (filterOption === "name") {
+                return technician.name.toLowerCase().includes(filterText);
+            } else if (filterOption === "email") {
+                return technician.email.toLowerCase().includes(filterText);
+            }
+            return true; // Default case if no filter is selected
+        });
+
+        console.log("Filtered Data:", filteredData); // Debugging
+
+        // Check if the element exists before modifying its style
+        const notFoundMessage = document.getElementById("no-results-message");
+        if (notFoundMessage) {
+            if (filteredData.length === 0) {
+                notFoundMessage.style.display = 'block';
+            } else {
+                notFoundMessage.style.display = 'none';
+            }
+        }
+
+        // Update techniciansData and reset pagination
+        techniciansData = filteredData;
+        currentPage = 1; // Reset to the first page when filter is applied
+        renderTable();
+        renderPagination();
+    }
+
 
     function renderTable() {
         technicianTableBody.innerHTML = "";
@@ -129,6 +178,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         });
     }
+
     loadTechnicians();
 });
 

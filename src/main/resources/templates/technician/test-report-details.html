@@ -24,102 +24,100 @@
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-md-6">
-                <div class="card shadow-sm mb-4">
-                    <div class="card-header bg-primary text-white">
-                        Test Info
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-striped">
-                                <tbody>
-                                <tr>
-                                    <th>Bike QR</th><td th:text="${report.bikeQR}">-</td>
-                                    <th>Test Run By</th><td th:text="${report.technicianName}">-</td>
-                                </tr>
-                                <tr>
-                                    <th>Type</th><td th:text="${report.type}">-</td>
-                                    <th>Status</th><td th:text="${report.state}">-</td>
-                                </tr>
-                                <tr>
-                                    <th>Expiry Date</th>
-                                    <td><span th:text="${#strings.replace(#strings.substring(report.expiryDate, 0, 19), 'T', ' ')}">-</span></td>
-                                    <th>Battery Capacity</th><td th:text="${report.batteryCapacity}">-</td>
-                                </tr>
-                                <tr>
-                                    <th>Max Support</th><td th:text="${report.maxSupport}">-</td>
-                                    <th>Engine Power Max</th><td th:text="${report.enginePowerMax}">-</td>
-                                </tr>
-                                <tr>
-                                    <th>Nominal Engine Power</th><td th:text="${report.enginePowerNominal}">-</td>
-                                    <th>Engine Torque</th><td th:text="${report.engineTorque}">-</td>
-                                </tr>
-                                </tbody>
-                            </table>
+        <div class="container-fluid report-tables-wrapper">
+            <div class="row">
+                <div class="col-12 mb-4">
+                    <div class="card shadow-sm w-100">
+                        <div class="card-header bg-primary text-white">Test Info</div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped">
+                                    <tbody>
+                                    <tr>
+                                        <th>Bike QR</th><td th:text="${report.bikeQR}">-</td>
+                                        <th>Test Run By</th><td th:text="${report.technicianName}">-</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Type</th><td th:text="${report.type}">-</td>
+                                        <th>Status</th><td th:text="${report.state}">-</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Expiry Date</th>
+                                        <td><span th:text="${#strings.replace(#strings.substring(report.expiryDate, 0, 19), 'T', ' ')}">-</span></td>
+                                        <th>Battery Capacity</th><td th:text="${report.batteryCapacity}">-</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Max Support</th><td th:text="${report.maxSupport}">-</td>
+                                        <th>Engine Power Max</th><td th:text="${report.enginePowerMax}">-</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Nominal Engine Power</th><td th:text="${report.enginePowerNominal}">-</td>
+                                        <th>Engine Torque</th><td th:text="${report.engineTorque}">-</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="col-md-6">
-                <div class="card shadow-sm mb-4">
-                    <div class="card-header bg-primary text-white">
-                        Report Summary
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-striped">
-                                <tbody>
-                                <tr>
-                                    <th>Avg Battery Voltage</th><td th:text="${summary != null ? summary.batteryVoltage : 'N/A'}">-</td>
-                                    <th>Avg Battery Current</th><td th:text="${summary != null ? summary.batteryCurrent : 'N/A'}">-</td>
-                                </tr>
-                                <tr>
-                                    <th>Avg Battery Capacity</th><td th:text="${summary != null ? summary.batteryCapacity : 'N/A'}">-</td>
-                                    <th>Battery Temp (°C)</th><td th:text="${summary != null ? summary.batteryTemperatureCelsius : 'N/A'}">-</td>
-                                </tr>
-                                <tr>
-                                    <th>Charge Status</th><td th:text="${summary != null ? summary.chargeStatus : 'N/A'}">-</td>
-                                    <th>Assistance Level</th><td th:text="${summary != null ? summary.assistanceLevel : 'N/A'}">-</td>
-                                </tr>
-                                <tr>
-                                    <th>Torque Crank (Nm)</th><td th:text="${summary != null ? summary.torqueCrankNm : 'N/A'}">-</td>
-                                    <th>Wheel Speed (km/h)</th><td th:text="${summary != null ? summary.bikeWheelSpeedKmh : 'N/A'}">-</td>
-                                </tr>
-                                <tr>
-                                    <th>Cadence (RPM)</th><td th:text="${summary != null ? summary.cadanceRpm : 'N/A'}">-</td>
-                                    <th>Engine RPM</th><td th:text="${summary != null ? summary.engineRpm : 'N/A'}">-</td>
-                                </tr>
-                                <tr>
-                                    <th>Engine Power (W)</th><td th:text="${summary != null ? summary.enginePowerWatt : 'N/A'}">-</td>
-                                    <th>Wheel Power (W)</th><td th:text="${summary != null ? summary.wheelPowerWatt : 'N/A'}">-</td>
-                                </tr>
-                                <tr>
-                                    <th>Roll Torque</th><td th:text="${summary != null ? summary.rollTorque : 'N/A'}">-</td>
-                                    <th>Loadcell (N)</th><td th:text="${summary != null ? summary.loadcellN : 'N/A'}">-</td>
-                                </tr>
-                                <tr>
-                                    <th>Rol Hz</th><td th:text="${summary != null ? summary.rolHz : 'N/A'}">-</td>
-                                    <th>Horizontal Inclination</th><td th:text="${summary != null ? summary.horizontalInclination : 'N/A'}">-</td>
-                                </tr>
-                                <tr>
-                                    <th>Vertical Inclination</th><td th:text="${summary != null ? summary.verticalInclination : 'N/A'}">-</td>
-                                    <th>Load Power</th><td th:text="${summary != null ? summary.loadPower : 'N/A'}">-</td>
-                                </tr>
-                                <tr>
-                                    <th>Status Plug</th><td th:text="${summary != null ? summary.statusPlug : 'N/A'}">-</td>
-                                    <th></th><td></td>
-                                </tr>
-                                </tbody>
-                            </table>
+                <div class="col-12 mb-4">
+                    <div class="card shadow-sm w-100">
+                        <div class="card-header bg-primary text-white">Report Summary</div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped">
+                                    <tbody>
+                                    <tr>
+                                        <th>Avg Battery Voltage</th><td th:text="${summary != null ? summary.batteryVoltage : 'N/A'}">-</td>
+                                        <th>Avg Battery Current</th><td th:text="${summary != null ? summary.batteryCurrent : 'N/A'}">-</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Avg Battery Capacity</th><td th:text="${summary != null ? summary.batteryCapacity : 'N/A'}">-</td>
+                                        <th>Battery Temp (°C)</th><td th:text="${summary != null ? summary.batteryTemperatureCelsius : 'N/A'}">-</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Charge Status</th><td th:text="${summary != null ? summary.chargeStatus : 'N/A'}">-</td>
+                                        <th>Assistance Level</th><td th:text="${summary != null ? summary.assistanceLevel : 'N/A'}">-</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Torque Crank (Nm)</th><td th:text="${summary != null ? summary.torqueCrankNm : 'N/A'}">-</td>
+                                        <th>Wheel Speed (km/h)</th><td th:text="${summary != null ? summary.bikeWheelSpeedKmh : 'N/A'}">-</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Cadence (RPM)</th><td th:text="${summary != null ? summary.cadanceRpm : 'N/A'}">-</td>
+                                        <th>Engine RPM</th><td th:text="${summary != null ? summary.engineRpm : 'N/A'}">-</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Engine Power (W)</th><td th:text="${summary != null ? summary.enginePowerWatt : 'N/A'}">-</td>
+                                        <th>Wheel Power (W)</th><td th:text="${summary != null ? summary.wheelPowerWatt : 'N/A'}">-</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Roll Torque</th><td th:text="${summary != null ? summary.rollTorque : 'N/A'}">-</td>
+                                        <th>Loadcell (N)</th><td th:text="${summary != null ? summary.loadcellN : 'N/A'}">-</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Rol Hz</th><td th:text="${summary != null ? summary.rolHz : 'N/A'}">-</td>
+                                        <th>Horizontal Inclination</th><td th:text="${summary != null ? summary.horizontalInclination : 'N/A'}">-</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Vertical Inclination</th><td th:text="${summary != null ? summary.verticalInclination : 'N/A'}">-</td>
+                                        <th>Load Power</th><td th:text="${summary != null ? summary.loadPower : 'N/A'}">-</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Status Plug</th><td th:text="${summary != null ? summary.statusPlug : 'N/A'}">-</td>
+                                        <th></th><td></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="text-center mt-4">
+        <div class="text-center mt-4 mb-5">
             <a th:href="@{/technician/test-report-dashboard}" class="btn btn-primary">Back to Test Report Dashboard</a>
             <button id="downloadPdfBtn" class="btn btn-success">Save as PDF</button>
         </div>
@@ -133,57 +131,25 @@
                         <div class="table-responsive">
                             <table class="table table-bordered table-striped">
                                 <tbody>
-                            <tr>
-                                <th>Tires</th><td th:text="${ inspection.tires() }">-</td>
-                                <th>Bell</th><td th:text="${inspection.bell()}">-</td>
-                            </tr>
-                            <tr>
-                                <th>Cranks</th><td th:text="${inspection.cranks()}">-</td>
-                                <th>Electric Wiring</th><td th:text="${inspection.electricWiring()}">-</td>
-                            </tr>
-                            <tr>
-                                <th>Front Fork</th><td th:text="${inspection.frontFork()}">-</td>
-                                <th>Handles</th><td th:text="${inspection.handles()}">-</td>
-                            </tr>
-                            <tr>
-                                <th>Chain Belt</th><td th:text="${inspection.chainBelt()}">-</td>
-                                <th>Pedals</th><td th:text="${inspection.pedals()}">-</td>
-                            </tr>
-                            <tr>
-                                <th>Reflectors</th><td th:text="${inspection.reflectors()}">-</td>
-                                <th>Brake Pads</th><td th:text="${inspection.brakePads()}">-</td>
-                            </tr>
-                            <tr>
-                                <th>Brake Handles</th><td th:text="${inspection.brakeHandles()}">-</td>
-                                <th>Brake Cables</th><td th:text="${inspection.brakeCables()}">-</td>
-                            </tr>
-                            <tr>
-                                <th>Brake Discs</th><td th:text="${inspection.brakeDiscs()}">-</td>
-                                <th>Mudguards</th><td th:text="${inspection.mudguards()}">-</td>
-                            </tr>
-                            <tr>
-                                <th>Handle Bar</th><td th:text="${inspection.handleBar()}">-</td>
-                                <th>Rear Sprocket</th><td th:text="${inspection.rearSprocket()}">-</td>
-                            </tr>
-                            <tr>
-                                <th>Front Sprocket</th><td th:text="${inspection.frontSprocket()}">-</td>
-                                <th>Rims Spokes</th><td th:text="${inspection.rimsSpokes()}">-</td>
-                            </tr>
-                            <tr>
-                                <th>Rear Suspension</th><td th:text="${inspection.rearSuspension()}">-</td>
-                                <th>Suspension Front</th><td th:text="${inspection.suspensionFront()}">-</td>
-                            </tr>
-                            <tr>
-                                <th>Saddle</th><td th:text="${inspection.saddle()}">-</td>
-                                <th></th><td></td>
-                            </tr>
-                            </tbody>
-                        </table>
+                                <tr><th>Tires</th><td th:text="${inspection.tires()}">-</td><th>Bell</th><td th:text="${inspection.bell()}">-</td></tr>
+                                <tr><th>Cranks</th><td th:text="${inspection.cranks()}">-</td><th>Electric Wiring</th><td th:text="${inspection.electricWiring()}">-</td></tr>
+                                <tr><th>Front Fork</th><td th:text="${inspection.frontFork()}">-</td><th>Handles</th><td th:text="${inspection.handles()}">-</td></tr>
+                                <tr><th>Chain Belt</th><td th:text="${inspection.chainBelt()}">-</td><th>Pedals</th><td th:text="${inspection.pedals()}">-</td></tr>
+                                <tr><th>Reflectors</th><td th:text="${inspection.reflectors()}">-</td><th>Brake Pads</th><td th:text="${inspection.brakePads()}">-</td></tr>
+                                <tr><th>Brake Handles</th><td th:text="${inspection.brakeHandles()}">-</td><th>Brake Cables</th><td th:text="${inspection.brakeCables()}">-</td></tr>
+                                <tr><th>Brake Discs</th><td th:text="${inspection.brakeDiscs()}">-</td><th>Mudguards</th><td th:text="${inspection.mudguards()}">-</td></tr>
+                                <tr><th>Handle Bar</th><td th:text="${inspection.handleBar()}">-</td><th>Rear Sprocket</th><td th:text="${inspection.rearSprocket()}">-</td></tr>
+                                <tr><th>Front Sprocket</th><td th:text="${inspection.frontSprocket()}">-</td><th>Rims Spokes</th><td th:text="${inspection.rimsSpokes()}">-</td></tr>
+                                <tr><th>Rear Suspension</th><td th:text="${inspection.rearSuspension()}">-</td><th>Suspension Front</th><td th:text="${inspection.suspensionFront()}">-</td></tr>
+                                <tr><th>Saddle</th><td th:text="${inspection.saddle()}">-</td><th></th><td></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+
     </div>
 
     <div th:insert="~{fragments/footer.html}"></div>

@@ -32,6 +32,10 @@ public class TestReportService {
         return testReport.get();
     }
 
+    public void saveTestReport(TestReport testReport) {
+        testReportRepository.save(testReport);
+    }
+
 
 
 

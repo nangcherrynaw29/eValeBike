@@ -35,4 +35,7 @@ public class TestResponseDTO {
     public double getEnginePowerMax() { return enginePowerMax; }
     public double getEnginePowerNominal() { return enginePowerNominal; }
     public double getEngineTorque() { return engineTorque; }
+
+
+
 }

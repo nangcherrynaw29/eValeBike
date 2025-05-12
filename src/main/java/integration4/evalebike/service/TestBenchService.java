@@ -1,5 +1,6 @@
 package integration4.evalebike.service;
 
+import integration4.evalebike.controller.TestBenchConfig;
 import integration4.evalebike.controller.technician.dto.TestReportDTO;
 import integration4.evalebike.controller.technician.dto.TestReportEntryDTO;
 import integration4.evalebike.controller.technician.dto.TestRequestDTO;
@@ -32,6 +33,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static integration4.evalebike.controller.technician.dto.TestReportDTO.convertToTestReportDTO;
+import static integration4.evalebike.controller.technician.dto.TestReportDTO.convertToTestReportWithNoEntries;
+import static integration4.evalebike.controller.technician.dto.TestReportEntryDTO.convertToTestReportEntries;
+
 @Service
 public class TestBenchService {
     private static final Logger logger = LoggerFactory.getLogger(TestBenchService.class);
@@ -41,12 +46,11 @@ public class TestBenchService {
     private final BikeRepository bikeRepository;
     private final TestBenchRepository testBenchRepository;
     private final TechnicianRepository technicianRepository;
-    private final String apiKey = "9e8dffd7-f6e1-45b4-b4aa-69fd257ca200";
 
-    public TestBenchService(WebClient.Builder webClientBuilder, TestReportRepository testReportRepository, TestBenchRepository testBenchRepository, TechnicianRepository technicianRepository, BikeRepository bikeRepository) {
+    public TestBenchService(WebClient.Builder webClientBuilder, TestBenchConfig testBenchConfig, TestReportRepository testReportRepository, TestBenchRepository testBenchRepository, TechnicianRepository technicianRepository, BikeRepository bikeRepository) {
         this.testBenchClient = webClientBuilder
-                .baseUrl("https://testbench.raoul.dev")
-                .defaultHeader("X-Api-Key", apiKey)
+                .baseUrl(testBenchConfig.getBaseUrl())
+                .defaultHeader("X-Api-Key", testBenchConfig.getApiKey())
                 .build();
         this.testReportRepository = testReportRepository;
         this.bikeRepository = bikeRepository;
@@ -120,7 +124,6 @@ public class TestBenchService {
 
 
     //to get the whole test report (including test entries)
-
     public Mono<TestReportDTO> getTestReportById(String testId) {
         logger.info("Fetching report for testId: {}", testId);
 
@@ -142,20 +145,8 @@ public class TestBenchService {
                                 }
                                 return fetchAndValidateTest(testId)
                                         .flatMap(test -> saveTestReport(test, entries, bikeQR, technicianUsername))
-                                        .map(testReportDTO -> new TestReportDTO(
-                                                testReportDTO.getId(),
-                                                testReportDTO.getExpiryDate(),
-                                                testReportDTO.getState(),
-                                                testReportDTO.getType(),
-                                                testReportDTO.getBatteryCapacity(),
-                                                testReportDTO.getMaxSupport(),
-                                                testReportDTO.getEnginePowerMax(),
-                                                testReportDTO.getEnginePowerNominal(),
-                                                testReportDTO.getEngineTorque(),
-                                                entries,
-                                                bikeQR,
-                                                testReportDTO.getTechnicianName()
-                                        ));
+                                        .map(testReportDTO -> convertToTestReportDTO(testReportDTO, entries, bikeQR));
+
                             });
                 })
                 .doOnError(e -> logger.error("Error fetching report for testId {}: {}", testId, e.getMessage()));
@@ -201,7 +192,8 @@ public class TestBenchService {
     }
 
 
-    public Mono<TestReportDTO> saveTestReport(TestResponseDTO test, List<TestReportEntryDTO> entryDTOs, String bikeQR, String technicianUsername) {
+    public Mono<TestReportDTO> saveTestReport(TestResponseDTO test, List<TestReportEntryDTO> entryDTOs,
+                                              String bikeQR, String technicianUsername) {
         return Mono.fromCallable(() -> bikeRepository.findByBikeQR(bikeQR)) // Fetch Bike by bikeQR
                 .flatMap(optionalBike -> {
                     if (optionalBike.isEmpty()) {
@@ -210,45 +202,8 @@ public class TestBenchService {
                     }
                     Bike bike = optionalBike.get();
 
-                    TestReport testReport = new TestReport(
-                            test.getId(),
-                            test.getExpiryDate(),
-                            test.getState(),
-                            test.getType(),
-                            test.getBatteryCapacity(),
-                            test.getMaxSupport(),
-                            test.getEnginePowerMax(),
-                            test.getEnginePowerNominal(),
-                            test.getEngineTorque()
-                    );
-                    testReport.setBike(bike); // Set the Bike entity
-                    testReport.setTechnicianName(technicianUsername);
-
-                    List<TestReportEntry> entries = entryDTOs.stream()
-                            .map(dto -> new TestReportEntry(
-                                    testReport,
-                                    dto.timestamp(),
-                                    dto.batteryVoltage(),
-                                    dto.batteryCurrent(),
-                                    dto.batteryCapacity(),
-                                    dto.batteryTemperatureCelsius(),
-                                    dto.chargeStatus(),
-                                    dto.assistanceLevel(),
-                                    dto.torqueCrankNm(),
-                                    dto.bikeWheelSpeedKmh(),
-                                    dto.cadanceRpm(),
-                                    dto.engineRpm(),
-                                    dto.enginePowerWatt(),
-                                    dto.wheelPowerWatt(),
-                                    dto.rollTorque(),
-                                    dto.loadcellN(),
-                                    dto.rolHz(),
-                                    dto.horizontalInclination(),
-                                    dto.verticalInclination(),
-                                    dto.loadPower(),
-                                    dto.statusPlug()
-                            ))
-                            .collect(Collectors.toList());
+                    TestReport testReport = convertToTestReportWithNoEntries(test, bike, technicianUsername);
+                    List<TestReportEntry> entries = convertToTestReportEntries(entryDTOs, testReport);
 
                     testReport.setReportEntries(entries);
 
