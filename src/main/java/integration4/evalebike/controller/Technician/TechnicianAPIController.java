@@ -89,13 +89,26 @@ public class TechnicianAPIController {
     }
 
     @PostMapping("/start/{bikeQR}")
-    public Mono<String> startTest(@PathVariable String bikeQR, @RequestParam("testType") String testType, Principal principal, @AuthenticationPrincipal final CustomUserDetails userDetails) {
+    public Mono<String> startTest(@PathVariable String bikeQR,
+                                  @RequestParam("testType") String testType,
+                                  Principal principal,
+                                  @AuthenticationPrincipal final CustomUserDetails userDetails) {
 
-        recentActivityService.save(new RecentActivity(Activity.INITIALIZED_TEST, "Test started successfully.", LocalDateTime.now(), userDetails.getUserId()));
         String technicianUsername = principal != null ? principal.getName() : "anonymous";
 
-        return Mono.fromCallable(() -> bikeService.findById(bikeQR)).flatMap(optionalBike -> optionalBike.map(Mono::just).orElseGet(() -> Mono.error(new RuntimeException("Bike not found with QR: " + bikeQR)))).flatMap(bike -> {
-            TestRequestDTO testRequestDTO = new TestRequestDTO(testType.toUpperCase(), bike.getAccuCapacity(), bike.getMaxSupport(), bike.getMaxEnginePower(), bike.getNominalEnginePower(), bike.getEngineTorque());
+        recentActivityService.save(new RecentActivity(Activity.INITIALIZED_TEST, "Test started successfully.", LocalDateTime.now(), userDetails.getUserId()));
+
+        return Mono.fromCallable(() -> bikeService.findById(bikeQR))
+                    .flatMap(optionalBike -> optionalBike
+                            .map(Mono::just)
+                            .orElseGet(() -> Mono.error(new RuntimeException("Bike not found with QR: " + bikeQR))))
+                .flatMap(bike -> {
+            TestRequestDTO testRequestDTO = new TestRequestDTO(testType.toUpperCase(),
+                                                                bike.getAccuCapacity(),
+                                                                bike.getMaxSupport(),
+                                                                bike.getMaxEnginePower(),
+                                                                bike.getNominalEnginePower(),
+                                                                bike.getEngineTorque());
             return testBenchService.processTest(testRequestDTO, technicianUsername, bikeQR).flatMap(response -> {
                 // Save partial TestReport
                 TestReport partialReport = new TestReport();
@@ -103,7 +116,7 @@ public class TechnicianAPIController {
                 partialReport.setBike(bike); // Set the Bike entity
                 partialReport.setTechnicianName(technicianUsername);
                 try {
-                    testReportRepository.save(partialReport);
+                    testReportService.saveTestReport(partialReport);
                 } catch (Exception e) {
                     return Mono.error(new RuntimeException("Failed to save partial TestReport", e));
                 }
