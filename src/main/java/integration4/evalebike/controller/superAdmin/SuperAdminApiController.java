@@ -47,7 +47,7 @@ public class SuperAdminApiController {
                 addAdminDto.name(),
                 addAdminDto.email(),
                 addAdminDto.companyName());
-        recentActivityService.save(new RecentActivity(Activity.CREATED_USER, "Created admin " + addAdminDto.name(), LocalDateTime.now(), userDetails.getUserId()));
+        recentActivityService.save(new RecentActivity(Activity.PENDING_APPROVAL, "There is a new admin waiting for an approval: " + administrator.getEmail(), LocalDateTime.now(), userDetails.getUserId()));
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(adminMapper.toAdminDto(administrator));
@@ -76,14 +76,16 @@ public class SuperAdminApiController {
     }
 
     @PostMapping("/{id}/approve")
-    public ResponseEntity<String> approveUser(@PathVariable Integer id) {
+    public ResponseEntity<String> approveUser(@PathVariable Integer id, @AuthenticationPrincipal CustomUserDetails userDetails) {
         userService.updateUserStatusAndNotify(id, UserStatus.APPROVED);
+        recentActivityService.save(new RecentActivity(Activity.APPROVED_USER, "User " + id + " was approved", LocalDateTime.now(), userDetails.getUserId()));
         return ResponseEntity.ok("User approved successfully.");
     }
 
     @PostMapping("/{id}/reject")
-    public ResponseEntity<String> rejectUser(@PathVariable Integer id) {
+    public ResponseEntity<String> rejectUser(@PathVariable Integer id, @AuthenticationPrincipal CustomUserDetails userDetails) {
         userService.updateUserStatusAndNotify(id, UserStatus.REJECTED);
+        recentActivityService.save(new RecentActivity(Activity.REJECTED_APPROVAL, "User " + id + " was rejected", LocalDateTime.now(), userDetails.getUserId()));
         return ResponseEntity.ok("User rejected successfully.");
     }
 }
