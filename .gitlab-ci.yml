@@ -130,27 +130,11 @@ deploy_job:
     - echo "Image name and tag: $IMAGE_NAME:$IMAGE_TAG"
     - docker build -t $IMAGE_NAME:$IMAGE_TAG .
     - echo "Built image, pushing to Docker Hub..."
-    - docker push $IMAGE_NAME:$IMAGE_TAG
+    - docker push $IMAGE_NAME:$IMAGE_TAG || { echo "Failed to push image"; exit 1; }
     - echo "Verifying push success..."
     - docker images
-    - |
-      ssh -tt team4@$APP_SERVER << EOF
-        echo "Running deployment on app server..."
-        sudo docker stop spring-app || true
-        sudo docker rm spring-app || true
-        echo "Pulling image $IMAGE_NAME:$IMAGE_TAG..."
-        sudo docker pull $IMAGE_NAME:$IMAGE_TAG
-        echo "Running container with image $IMAGE_NAME:$IMAGE_TAG..."
-        sudo docker run -d --name spring-app -p 80:8080 \
-          -e SPRING_DATASOURCE_URL="jdbc:sqlserver://evalebike.database.windows.net:1433;database=eValeBike;user=user@evalebike;password=password!1;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30" \
-          -e SPRING_DATASOURCE_USERNAME=user \
-          -e SPRING_DATASOURCE_PASSWORD=password!1 \
-          $IMAGE_NAME:$IMAGE_TAG
-        echo "Deployment complete, checking container status..."
-        sudo docker ps -a
-        exit
-      EOF
-
+    - echo "Deploying to app server..."
+    - ssh team4@$APP_SERVER "echo 'Running deployment on app server...' && sudo docker stop spring-app || true && sudo docker rm spring-app || true && echo 'Pulling image $IMAGE_NAME:$IMAGE_TAG...' && sudo docker pull $IMAGE_NAME:$IMAGE_TAG && echo 'Running container with image $IMAGE_NAME:$IMAGE_TAG...' && sudo docker run -d --name spring-app -p 80:8080 -e SPRING_DATASOURCE_URL='jdbc:sqlserver://evalebike.database.windows.net:1433;database=eValeBike;user=user@evalebike;password=password!1;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30' -e SPRING_DATASOURCE_USERNAME=user -e SPRING_DATASOURCE_PASSWORD=password!1 $IMAGE_NAME:$IMAGE_TAG && echo 'Deployment complete, checking container status...' && sudo docker ps -a"
 
 destroy_job:
   stage: destroy
