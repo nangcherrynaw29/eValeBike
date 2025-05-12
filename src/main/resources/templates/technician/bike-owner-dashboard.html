@@ -14,13 +14,10 @@
     <script src="/js/recent-history.js" type="module" defer></script>
     <script src="/js/technician/bike-owner-dashboard.js" type="module" defer></script>
 </head>
-
 <body>
 <input type="hidden" id="user-role" th:value="${userRole}">
 <div class="page-wrapper">
-
     <div th:insert="~{fragments/menu.html}"></div>
-
     <div class="main-content-wrapper dashboard-container flex-grow-1">
         <div class="dashboard-header">
             <h2 class="dashboard-title">Customer Dashboard</h2>
@@ -30,7 +27,7 @@
             </div>
         </div>
 
-        <div class="row">
+        <div class="row mb-4">
             <div class="col-md-4">
                 <div class="card stat-card">
                     <div class="stat-number" th:text="${bikeOwners != null ? bikeOwners.size() : 0}">0</div>
