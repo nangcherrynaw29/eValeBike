@@ -12,6 +12,7 @@
     <title>Technician Dashboard</title>
 </head>
 <body>
+<input type="hidden" id="user-role" th:value="${userRole}">
 <div class="page-wrapper">
 <div th:insert="~{fragments/menu.html}"></div>
 <div class="dashboard-container">
@@ -39,10 +40,10 @@
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card stat-card">
-                <div class="stat-number" id="pending-requests">0</div>
-                <div class="stat-label">Pending Requests</div>
-                <small>Approvals Needed</small>
+            <div class="card stat-card clickable" id="pending-requests-card">
+                <div class="stat-number" id="new-requests">0</div>
+                <div class="stat-label">New Requests</div>
+                <small>Pending Approval</small>
             </div>
         </div>
     </div>
@@ -117,7 +118,7 @@
                         <!-- Dynamic pagination -->
                     </ul>
                 </nav>
-                <button id="add-technician-btn" class="btn btn-primary btn-block">
+                <button id="add-technician-btn" class="btn btn-primary btn-block" sec:authorize="hasRole('ADMIN')">
                     <i class="fas fa-user-plus"></i> Add Technician
                 </button>
             </div>

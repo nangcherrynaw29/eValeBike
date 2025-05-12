@@ -5,6 +5,7 @@ import integration4.evalebike.domain.UserStatus;
 import integration4.evalebike.exception.NotFoundException;
 import integration4.evalebike.repository.TechnicianRepository;
 import integration4.evalebike.repository.TestBenchRepository;
+import integration4.evalebike.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import integration4.evalebike.utility.PasswordUtility;
 import org.springframework.stereotype.Service;
@@ -16,11 +17,13 @@ public class TechnicianService {
     private final TechnicianRepository technicianRepository;
     private final PasswordUtility passwordUtility;
     private final TestBenchRepository testBenchRepository;
+    private final UserRepository userRepository;
 
-    public TechnicianService(TechnicianRepository technicianRepository, PasswordUtility passwordUtility, TestBenchRepository testBenchRepository) {
+    public TechnicianService(TechnicianRepository technicianRepository, PasswordUtility passwordUtility, TestBenchRepository testBenchRepository, UserRepository userRepository) {
         this.technicianRepository = technicianRepository;
         this.passwordUtility = passwordUtility;
         this.testBenchRepository = testBenchRepository;
+        this.userRepository = userRepository;
     }
 
     public List<Technician> getAll() {
@@ -32,12 +35,13 @@ public class TechnicianService {
                 .orElseThrow(() -> NotFoundException.forTechnician(id));
     }
 
-    public Technician saveTechnician(final String name, final String email) {
+    public Technician saveTechnician(final String name, final String email, int createdBy) {
         String rawPassword = passwordUtility.generateRandomPassword(8);
         String hashedPassword = passwordUtility.hashPassword(rawPassword);
 
         Technician technician = new Technician(name, email);
         technician.setPassword(hashedPassword);
+        technician.setCreatedBy(userRepository.findById(createdBy).orElseThrow(() -> NotFoundException.forAdmin(createdBy)));
         passwordUtility.sendPasswordEmail(email, rawPassword);
         return technicianRepository.save(technician);
     }

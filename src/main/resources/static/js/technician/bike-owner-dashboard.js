@@ -69,10 +69,20 @@ document.addEventListener("DOMContentLoaded", () => {
         const start = (currentPage - 1) * rowsPerPage;
         const end = start + rowsPerPage;
         const pageData = bikeOwners.slice(start, end);
+        const userRole = document.getElementById("user-role").value;
 
         pageData.forEach(owner => {
             const tr = document.createElement('tr');
             tr.id = `owner-${owner.id}`;
+
+            let deleteButtonHtml = '';
+            if (userRole === 'TECHNICIAN') {
+                deleteButtonHtml = `
+                <button class="btn btn-outline-danger remove-bikeOwners-button" data-bikeOwner-id="${owner.id}">
+                    <i class="fa-solid fa-trash"></i>
+                </button>`;
+            }
+
             tr.innerHTML = `
                 <td>${owner.name}</td>
                 <td>${owner.email}</td>
@@ -81,11 +91,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <td>
                     <a href="/technician/bikes/owner/${owner.id}" class="btn btn-primary">All Bikes</a>
                 </td>
-                <td>
-                    <button class="btn btn-outline-danger remove-bikeOwners-button" data-bikeOwner-id="${owner.id}">
-                        <i class="fa-solid fa-trash"></i>
-                    </button>
-                </td>
+                <td>${deleteButtonHtml}</td>
             `;
             tbody.appendChild(tr);
         });

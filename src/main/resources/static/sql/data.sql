@@ -17,6 +17,10 @@ SELECT 2,
        'APPROVED'
 WHERE NOT EXISTS (SELECT 1 FROM app_user WHERE id = 2);
 
+INSERT INTO technician (id)
+SELECT 2
+WHERE NOT EXISTS (SELECT 1 FROM technician WHERE id = 2);
+
 INSERT INTO app_user (id, name, email, password, role, user_status)
 SELECT 3,
        'Alice Johnson',
@@ -25,6 +29,10 @@ SELECT 3,
        'ADMIN',
        'APPROVED'
 WHERE NOT EXISTS (SELECT 1 FROM app_user WHERE id = 3);
+
+INSERT INTO administrator (id, company_name)
+SELECT 3, 'E-Bike Corp'
+WHERE NOT EXISTS (SELECT 1 FROM administrator WHERE id = 3);
 
 INSERT INTO app_user (id, name, email, password, role, user_status)
 SELECT 4,
@@ -35,148 +43,169 @@ SELECT 4,
        'APPROVED'
 WHERE NOT EXISTS (SELECT 1 FROM app_user WHERE id = 4);
 
-INSERT INTO app_user (id, name, email, password, role, user_status)
+-- Insert into the super_admin table if the id doesn't already exist
+INSERT INTO super_admin (id)
+SELECT 4
+WHERE NOT EXISTS (SELECT 1 FROM super_admin WHERE id = 4);
+
+INSERT INTO app_user (id, name, email, password, role, user_status, created_by_id)
 SELECT 5,
        'Michael Green',
        'michael.green@example.com',
        '$2a$10$kU6clDpBtcQAiul4xa9GP.Liy2GmP3QCPXHeZNjBSLj240YukGx7K',
        'BIKE_OWNER',
-       'APPROVED'
+       'APPROVED',
+       2
 WHERE NOT EXISTS (SELECT 1 FROM app_user WHERE id = 5);
 
-INSERT INTO app_user (id, name, email, password, role, user_status)
+INSERT INTO app_user (id, name, email, password, role, user_status, created_by_id)
 SELECT 6,
        'Sarah White',
        'sarah.white@example.com',
        '$2a$10$kU6clDpBtcQAiul4xa9GP.Liy2GmP3QCPXHeZNjBSLj240YukGx7K',
        'BIKE_OWNER',
-       'APPROVED'
+       'APPROVED',
+       2
 WHERE NOT EXISTS (SELECT 1 FROM app_user WHERE id = 6);
 
-INSERT INTO app_user (id, name, email, password, role, user_status)
+INSERT INTO app_user (id, name, email, password, role, user_status, created_by_id)
 SELECT 7,
        'Nathan',
        'nathan@example.com',
        '$2a$10$kU6clDpBtcQAiul4xa9GP.Liy2GmP3QCPXHeZNjBSLj240YukGx7K',
        'TECHNICIAN',
-       'APPROVED'
+       'APPROVED',
+       3
 WHERE NOT EXISTS (SELECT 1 FROM app_user WHERE id = 7);
 
-INSERT INTO app_user (id, name, email, password, role, user_status)
+INSERT INTO app_user (id, name, email, password, role, user_status, created_by_id)
 SELECT 8,
        'Nathaniel',
        'nathaniel@example.com',
        '$2a$10$kU6clDpBtcQAiul4xa9GP.Liy2GmP3QCPXHeZNjBSLj240YukGx7K',
        'BIKE_OWNER',
-       'APPROVED'
+       'APPROVED',
+       2
 WHERE NOT EXISTS (SELECT 1 FROM app_user WHERE id = 8);
 
-INSERT INTO app_user (id, name, email, password, role, user_status)
+INSERT INTO app_user (id, name, email, password, role, user_status, created_by_id)
 SELECT 9,
        'Jean',
        'jean@example.com',
        '$2a$10$kU6clDpBtcQAiul4xa9GP.Liy2GmP3QCPXHeZNjBSLj240YukGx7K',
        'BIKE_OWNER',
-       'APPROVED'
+       'APPROVED',
+       2
 WHERE NOT EXISTS (SELECT 1 FROM app_user WHERE id = 9);
 
-INSERT INTO app_user (id, name, email, password, role, user_status)
+INSERT INTO app_user (id, name, email, password, role, user_status, created_by_id)
 SELECT 10,
        'Jeremy',
        'jeremy@example.com',
        '$2a$10$kU6clDpBtcQAiul4xa9GP.Liy2GmP3QCPXHeZNjBSLj240YukGx7K',
        'BIKE_OWNER',
-       'APPROVED'
+       'APPROVED',
+       2
 WHERE NOT EXISTS (SELECT 1 FROM app_user WHERE id = 10);
 
-INSERT INTO app_user (id, name, email, password, role, user_status)
+INSERT INTO app_user (id, name, email, password, role, user_status, created_by_id)
 SELECT 11,
        'Kevin',
        'kevine@example.com',
        '$2a$10$kU6clDpBtcQAiul4xa9GP.Liy2GmP3QCPXHeZNjBSLj240YukGx7K',
        'BIKE_OWNER',
-       'APPROVED'
+       'APPROVED',
+       2
 WHERE NOT EXISTS (SELECT 1 FROM app_user WHERE id = 11);
 
-INSERT INTO app_user (id, name, email, password, role, user_status)
+INSERT INTO app_user (id, name, email, password, role, user_status, created_by_id)
 SELECT 12,
        'Andrew',
        'andrew@example.com',
        '$2a$10$kU6clDpBtcQAiul4xa9GP.Liy2GmP3QCPXHeZNjBSLj240YukGx7K',
        'TECHNICIAN',
-       'APPROVED'
+       'APPROVED',
+       3
 WHERE NOT EXISTS (SELECT 1 FROM app_user WHERE id = 12);
 
-INSERT INTO app_user (id, name, email, password, role, user_status)
+INSERT INTO app_user (id, name, email, password, role, user_status, created_by_id)
 SELECT 13,
        'Nicky',
        'nicky@example.com',
        '$2a$10$kU6clDpBtcQAiul4xa9GP.Liy2GmP3QCPXHeZNjBSLj240YukGx7K',
        'TECHNICIAN',
-       'APPROVED'
+       'APPROVED',
+       3
 WHERE NOT EXISTS (SELECT 1 FROM app_user WHERE id = 13);
 
-INSERT INTO app_user (id, name, email, password, role, user_status)
+INSERT INTO app_user (id, name, email, password, role, user_status, created_by_id)
 SELECT 14,
        'Aaron',
        'aaron@example.com',
        '$2a$10$kU6clDpBtcQAiul4xa9GP.Liy2GmP3QCPXHeZNjBSLj240YukGx7K',
        'TECHNICIAN',
-       'APPROVED'
+       'APPROVED',
+       3
 WHERE NOT EXISTS (SELECT 1 FROM app_user WHERE id = 14);
 
-INSERT INTO app_user (id, name, email, password, role, user_status)
+INSERT INTO app_user (id, name, email, password, role, user_status, created_by_id)
 SELECT 15,
        'Riko',
        'riko@example.com',
        '$2a$10$kU6clDpBtcQAiul4xa9GP.Liy2GmP3QCPXHeZNjBSLj240YukGx7K',
        'TECHNICIAN',
-       'APPROVED'
+       'APPROVED',
+       3
 WHERE NOT EXISTS (SELECT 1 FROM app_user WHERE id = 15);
 
-INSERT INTO app_user (id, name, email, password, role, user_status)
+INSERT INTO app_user (id, name, email, password, role, user_status, created_by_id)
 SELECT 16,
        'Nora',
        'nora@example.com',
        '$2a$10$kU6clDpBtcQAiul4xa9GP.Liy2GmP3QCPXHeZNjBSLj240YukGx7K',
        'ADMIN',
-       'APPROVED'
+       'APPROVED',
+       4
 WHERE NOT EXISTS (SELECT 1 FROM app_user WHERE id = 16);
 
-INSERT INTO app_user (id, name, email, password, role, user_status)
+INSERT INTO app_user (id, name, email, password, role, user_status, created_by_id)
 SELECT 17,
-       'Waymack',
+       'Wymack',
        'waymack@example.com',
        '$2a$10$kU6clDpBtcQAiul4xa9GP.Liy2GmP3QCPXHeZNjBSLj240YukGx7K',
        'TECHNICIAN',
-       'APPROVED'
+       'APPROVED',
+       3
 WHERE NOT EXISTS (SELECT 1 FROM app_user WHERE id = 17);
 
-INSERT INTO app_user (id, name, email, password, role, user_status)
+INSERT INTO app_user (id, name, email, password, role, user_status, created_by_id)
 SELECT 18,
        'Sara',
        'sara@example.com',
        '$2a$10$kU6clDpBtcQAiul4xa9GP.Liy2GmP3QCPXHeZNjBSLj240YukGx7K',
        'BIKE_OWNER',
-       'APPROVED'
+       'APPROVED',
+       2
 WHERE NOT EXISTS (SELECT 1 FROM app_user WHERE id = 18);
 
-INSERT INTO app_user (id, name, email, password, role, user_status)
+INSERT INTO app_user (id, name, email, password, role, user_status, created_by_id)
 SELECT 19,
        'Abby',
        'abby@example.com',
        '$2a$10$kU6clDpBtcQAiul4xa9GP.Liy2GmP3QCPXHeZNjBSLj240YukGx7K',
        'TECHNICIAN',
-       'APPROVED'
+       'APPROVED',
+       3
 WHERE NOT EXISTS (SELECT 1 FROM app_user WHERE id = 19);
 
-INSERT INTO app_user (id, name, email, password, role, user_status)
+INSERT INTO app_user (id, name, email, password, role, user_status, created_by_id)
 SELECT 20,
        'Lila',
        'lila@example.com',
        '$2a$10$kU6clDpBtcQAiul4xa9GP.Liy2GmP3QCPXHeZNjBSLj240YukGx7K',
        'BIKE_OWNER',
-       'APPROVED'
+       'APPROVED',
+       2
 WHERE NOT EXISTS (SELECT 1 FROM app_user WHERE id = 20);
 
 -- Insert into the bike_owner table
@@ -313,10 +342,6 @@ WHERE NOT EXISTS (SELECT 1
 
 -- Insert into the technician table if the id doesn't already exist
 INSERT INTO technician (id)
-SELECT 2
-WHERE NOT EXISTS (SELECT 1 FROM technician WHERE id = 2);
-
-INSERT INTO technician (id)
 SELECT 7
 WHERE NOT EXISTS (SELECT 1 FROM technician WHERE id = 7);
 
@@ -346,17 +371,8 @@ WHERE NOT EXISTS (SELECT 1 FROM technician WHERE id = 19);
 
 -- Insert into the administrator table if the id doesn't already exist
 INSERT INTO administrator (id, company_name)
-SELECT 3, 'E-Bike Corp'
-WHERE NOT EXISTS (SELECT 1 FROM administrator WHERE id = 3);
-
-INSERT INTO administrator (id, company_name)
 SELECT 16, 'E-Nursing'
 WHERE NOT EXISTS (SELECT 1 FROM administrator WHERE id = 16);
-
--- Insert into the super_admin table if the id doesn't already exist
-INSERT INTO super_admin (id)
-SELECT 4
-WHERE NOT EXISTS (SELECT 1 FROM super_admin WHERE id = 4);
 
 -- Initialize test benches
 INSERT INTO test_bench (last_calibration_date, location, status, test_bench_name, technician_id)

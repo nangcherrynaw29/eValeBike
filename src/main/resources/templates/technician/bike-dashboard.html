@@ -86,7 +86,7 @@
                         </div>
                     </td>
                     <td>
-                        <button class="btn btn-outline-danger remove-bike-button" th:attr="data-bike-id=${bike.bikeQR}">
+                        <button class="btn btn-outline-danger remove-bike-button" th:attr="data-bike-id=${bike.bikeQR}" sec:authorize="hasRole('TECHNICIAN')">
                             <i class="fa-solid fa-trash"></i></button>
                     </td>
                 </tr>

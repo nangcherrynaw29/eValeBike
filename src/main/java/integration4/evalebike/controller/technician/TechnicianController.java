@@ -7,9 +7,12 @@ import integration4.evalebike.controller.viewModel.ReportsViewModel;
 import integration4.evalebike.controller.viewModel.TestReportEntryViewModel;
 import integration4.evalebike.controller.viewModel.VisualInspectionViewModel;
 import integration4.evalebike.domain.*;
+import integration4.evalebike.security.CustomUserDetails;
 import integration4.evalebike.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -50,7 +53,7 @@ public class TechnicianController {
     }
 
     @GetMapping("/bikes")
-    public String logBikes(Model model) {
+    public String logBikes(Model model, @AuthenticationPrincipal CustomUserDetails userDetails) {
         List<Bike> bikes = bikeService.getAll();
         for (Bike bike : bikes) {
             String qrCodeImage = qrCodeService.generateQrCodeBase64(bike.getBikeQR(), 200, 200);
@@ -61,14 +64,22 @@ public class TechnicianController {
     }
 
     @GetMapping("/bike-owners")
-    public String logBikeOwners(Model model) {
+    public String logBikeOwners(Model model, @AuthenticationPrincipal CustomUserDetails userDetails) {
         List<BikeOwner> bikeOwners = bikeOwnerService.getAll();
         long totalBikes = bikeService.countAllBikes();
         long birthdayCount = bikeOwnerService.countOwnersWithBirthdayToday();
 
+        String role = userDetails.getAuthorities()
+                .stream()
+                .map(GrantedAuthority::getAuthority)
+                .findFirst()
+                .orElse("UNKNOWN");
+        String userRole = role.replace("ROLE_", "");
+
         model.addAttribute("bikeOwners", bikeOwners);
         model.addAttribute("totalBikes", totalBikes);
         model.addAttribute("birthdayCount", birthdayCount);
+        model.addAttribute("userRole", userRole);
         return "technician/bike-owner-dashboard";
     }
 
