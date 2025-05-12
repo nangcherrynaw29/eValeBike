@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Test Report Comparison</title>
+  <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}">
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="stylesheet" href="/css/global.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="/js/technician/download-pdf.js"></script>
+</head>
+<body>
+<div class="page-wrapper d-flex flex-column min-vh-100">
+  <div th:insert="~{fragments/menu.html}"></div>
+
+  <div class="dashboard-container">
+    <div class="dashboard-header">
+      <h2 class="dashboard-title">Test Report Comparison</h2>
+      <div class="user-info">
+        <span>Welcome, <strong>Technician</strong>!</span>
+        <div class="user-avatar">T</div>
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- Left Column: Report for Test A -->
+      <div class="col-md-6 mb-4">
+        <div class="card shadow-sm h-100">
+          <div class="card-header bg-primary text-white">
+            Report for Test A
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-bordered table-striped">
+                <tbody>
+                <tr>
+                  <th>Bike QR</th><td th:text="${reports[0].bikeQR}">-</td>
+                  <th>Test Run By</th><td th:text="${reports[0].technicianName}">-</td>
+                </tr>
+                <tr>
+                  <th>Type</th><td th:text="${reports[0].type}">-</td>
+                  <th>Status</th><td th:text="${reports[0].state}">-</td>
+                </tr>
+                <tr>
+                  <th>Expiry Date</th>
+                  <td><span th:text="${#strings.replace(#strings.substring(reports[0].expiryDate, 0, 19), 'T', ' ')}">-</span></td>
+                  <th>Battery Capacity</th><td th:text="${reports[0].batteryCapacity}">-</td>
+                </tr>
+                <!-- More rows as necessary -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Report for Test B -->
+      <div class="col-md-6 mb-4">
+        <div class="card shadow-sm h-100">
+          <div class="card-header bg-primary text-white">
+            Report for Test B
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-bordered table-striped">
+                <tbody>
+                <tr>
+                  <th>Bike QR</th><td th:text="${reports[1].bikeQR}">-</td>
+                  <th>Test Run By</th><td th:text="${reports[1].technicianName}">-</td>
+                </tr>
+                <tr>
+                  <th>Type</th><td th:text="${reports[1].type}">-</td>
+                  <th>Status</th><td th:text="${reports[1].state}">-</td>
+                </tr>
+                <tr>
+                  <th>Expiry Date</th>
+                  <td><span th:text="${#strings.replace(#strings.substring(reports[1].expiryDate, 0, 19), 'T', ' ')}">-</span></td>
+                  <th>Battery Capacity</th><td th:text="${reports[1].batteryCapacity}">-</td>
+                </tr>
+                <!-- More rows as necessary -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- Left Column: Summary for Test A -->
+      <div class="col-md-6 mb-4">
+        <div class="card shadow-sm h-100">
+          <div class="card-header bg-secondary text-white">
+            Summary for Test A
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-bordered table-striped">
+                <tbody>
+                <tr>
+                  <th>Avg Battery Voltage</th><td th:text="${summaries[0] != null ? summaries[0].batteryVoltage : 'N/A'}">-</td>
+                  <th>Avg Battery Current</th><td th:text="${summaries[0] != null ? summaries[0].batteryCurrent : 'N/A'}">-</td>
+                </tr>
+                <tr>
+                  <th>Avg Battery Capacity</th><td th:text="${summaries[0] != null ? summaries[0].batteryCapacity : 'N/A'}">-</td>
+                  <th>Battery Temp (°C)</th><td th:text="${summaries[0] != null ? summaries[0].batteryTemperatureCelsius : 'N/A'}">-</td>
+                </tr>
+                <tr>
+                  <th>Charge Status</th><td th:text="${summaries[0] != null ? summaries[0].chargeStatus : 'N/A'}">-</td>
+                  <th>Assistance Level</th><td th:text="${summaries[0] != null ? summaries[0].assistanceLevel : 'N/A'}">-</td>
+                </tr>
+                <!-- More rows as necessary -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Summary for Test B -->
+      <div class="col-md-6 mb-4">
+        <div class="card shadow-sm h-100">
+          <div class="card-header bg-secondary text-white">
+            Summary for Test B
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-bordered table-striped">
+                <tbody>
+                <tr>
+                  <th>Avg Battery Voltage</th><td th:text="${summaries[1] != null ? summaries[1].batteryVoltage : 'N/A'}">-</td>
+                  <th>Avg Battery Current</th><td th:text="${summaries[1] != null ? summaries[1].batteryCurrent : 'N/A'}">-</td>
+                </tr>
+                <tr>
+                  <th>Avg Battery Capacity</th><td th:text="${summaries[1] != null ? summaries[1].batteryCapacity : 'N/A'}">-</td>
+                  <th>Battery Temp (°C)</th><td th:text="${summaries[1] != null ? summaries[1].batteryTemperatureCelsius : 'N/A'}">-</td>
+                </tr>
+                <tr>
+                  <th>Charge Status</th><td th:text="${summaries[1] != null ? summaries[1].chargeStatus : 'N/A'}">-</td>
+                  <th>Assistance Level</th><td th:text="${summaries[1] != null ? summaries[1].assistanceLevel : 'N/A'}">-</td>
+                </tr>
+                <!-- More rows as necessary -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-center mt-4">
+      <a th:href="@{/technician/test-report-dashboard}" class="btn btn-primary">Back to Test Report Dashboard</a>
+      <button id="downloadPdfBtn" class="btn btn-success">Save as PDF</button>
+    </div>
+  </div>
+
+  <div th:insert="~{fragments/footer.html}"></div>
+</div>
+<script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>
