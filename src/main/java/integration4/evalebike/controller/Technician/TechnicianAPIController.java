@@ -40,7 +40,7 @@ public class TechnicianAPIController {
     public TechnicianAPIController(BikeService bikeService, BikeOwnerService bikeOwnerService, BikeOwnerMapper bikeOwnerMapper,
                                    TestBenchService testBenchService, RecentActivityService recentActivityService,
                                    TestReportEntryService testReportEntryService, VisualInspectionService visualInspectionService,
-                                   TestReportService testReportService) {
+                                   TestReportService testReportService, TechnicianService technicianService) {
         this.bikeService = bikeService;
         this.bikeOwnerService = bikeOwnerService;
         this.testBenchService = testBenchService;
@@ -117,39 +117,39 @@ public class TechnicianAPIController {
         recentActivityService.save(new RecentActivity(Activity.INITIALIZED_TEST, "Test started successfully.", LocalDateTime.now(), userDetails.getUserId()));
 
         return Mono.fromCallable(() -> bikeService.findById(bikeQR))
-                    .flatMap(optionalBike -> optionalBike
-                            .map(Mono::just)
-                            .orElseGet(() -> Mono.error(new RuntimeException("Bike not found with QR: " + bikeQR))))
+                .flatMap(optionalBike -> optionalBike
+                        .map(Mono::just)
+                        .orElseGet(() -> Mono.error(new RuntimeException("Bike not found with QR: " + bikeQR))))
                 .flatMap(bike -> {
-            TestRequestDTO testRequestDTO = new TestRequestDTO(testType.toUpperCase(),
-                                                                bike.getAccuCapacity(),
-                                                                bike.getMaxSupport(),
-                                                                bike.getMaxEnginePower(),
-                                                                bike.getNominalEnginePower(),
-                                                                bike.getEngineTorque());
-            return testBenchService.processTest(testRequestDTO, technicianUsername, bikeQR).flatMap(response -> {
-                // Save partial TestReport
-                TestReport partialReport = new TestReport();
-                partialReport.setId(response.getId());
-                partialReport.setBike(bike); // Set the Bike entity
-                partialReport.setTechnicianName(technicianUsername);
-                try {
-                    testReportService.saveTestReport(partialReport);
-                } catch (Exception e) {
-                    return Mono.error(new RuntimeException("Failed to save partial TestReport", e));
-                }
-                return Mono.just("redirect:/technician/loading?testId=" + response.getId());
-            });
-        }).onErrorResume(e -> {
-            String errorMessage = "Failed to start test";
-            if (e.getMessage().contains("Bike not found")) {
-                errorMessage = "Bike not found with QR: " + bikeQR;
-            } else if (e.getMessage().contains("Bad Request")) {
-                errorMessage = "Invalid test parameters";
-            }
-            String encodedError = URLEncoder.encode(errorMessage, StandardCharsets.UTF_8);
-            return Mono.just("redirect:/technician/bikes?error=" + encodedError);
-        });
+                    TestRequestDTO testRequestDTO = new TestRequestDTO(testType.toUpperCase(),
+                            bike.getAccuCapacity(),
+                            bike.getMaxSupport(),
+                            bike.getMaxEnginePower(),
+                            bike.getNominalEnginePower(),
+                            bike.getEngineTorque());
+                    return testBenchService.processTest(testRequestDTO, technicianUsername, bikeQR).flatMap(response -> {
+                        // Save partial TestReport
+                        TestReport partialReport = new TestReport();
+                        partialReport.setId(response.getId());
+                        partialReport.setBike(bike); // Set the Bike entity
+                        partialReport.setTechnicianName(technicianUsername);
+                        try {
+                            testReportService.saveTestReport(partialReport);
+                        } catch (Exception e) {
+                            return Mono.error(new RuntimeException("Failed to save partial TestReport", e));
+                        }
+                        return Mono.just("redirect:/technician/loading?testId=" + response.getId());
+                    });
+                }).onErrorResume(e -> {
+                    String errorMessage = "Failed to start test";
+                    if (e.getMessage().contains("Bike not found")) {
+                        errorMessage = "Bike not found with QR: " + bikeQR;
+                    } else if (e.getMessage().contains("Bad Request")) {
+                        errorMessage = "Invalid test parameters";
+                    }
+                    String encodedError = URLEncoder.encode(errorMessage, StandardCharsets.UTF_8);
+                    return Mono.just("redirect:/technician/bikes?error=" + encodedError);
+                });
     }
 
     @GetMapping("/test-report-entries/{testId}")
