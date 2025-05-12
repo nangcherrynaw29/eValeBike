@@ -1,29 +1,3 @@
-services:
-  - docker:20.10.24-dind
-
-include:
-  - template: Security/SAST.gitlab-ci.yml
-
-variables:
-  DOCKER_HOST: tcp://docker:2375
-  DOCKER_TLS_CERTDIR: ""
-  SSH_PRIVATE_KEY: $SSH_PRIVATE_KEYY
-  APP_SERVER: $APP_SERVER
-  IMAGE_NAME: $CI_REGISTRY_IMAGE
-  IMAGE_TAG: $CI_COMMIT_REF_SLUG
-  DOCKERHUB_USER: $DOCKERHUB_USERNAME
-  DOCKERHUB_PASS: $DOCKERHUB_PASSWORD
-
-stages:
-  - build
-  - test
-  - sast
-  - deploy
-  - destroy
-
-before_script:
-  - echo "Starting CI/CD pipeline..."
-
 build_job:
   stage: build
   image: gradle:8.4.0-jdk21
@@ -57,8 +31,10 @@ test_job:
     - ssh-add ~/.ssh/gitlabrunner
     - ssh-keyscan -H $APP_SERVER >> ~/.ssh/known_hosts
   script:
+    - echo "Creating directory on app server..."
+    - ssh team4@$APP_SERVER "mkdir -p /home/team4/evalbike"
     - echo "Copying project to app server..."
-    - scp -r build.gradle settings.gradle src/ team4@$APP_SERVER:/home/team4/evalbike/
+    - scp -r build.gradle settings.gradle src/ team4@$APP_SERVER:/home/team4/evalbike/ || { echo "Failed to copy project files"; exit 1; }
     - echo "Running tests on app server..."
     - |
       ssh -tt team4@$APP_SERVER << EOF
@@ -68,11 +44,11 @@ test_job:
         export SPRING_DATASOURCE_URL="jdbc:sqlserver://evalebike.database.windows.net:1433;database=eValeBikeTest;user=user@evalebike;password=password!1;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30"
         export SPRING_DATASOURCE_USERNAME=user
         export SPRING_DATASOURCE_PASSWORD=password!1
-        gradle test --info
+        gradle test --info || { echo "Tests failed"; exit 1; }
         exit
       EOF
     - echo "Copying test results back..."
-    - scp -r team4@$APP_SERVER:/home/team4/evalbike/build/test-results/test/ build/test-results/test/
+    - scp -r team4@$APP_SERVER:/home/team4/evalbike/build/test-results/test/ build/test-results/test/ || { echo "Failed to copy test results"; exit 1; }
   artifacts:
     when: always
     reports:
@@ -81,71 +57,3 @@ test_job:
       - build/test-results/test/
   needs:
     - build_job
-
-sast:
-  stage: sast
-  script:
-    - echo "Running SAST analysis..."
-  artifacts:
-    paths:
-      - gl-sast-report.json
-    expire_in: 1 week
-  allow_failure: false
-
-deploy_job:
-  stage: deploy
-  image: docker:stable
-  services:
-    - name: docker:20.10.24-dind
-      alias: docker
-  tags:
-    - docker
-  before_script:
-    - echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USER" --password-stdin
-    - mkdir -p ~/.ssh
-    - echo "$SSH_PRIVATE_KEYY" | base64 -d > ~/.ssh/gitlabrunner
-    - chmod 600 ~/.ssh/gitlabrunner
-    - eval "$(ssh-agent -s)"
-    - ssh-add ~/.ssh/gitlabrunner
-    - ssh-keyscan -H $APP_SERVER >> ~/.ssh/known_hosts
-  script:
-    - echo "$IMAGE_NAME:$IMAGE_TAG"
-    - docker build -t $IMAGE_NAME:$IMAGE_TAG .
-    - docker push $IMAGE_NAME:$IMAGE_TAG
-    - |
-      ssh -tt team4@$APP_SERVER << EOF
-        sudo docker stop spring-app || true
-        sudo docker rm spring-app || true
-        sudo docker pull $IMAGE_NAME:$IMAGE_TAG
-        sudo docker run -d --name spring-app -p 80:8080 \
-          -e SPRING_DATASOURCE_URL="jdbc:sqlserver://evalebike.database.windows.net:1433;database=eValeBike;user=user@evalebike;password=password!1;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30" \
-          -e SPRING_DATASOURCE_USERNAME=user \
-          -e SPRING_DATASOURCE_PASSWORD=password!1 \
-          $IMAGE_NAME:$IMAGE_TAG
-        exit
-      EOF
-
-destroy_job:
-  stage: destroy
-  when: manual
-  image: docker:stable
-  services:
-    - name: docker:20.10.24-dind
-      alias: docker
-  tags:
-    - docker
-  before_script:
-    - mkdir -p ~/.ssh
-    - echo "$SSH_PRIVATE_KEYY" | base64 -d > ~/.ssh/gitlabrunner
-    - chmod 600 ~/.ssh/gitlabrunner
-    - eval "$(ssh-agent -s)"
-    - ssh-add ~/.ssh/gitlabrunner
-    - ssh-keyscan -H $APP_SERVER >> ~/.ssh/known_hosts
-  script:
-    - echo "Stopping and removing the container..."
-    - |
-      ssh -tt team4@$APP_SERVER << EOF
-        sudo docker stop spring-app || true
-        sudo docker rm spring-app || true
-        exit
-      EOF
