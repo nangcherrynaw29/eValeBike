@@ -151,6 +151,7 @@ deploy_job:
         exit
       EOF
 
+
 destroy_job:
   stage: destroy
   when: manual
