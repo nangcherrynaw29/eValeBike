@@ -198,6 +198,17 @@ public class TechnicianController {
 
 
 
+    @GetMapping("/reports-by-bike/{qr}")
+    public String getReportsByBike(@PathVariable("qr") String bikeQr, Model model) {
+        List<ReportViewModel> reports = testReportService.getTestReportsByBikeQR(bikeQr) ;
+        model.addAttribute("bikeQr", bikeQr);
+        model.addAttribute("reports", reports);
+
+        return "/technician/reports-by-qr";
+    }
+
+
+
 
 
 

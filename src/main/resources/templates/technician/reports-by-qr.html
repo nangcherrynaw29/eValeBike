@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Reports for Bike [[${bikeQr}]]</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}">
+</head>
+<body>
+<div class="container mt-4">
+    <h2>Test Reports for Bike QR: <strong th:text="${bikeQr}">QR</strong></h2>
+
+    <table class="table mt-3">
+        <thead>
+        <tr>
+            <th>Test Run By</th>
+            <th>State</th>
+            <th>Type</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="report : ${reports}">
+            <td th:text="${#strings.substring(report.testReportEntries()[0].timestamp, 0, 10)}">Timestamp</td>
+            <td th:text="${report.technicianName()}">Technician</td>
+            <td th:text="${report.state}">State</td>
+            <td th:text="${report.type}">Type</td>
+
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
