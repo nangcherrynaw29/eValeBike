@@ -18,6 +18,9 @@ public abstract class User {
     private Role role;
     @Enumerated(EnumType.STRING)
     private UserStatus userStatus = PENDING;
+    @ManyToOne
+    @JoinColumn(name = "created_by_id")
+    private User createdBy;
 
     public User(Integer id, String name, String email, String password, UserStatus userStatus) {
         this.id = id;
@@ -115,5 +118,13 @@ public abstract class User {
 
     public boolean isActive() {
         return this.userStatus == UserStatus.APPROVED;
+    }
+
+    public User getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(User createdBy) {
+        this.createdBy = createdBy;
     }
 }

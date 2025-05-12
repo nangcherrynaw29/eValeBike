@@ -46,7 +46,8 @@ public class SuperAdminApiController {
         final Administrator administrator = adminService.saveAdmin(
                 addAdminDto.name(),
                 addAdminDto.email(),
-                addAdminDto.companyName());
+                addAdminDto.companyName(),
+                userDetails.getUserId());
         recentActivityService.save(new RecentActivity(Activity.PENDING_APPROVAL, "There is a new admin waiting for an approval: " + administrator.getEmail(), LocalDateTime.now(), userDetails.getUserId()));
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -61,30 +62,43 @@ public class SuperAdminApiController {
     }
 
     @GetMapping("/pending")
-    public ResponseEntity<List<PendingUserDto>> getPendingApprovals() {
-        List<PendingUserDto> pendingUsers = userService.getUsersByStatus(UserStatus.PENDING)
-                .stream()
+    public ResponseEntity<List<PendingUserDto>> getPendingApprovals(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        Role currentRole = userDetails.getRole();
+        List<PendingUserDto> pendingUsers = userService.getUsersByStatus(UserStatus.PENDING).stream()
+                .filter(user -> {
+                    Role targetRole = user.getRole();
+                    return (targetRole == Role.ADMIN && currentRole == Role.SUPER_ADMIN);
+                })
                 .map(PendingUserDto::fromUser)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(pendingUsers);
     }
 
     @GetMapping("/pending/count")
-    public ResponseEntity<Integer> getPendingCount() {
+    public ResponseEntity<Integer> getPendingCount(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        Role currentUserRole = userDetails.getRole();
         List<User> pendingUsers = userService.getUsersByStatus(UserStatus.PENDING);
-        return ResponseEntity.ok(pendingUsers.size());
+
+        long count = pendingUsers.stream()
+                .filter(user -> {
+                    Role pendingRole = user.getRole();
+                    return (pendingRole == Role.ADMIN && currentUserRole == Role.SUPER_ADMIN);
+                })
+                .count();
+
+        return ResponseEntity.ok((int) count);
     }
 
     @PostMapping("/{id}/approve")
     public ResponseEntity<String> approveUser(@PathVariable Integer id, @AuthenticationPrincipal CustomUserDetails userDetails) {
-        userService.updateUserStatusAndNotify(id, UserStatus.APPROVED);
+        userService.updateUserStatusAndNotify(id, UserStatus.APPROVED, userDetails.getUserId());
         recentActivityService.save(new RecentActivity(Activity.APPROVED_USER, "User " + id + " was approved", LocalDateTime.now(), userDetails.getUserId()));
         return ResponseEntity.ok("User approved successfully.");
     }
 
     @PostMapping("/{id}/reject")
     public ResponseEntity<String> rejectUser(@PathVariable Integer id, @AuthenticationPrincipal CustomUserDetails userDetails) {
-        userService.updateUserStatusAndNotify(id, UserStatus.REJECTED);
+        userService.updateUserStatusAndNotify(id, UserStatus.REJECTED, userDetails.getUserId());
         recentActivityService.save(new RecentActivity(Activity.REJECTED_APPROVAL, "User " + id + " was rejected", LocalDateTime.now(), userDetails.getUserId()));
         return ResponseEntity.ok("User rejected successfully.");
     }
