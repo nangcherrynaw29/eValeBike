@@ -17,7 +17,6 @@ import org.springframework.web.servlet.ModelAndView;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Controller
@@ -152,7 +151,7 @@ public class TechnicianController {
         } catch (RuntimeException e) {
             logger.error("Error fetching report for testId {}: {}", testId, e.getMessage(), e);
             model.addAttribute("error", e.getMessage());
-            return "technician/error";
+            return "error";
         }
     }
 

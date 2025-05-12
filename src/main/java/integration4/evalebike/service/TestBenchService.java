@@ -25,6 +25,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import org.springframework.http.HttpStatusCode;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -201,8 +202,8 @@ public class TestBenchService {
                     }
                     Bike bike = optionalBike.get();
 
-                    TestReport testReport = convertToTestReportWithNoEntries(test,bike,technicianUsername);
-                    List<TestReportEntry> entries = convertToTestReportEntries(entryDTOs,testReport);
+                    TestReport testReport = convertToTestReportWithNoEntries(test, bike, technicianUsername);
+                    List<TestReportEntry> entries = convertToTestReportEntries(entryDTOs, testReport);
 
                     testReport.setReportEntries(entries);
 

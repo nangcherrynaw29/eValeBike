@@ -165,7 +165,6 @@ public class TechnicianAPIController {
             TestReport testReport = testReportService.getTestReportWithEntriesById(testId);
             visualInspection.setTestReport(testReport);
             visualInspectionService.saveInspection(visualInspection);
-
             return ResponseEntity.ok("Inspection submitted successfully!");
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Failed to submit the inspection: " + e.getMessage());
