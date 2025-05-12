@@ -36,13 +36,13 @@ build_job:
     - ls -la
     - gradle build -x test
     - echo "Listing artifacts after build..."
-    - ls -la build.gradle settings.gradle src/ gradle/ gradlew gradlew.bat build/libs/
+    - ls -la build.gradle.kts settings.gradle.kts src/ gradle/ gradlew gradlew.bat build/libs/
   artifacts:
     paths:
       - build/libs/*.jar
       - build/libs/
-      - build.gradle
-      - settings.gradle
+      - build.gradle.kts
+      - settings.gradle.kts
       - src/
       - gradle/
       - gradlew
@@ -65,11 +65,11 @@ test_job:
     - ssh-keyscan -H $APP_SERVER >> ~/.ssh/known_hosts
   script:
     - echo "Verifying artifacts in working directory..."
-    - ls -la build.gradle settings.gradle src/ gradle/ gradlew gradlew.bat || { echo "Artifacts missing"; exit 1; }
+    - ls -la build.gradle.kts settings.gradle.kts src/ gradle/ gradlew gradlew.bat || { echo "Artifacts missing"; exit 1; }
     - echo "Creating directory on app server..."
     - ssh team4@$APP_SERVER "mkdir -p /home/team4/evalbike && chmod 755 /home/team4/evalbike" || { echo "Failed to create directory"; exit 1; }
     - echo "Copying project to app server..."
-    - scp -r build.gradle settings.gradle src/ gradle/ gradlew gradlew.bat team4@$APP_SERVER:/home/team4/evalbike/ || { echo "Failed to copy project files"; exit 1; }
+    - scp -r build.gradle.kts settings.gradle.kts src/ gradle/ gradlew gradlew.bat team4@$APP_SERVER:/home/team4/evalbike/ || { echo "Failed to copy project files"; exit 1; }
     - echo "Verifying Java and Gradle on app server..."
     - ssh team4@$APP_SERVER "java -version && /home/team4/evalbike/gradlew -v" || { echo "Java or Gradle not installed"; exit 1; }
     - echo "Running tests on app server..."
