@@ -11,4 +11,12 @@ import java.util.List;
 public interface AdminRepository extends JpaRepository<Administrator, Integer> {
 
     List<Administrator> findByUserStatus(UserStatus userStatus);
+    public List<Administrator> findByNameContainingIgnoreCase(String name);
+
+    public List<Administrator> findByEmailContainingIgnoreCase(String email);
+
+    public List<Administrator> findByCompanyNameContainingIgnoreCase(String companyName);
+
+
 }
+
