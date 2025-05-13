@@ -2,6 +2,8 @@ package integration4.evalebike.controller.technician;
 
 import integration4.evalebike.controller.technician.dto.*;
 import integration4.evalebike.controller.technician.dto.TestRequestDTO;
+import integration4.evalebike.controller.viewModel.ReportViewModel;
+import integration4.evalebike.controller.viewModel.TestReportEntryViewModel;
 import integration4.evalebike.domain.Bike;
 import integration4.evalebike.domain.BikeOwner;
 import integration4.evalebike.domain.TestReport;
@@ -23,7 +25,10 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Controller
@@ -170,4 +175,39 @@ public class TechnicianAPIController {
             return ResponseEntity.status(500).body("Failed to submit the inspection: " + e.getMessage());
         }
     }
+
+//    @GetMapping("/compare/{id1}/{id2}")
+//    public ResponseEntity<Map<String, Object>> compare(@PathVariable String id1, @PathVariable String id2) {
+//        try {
+//            List<ReportViewModel> reportViewModels = new ArrayList<>();
+//            List<TestReportEntryViewModel> summaries = new ArrayList<>();
+//
+//            for (String id : new String[]{id1, id2}) {
+//                TestReport report = testReportService.getTestReportWithEntriesById(id);
+//                if (report == null) {
+//                    Map<String, Object> errorResponse = new HashMap<>();
+//                    errorResponse.put("error", "Test report not found for ID: " + id);
+//                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+//                }
+//                ReportViewModel reportVm = ReportViewModel.from(report);
+//                reportViewModels.add(reportVm);
+//
+//                List<TestReportEntry> entries = report.getReportEntries();
+//                TestReportEntryViewModel summaryVm = (entries != null && !entries.isEmpty())
+//                        ? TestReportEntryViewModel.summarize(entries)
+//                        : null;
+//                summaries.add(summaryVm);
+//            }
+//
+//            Map<String, Object> response = new HashMap<>();
+//            response.put("reports", reportViewModels);
+//            response.put("summaries", summaries);
+//
+//            return ResponseEntity.ok(response);
+//        } catch (Exception e) {
+//            Map<String, Object> errorResponse = new HashMap<>();
+//            errorResponse.put("error", "Failed to compare reports: " + e.getMessage());
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+//        }
+//    }
 }

@@ -1,163 +1,174 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Test Report Comparison</title>
-  <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}">
-  <link rel="stylesheet" href="/css/dashboard.css">
-  <link rel="stylesheet" href="/css/global.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="/js/technician/download-pdf.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      background-color: #f4f6f9;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .container-limited {
+      max-width: 960px;
+      margin: auto;
+      padding: 2rem 1rem;
+    }
+
+    .card {
+      border-radius: 12px;
+      border: none;
+      overflow: hidden;
+    }
+
+    .card-header {
+      font-weight: bold;
+      font-size: 1.2rem;
+      padding: 1rem 1.25rem;
+    }
+
+    .table {
+      margin-bottom: 0;
+    }
+
+    .table thead {
+      background-color: #e9ecef;
+    }
+
+    .table th, .table td {
+      vertical-align: middle;
+      padding: 0.75rem 1rem;
+      border-color: #dee2e6;
+    }
+
+    .table tbody tr:hover {
+      background-color: inherit; /* disables hover effect */
+    }
+
+    .btn {
+      border-radius: 8px;
+    }
+  </style>
+
 </head>
 <body>
-<div class="page-wrapper d-flex flex-column min-vh-100">
-  <div th:insert="~{fragments/menu.html}"></div>
 
-  <div class="dashboard-container">
-    <div class="dashboard-header">
-      <h2 class="dashboard-title">Test Report Comparison</h2>
-      <div class="user-info">
-        <span>Welcome, <strong>Technician</strong>!</span>
-        <div class="user-avatar">T</div>
-      </div>
+<div class="container-limited mt-4">
+
+  <div class="card shadow-sm mb-4">
+    <div class="card-header">
+      Bike Under Test
     </div>
-
-    <div class="row">
-      <!-- Left Column: Report for Test A -->
-      <div class="col-md-6 mb-4">
-        <div class="card shadow-sm h-100">
-          <div class="card-header bg-primary text-white">
-            Report for Test A
-          </div>
-          <div class="card-body">
-            <div class="table-responsive">
-              <table class="table table-bordered table-striped">
-                <tbody>
-                <tr>
-                  <th>Bike QR</th><td th:text="${reports[0].bikeQR}">-</td>
-                  <th>Test Run By</th><td th:text="${reports[0].technicianName}">-</td>
-                </tr>
-                <tr>
-                  <th>Type</th><td th:text="${reports[0].type}">-</td>
-                  <th>Status</th><td th:text="${reports[0].state}">-</td>
-                </tr>
-                <tr>
-                  <th>Expiry Date</th>
-                  <td><span th:text="${#strings.replace(#strings.substring(reports[0].expiryDate, 0, 19), 'T', ' ')}">-</span></td>
-                  <th>Battery Capacity</th><td th:text="${reports[0].batteryCapacity}">-</td>
-                </tr>
-                <!-- More rows as necessary -->
-                </tbody>
-              </table>
-            </div>
-          </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-4">
+          <span th:text="${reports[0].bikeQR()}"></span>
         </div>
       </div>
-
-      <!-- Right Column: Report for Test B -->
-      <div class="col-md-6 mb-4">
-        <div class="card shadow-sm h-100">
-          <div class="card-header bg-primary text-white">
-            Report for Test B
-          </div>
-          <div class="card-body">
-            <div class="table-responsive">
-              <table class="table table-bordered table-striped">
-                <tbody>
-                <tr>
-                  <th>Bike QR</th><td th:text="${reports[1].bikeQR}">-</td>
-                  <th>Test Run By</th><td th:text="${reports[1].technicianName}">-</td>
-                </tr>
-                <tr>
-                  <th>Type</th><td th:text="${reports[1].type}">-</td>
-                  <th>Status</th><td th:text="${reports[1].state}">-</td>
-                </tr>
-                <tr>
-                  <th>Expiry Date</th>
-                  <td><span th:text="${#strings.replace(#strings.substring(reports[1].expiryDate, 0, 19), 'T', ' ')}">-</span></td>
-                  <th>Battery Capacity</th><td th:text="${reports[1].batteryCapacity}">-</td>
-                </tr>
-                <!-- More rows as necessary -->
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="row">
-      <!-- Left Column: Summary for Test A -->
-      <div class="col-md-6 mb-4">
-        <div class="card shadow-sm h-100">
-          <div class="card-header bg-secondary text-white">
-            Summary for Test A
-          </div>
-          <div class="card-body">
-            <div class="table-responsive">
-              <table class="table table-bordered table-striped">
-                <tbody>
-                <tr>
-                  <th>Avg Battery Voltage</th><td th:text="${summaries[0] != null ? summaries[0].batteryVoltage : 'N/A'}">-</td>
-                  <th>Avg Battery Current</th><td th:text="${summaries[0] != null ? summaries[0].batteryCurrent : 'N/A'}">-</td>
-                </tr>
-                <tr>
-                  <th>Avg Battery Capacity</th><td th:text="${summaries[0] != null ? summaries[0].batteryCapacity : 'N/A'}">-</td>
-                  <th>Battery Temp (°C)</th><td th:text="${summaries[0] != null ? summaries[0].batteryTemperatureCelsius : 'N/A'}">-</td>
-                </tr>
-                <tr>
-                  <th>Charge Status</th><td th:text="${summaries[0] != null ? summaries[0].chargeStatus : 'N/A'}">-</td>
-                  <th>Assistance Level</th><td th:text="${summaries[0] != null ? summaries[0].assistanceLevel : 'N/A'}">-</td>
-                </tr>
-                <!-- More rows as necessary -->
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Right Column: Summary for Test B -->
-      <div class="col-md-6 mb-4">
-        <div class="card shadow-sm h-100">
-          <div class="card-header bg-secondary text-white">
-            Summary for Test B
-          </div>
-          <div class="card-body">
-            <div class="table-responsive">
-              <table class="table table-bordered table-striped">
-                <tbody>
-                <tr>
-                  <th>Avg Battery Voltage</th><td th:text="${summaries[1] != null ? summaries[1].batteryVoltage : 'N/A'}">-</td>
-                  <th>Avg Battery Current</th><td th:text="${summaries[1] != null ? summaries[1].batteryCurrent : 'N/A'}">-</td>
-                </tr>
-                <tr>
-                  <th>Avg Battery Capacity</th><td th:text="${summaries[1] != null ? summaries[1].batteryCapacity : 'N/A'}">-</td>
-                  <th>Battery Temp (°C)</th><td th:text="${summaries[1] != null ? summaries[1].batteryTemperatureCelsius : 'N/A'}">-</td>
-                </tr>
-                <tr>
-                  <th>Charge Status</th><td th:text="${summaries[1] != null ? summaries[1].chargeStatus : 'N/A'}">-</td>
-                  <th>Assistance Level</th><td th:text="${summaries[1] != null ? summaries[1].assistanceLevel : 'N/A'}">-</td>
-                </tr>
-                <!-- More rows as necessary -->
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="text-center mt-4">
-      <a th:href="@{/technician/test-report-dashboard}" class="btn btn-primary">Back to Test Report Dashboard</a>
-      <button id="downloadPdfBtn" class="btn btn-success">Save as PDF</button>
     </div>
   </div>
 
-  <div th:insert="~{fragments/footer.html}"></div>
+  <div class="card shadow-sm mb-4">
+    <div class="card-header">
+      Test Reports Comparison
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover table-sm">
+          <thead>
+          <tr>
+            <th>Detail</th>
+            <th>Test A</th>
+            <th>Test B</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <th>Test ID</th>
+            <td th:text="${reports[0].id()}">-</td>
+            <td th:text="${reports[1].id()}">-</td>
+          </tr>
+          <tr>
+            <th>Test Run By</th>
+            <td th:text="${reports[0].technicianName()}">-</td>
+            <td th:text="${reports[1].technicianName()}">-</td>
+          </tr>
+          <tr>
+            <th>Test Type</th>
+            <td th:text="${reports[0].type()}">-</td>
+            <td th:text="${reports[1].type()}">-</td>
+          </tr>
+          <tr>
+            <th>Status</th>
+            <td th:text="${reports[0].state()}">-</td>
+            <td th:text="${reports[1].state()}">-</td>
+          </tr>
+          <tr>
+            <th>Test Date</th>
+            <td th:text="${#strings.substring(reports[0].testReportEntries()[0].timestamp, 0, 10)}">-</td>
+            <td th:text="${#strings.substring(reports[1].testReportEntries()[0].timestamp, 0, 10)}">-</td>
+          </tr>
+          <tr>
+            <th>Battery Capacity</th>
+            <td th:text="${reports[0].batteryCapacity()}">-</td>
+            <td th:text="${reports[1].batteryCapacity()}">-</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow-sm mb-4">
+    <div class="card-header">
+      Test Metrics Comparison
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover table-sm">
+          <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Test A</th>
+            <th>Test B</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr><th>Avg Battery Voltage</th><td th:text="${summaries[0].batteryVoltage()}">-</td><td th:text="${summaries[1].batteryVoltage()}">-</td></tr>
+          <tr><th>Avg Battery Current</th><td th:text="${summaries[0].batteryCurrent()}">-</td><td th:text="${summaries[1].batteryCurrent()}">-</td></tr>
+          <tr><th>Avg Battery Capacity</th><td th:text="${summaries[0].batteryCapacity()}">-</td><td th:text="${summaries[1].batteryCapacity()}">-</td></tr>
+          <tr><th>Battery Temp (°C)</th><td th:text="${summaries[0].batteryTemperatureCelsius()}">-</td><td th:text="${summaries[1].batteryTemperatureCelsius()}">-</td></tr>
+          <tr><th>Charge Status</th><td th:text="${summaries[0].chargeStatus()}">-</td><td th:text="${summaries[1].chargeStatus()}">-</td></tr>
+          <tr><th>Assistance Level</th><td th:text="${summaries[0].assistanceLevel()}">-</td><td th:text="${summaries[1].assistanceLevel()}">-</td></tr>
+          <tr><th>Torque Crank (Nm)</th><td th:text="${summaries[0].torqueCrankNm()}">-</td><td th:text="${summaries[1].torqueCrankNm()}">-</td></tr>
+          <tr><th>Wheel Speed (km/h)</th><td th:text="${summaries[0].bikeWheelSpeedKmh()}">-</td><td th:text="${summaries[1].bikeWheelSpeedKmh()}">-</td></tr>
+          <tr><th>Cadence (RPM)</th><td th:text="${summaries[0].cadanceRpm()}">-</td><td th:text="${summaries[1].cadanceRpm()}">-</td></tr>
+          <tr><th>Engine RPM</th><td th:text="${summaries[0].engineRpm()}">-</td><td th:text="${summaries[1].engineRpm()}">-</td></tr>
+          <tr><th>Engine Power (W)</th><td th:text="${summaries[0].enginePowerWatt()}">-</td><td th:text="${summaries[1].enginePowerWatt()}">-</td></tr>
+          <tr><th>Wheel Power (W)</th><td th:text="${summaries[0].wheelPowerWatt()}">-</td><td th:text="${summaries[1].wheelPowerWatt()}">-</td></tr>
+          <tr><th>Roll Torque</th><td th:text="${summaries[0].rollTorque()}">-</td><td th:text="${summaries[1].rollTorque()}">-</td></tr>
+          <tr><th>Load cell (N)</th><td th:text="${summaries[0].loadcellN()}">-</td><td th:text="${summaries[1].loadcellN()}">-</td></tr>
+          <tr><th>Rol Hz</th><td th:text="${summaries[0].rolHz()}">-</td><td th:text="${summaries[1].rolHz()}">-</td></tr>
+          <tr><th>Horizontal Inclination</th><td th:text="${summaries[0].horizontalInclination()}">-</td><td th:text="${summaries[1].horizontalInclination()}">-</td></tr>
+          <tr><th>Vertical Inclination</th><td th:text="${summaries[0].verticalInclination()}">-</td><td th:text="${summaries[1].verticalInclination()}">-</td></tr>
+          <tr><th>Load Power</th><td th:text="${summaries[0].loadPower()}">-</td><td th:text="${summaries[1].loadPower()}">-</td></tr>
+          <tr><th>Status Plug</th><td th:text="${summaries[0].statusPlug()}">-</td><td th:text="${summaries[1].statusPlug()}">-</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="text-center mt-4">
+    <a th:href="@{/technician/test-report-dashboard}" class="btn btn-primary">Back to Test Report Dashboard</a>
+  </div>
+
 </div>
-<script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>
