@@ -12,7 +12,6 @@
     <title>Technician Dashboard</title>
 </head>
 <body>
-<input type="hidden" id="user-role" th:value="${userRole}">
 <div class="page-wrapper">
 <div th:insert="~{fragments/menu.html}"></div>
 <div class="dashboard-container">
@@ -118,7 +117,7 @@
                         <!-- Dynamic pagination -->
                     </ul>
                 </nav>
-                <button id="add-technician-btn" class="btn btn-primary btn-block" sec:authorize="hasRole('ADMIN')">
+                <button id="add-technician-btn" class="btn btn-primary btn-block">
                     <i class="fas fa-user-plus"></i> Add Technician
                 </button>
             </div>

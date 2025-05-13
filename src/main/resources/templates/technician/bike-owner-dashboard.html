@@ -15,7 +15,6 @@
     <script src="/js/technician/bike-owner-dashboard.js" type="module" defer></script>
 </head>
 <body>
-<input type="hidden" id="user-role" th:value="${userRole}">
 <div class="page-wrapper">
     <div th:insert="~{fragments/menu.html}"></div>
     <div class="main-content-wrapper dashboard-container flex-grow-1">
@@ -102,7 +101,7 @@
                         <ul class="pagination justify-content-center" id="pagination-controls">
                         </ul>
                     </nav>
-                    <button id="add-bikeowner-btn" class="btn btn-primary" sec:authorize="hasRole('TECHNICIAN')">
+                    <button id="add-bikeowner-btn" class="btn btn-primary">
                         <i class="fas fa-user-plus"></i> Add Customer
                     </button>
                 </div>

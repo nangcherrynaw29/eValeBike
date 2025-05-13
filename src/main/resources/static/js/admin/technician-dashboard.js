@@ -81,24 +81,19 @@ document.addEventListener("DOMContentLoaded", () => {
         const start = (currentPage - 1) * techniciansPerPage;
         const end = start + techniciansPerPage;
         const currentTechnicians = techniciansData.slice(start, end);
-        const userRole = document.getElementById("user-role").value;
 
         currentTechnicians.forEach(technician => {
             const row = document.createElement("tr");
             row.dataset.id = technician.id;
 
-            let deleteButtonHtml = '';
-            if (userRole === 'ADMIN') {
-                deleteButtonHtml = `
-                <button class="btn btn-outline-danger delete-btn" data-id="${technician.id}">
-                    <i class="fa-solid fa-trash"></i>
-                </button>`;
-            }
-
             row.innerHTML = `
             <td>${technician.name}</td>
             <td>${technician.email}</td>
-            <td>${deleteButtonHtml}</td>
+            <td>
+            <button class="btn btn-outline-danger delete-btn" data-id="${technician.id}">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+            </td>
         `;
             technicianTableBody.appendChild(row);
         });

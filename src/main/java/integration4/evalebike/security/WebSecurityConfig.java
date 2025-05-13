@@ -25,10 +25,8 @@ public class WebSecurityConfig {
                         .requestMatchers("/technician/**").hasAnyRole("TECHNICIAN", "ADMIN", "SUPER_ADMIN")
                         .requestMatchers("/bikeOwner/**").hasAnyRole("BIKE_OWNER", "TECHNICIAN", "ADMIN", "SUPER_ADMIN")
                         .requestMatchers("/api/bike-owner/**").hasAnyRole("BIKE_OWNER", "TECHNICIAN", "ADMIN", "SUPER_ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/api/technician/**").hasAnyRole("TECHNICIAN", "ADMIN", "SUPER_ADMIN")
-                        .requestMatchers("/api/technician/**").hasRole("TECHNICIAN")
-                        .requestMatchers(HttpMethod.GET, "/api/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/technician/**").hasAnyRole("TECHNICIAN", "ADMIN", "SUPER_ADMIN")
+                        .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
                         .requestMatchers("/api/super-admin/**").hasRole("SUPER_ADMIN")
                         .requestMatchers(
                                 antMatcher(HttpMethod.GET, "/js/**"),

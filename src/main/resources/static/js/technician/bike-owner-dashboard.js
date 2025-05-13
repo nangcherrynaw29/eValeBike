@@ -1,4 +1,32 @@
 document.addEventListener("DOMContentLoaded", () => {
+    const addBikeOwnerBtn = document.querySelector("#add-bikeowner-btn");
+
+    if (addBikeOwnerBtn) {
+        addBikeOwnerBtn.addEventListener("click", async (e) => {
+            e.preventDefault();
+
+            try {
+                window.location.href = "/technician/bike-owners/add";
+            } catch (error) {
+                console.error("Error navigating:", error);
+                alert("Something went wrong while redirecting.");
+            }
+        });
+    }
+
+    const removeBikeOwnersButtons = document.querySelectorAll('.remove-bikeOwners-button');
+    removeBikeOwnersButtons.forEach(button => button.addEventListener('click', async e => {
+        const bikeOwnerId = button.getAttribute('data-bikeOwner-id');
+        button.disabled = true;
+        const result = await fetch(`/api/technician/bikeOwners/${bikeOwnerId}`, {method: 'DELETE'});
+        button.disabled = false;
+        if (result.status === 204) {
+            document.querySelector(`#owner-${bikeOwnerId}`).remove();
+        }
+    }));
+});
+
+document.addEventListener("DOMContentLoaded", () => {
     const rowsPerPage = 5;
     let currentPage = 1;
     let bikeOwners = [];
@@ -69,19 +97,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const start = (currentPage - 1) * rowsPerPage;
         const end = start + rowsPerPage;
         const pageData = bikeOwners.slice(start, end);
-        const userRole = document.getElementById("user-role").value;
 
         pageData.forEach(owner => {
             const tr = document.createElement('tr');
             tr.id = `owner-${owner.id}`;
-
-            let deleteButtonHtml = '';
-            if (userRole === 'TECHNICIAN') {
-                deleteButtonHtml = `
-                <button class="btn btn-outline-danger remove-bikeOwners-button" data-bikeOwner-id="${owner.id}">
-                    <i class="fa-solid fa-trash"></i>
-                </button>`;
-            }
 
             tr.innerHTML = `
                 <td>${owner.name}</td>
@@ -91,9 +110,25 @@ document.addEventListener("DOMContentLoaded", () => {
                 <td>
                     <a href="/technician/bikes/owner/${owner.id}" class="btn btn-primary">All Bikes</a>
                 </td>
-                <td>${deleteButtonHtml}</td>
+                <td>
+                <button class="btn btn-outline-danger remove-bikeOwners-button" data-bikeOwner-id="${owner.id}">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+                </td>
             `;
             tbody.appendChild(tr);
+        });
+
+        document.querySelectorAll('.remove-bikeOwners-button').forEach(button => {
+            button.addEventListener('click', async e => {
+                const bikeOwnerId = button.getAttribute('data-bikeOwner-id');
+                button.disabled = true;
+                const result = await fetch(`/api/technician/bikeOwners/${bikeOwnerId}`, { method: 'DELETE' });
+                button.disabled = false;
+                if (result.status === 204) {
+                    document.querySelector(`#owner-${bikeOwnerId}`).remove();
+                }
+            });
         });
     }
 
@@ -129,4 +164,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
         addPageItem('Next', currentPage + 1, currentPage === totalPages);
     }
+    const addBikeOwnerBtn = document.querySelector("#add-bikeowner-btn");
+    if (addBikeOwnerBtn) {
+        addBikeOwnerBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            window.location.href = "/technician/bike-owners/add";
+        });
+    }
+
 });
