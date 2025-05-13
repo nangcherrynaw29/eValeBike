@@ -4,13 +4,13 @@ import integration4.evalebike.controller.admin.dto.TestBenchMapper;
 import integration4.evalebike.controller.admin.dto.request.TechnicianRequestDTO;
 import integration4.evalebike.controller.admin.dto.response.TechnicianResponseDTO;
 import integration4.evalebike.controller.admin.dto.response.TestBenchResponseDTO;
-import integration4.evalebike.domain.Activity;
-import integration4.evalebike.domain.RecentActivity;
-import integration4.evalebike.domain.Technician;
+import integration4.evalebike.controller.superAdmin.dto.PendingUserDto;
+import integration4.evalebike.domain.*;
 import integration4.evalebike.security.CustomUserDetails;
 import integration4.evalebike.service.RecentActivityService;
 import integration4.evalebike.service.TechnicianService;
 import integration4.evalebike.service.TestBenchService;
+import integration4.evalebike.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -28,18 +28,20 @@ public class AdminApiController {
     private final TestBenchService testBenchService;
     private final TestBenchMapper testBenchMapper;
     private final RecentActivityService recentActivityService;
+    private final UserService userService;
 
-    public AdminApiController(TechnicianService technicianService, TestBenchService testBenchService, TestBenchMapper testBenchMapper, RecentActivityService recentActivityService) {
+    public AdminApiController(TechnicianService technicianService, TestBenchService testBenchService, TestBenchMapper testBenchMapper, RecentActivityService recentActivityService, UserService userService) {
         this.technicianService = technicianService;
         this.testBenchService = testBenchService;
         this.testBenchMapper = testBenchMapper;
         this.recentActivityService = recentActivityService;
+        this.userService = userService;
     }
 
     // Create a new technician
     @PostMapping()
     public ResponseEntity<TechnicianResponseDTO> createTechnician(@RequestBody final TechnicianRequestDTO technicianDTO, @AuthenticationPrincipal final CustomUserDetails userDetails) {
-        final Technician savedTechnician = technicianService.saveTechnician(technicianDTO.name(), technicianDTO.email());
+        final Technician savedTechnician = technicianService.saveTechnician(technicianDTO.name(), technicianDTO.email(), userDetails.getUserId());
         recentActivityService.save(new RecentActivity(Activity.CREATED_USER, "Technician " + technicianDTO.name() + " created", LocalDateTime.now(), userDetails.getUserId()));
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -89,5 +91,53 @@ public class AdminApiController {
         technicianService.deleteTechnician(id);
         recentActivityService.save(new RecentActivity(Activity.DELETED_USER, "Deleted technician with id: " + id, LocalDateTime.now(), userDetails.getUserId()));
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/pending")
+    public ResponseEntity<List<PendingUserDto>> getPendingApprovals(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        Role currentRole = userDetails.getRole();
+        List<PendingUserDto> pendingUsers = userService.getUsersByStatus(UserStatus.PENDING).stream()
+                .filter(user -> {
+                    Role targetRole = user.getRole();
+                    return (targetRole == Role.TECHNICIAN && currentRole == Role.ADMIN);
+                })
+                .filter(user -> {
+                    User targetedCreator = user.getCreatedBy();
+                    return (targetedCreator.getId() == userDetails.getUserId());
+                })
+                .map(PendingUserDto::fromUser)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(pendingUsers);
+    }
+
+    @GetMapping("/pending/count")
+    public ResponseEntity<Integer> getPendingCount(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        Role currentUserRole = userDetails.getRole();
+        List<User> pendingUsers = userService.getUsersByStatus(UserStatus.PENDING);
+
+        long count = pendingUsers.stream()
+                .filter(user -> {
+                    Role pendingRole = user.getRole();
+                    return (pendingRole == Role.TECHNICIAN && currentUserRole == Role.ADMIN);
+                })
+                .filter(user -> {
+                    User targetedCreator = user.getCreatedBy();
+                    return (targetedCreator.getId() == userDetails.getUserId());
+                })
+                .count();
+
+        return ResponseEntity.ok((int) count);
+    }
+
+    @PostMapping("/{id}/approve")
+    public ResponseEntity<String> approveUser(@PathVariable Integer id, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        userService.updateUserStatusAndNotify(id, UserStatus.APPROVED, userDetails.getUserId());
+        return ResponseEntity.ok("User approved successfully.");
+    }
+
+    @PostMapping("/{id}/reject")
+    public ResponseEntity<String> rejectUser(@PathVariable Integer id, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        userService.updateUserStatusAndNotify(id, UserStatus.REJECTED, userDetails.getUserId());
+        return ResponseEntity.ok("User rejected successfully.");
     }
 }

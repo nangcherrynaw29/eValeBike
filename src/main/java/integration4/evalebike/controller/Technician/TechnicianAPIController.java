@@ -7,13 +7,10 @@ import integration4.evalebike.controller.viewModel.TestReportEntryViewModel;
 import integration4.evalebike.domain.Bike;
 import integration4.evalebike.domain.BikeOwner;
 import integration4.evalebike.domain.TestReport;
-import integration4.evalebike.repository.TestReportRepository;
 import integration4.evalebike.domain.*;
 import integration4.evalebike.security.CustomUserDetails;
 import integration4.evalebike.service.*;
 import jakarta.validation.Valid;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -43,12 +40,12 @@ public class TechnicianAPIController {
     private final TestReportEntryService testReportEntryService;
     private final VisualInspectionService visualInspectionService;
     private final TestReportService testReportService;
-
+    private final TechnicianService technicianService;
 
     public TechnicianAPIController(BikeService bikeService, BikeOwnerService bikeOwnerService, BikeOwnerMapper bikeOwnerMapper,
                                    TestBenchService testBenchService, RecentActivityService recentActivityService,
                                    TestReportEntryService testReportEntryService, VisualInspectionService visualInspectionService,
-                                   TestReportService testReportService) {
+                                   TestReportService testReportService, TechnicianService technicianService) {
         this.bikeService = bikeService;
         this.bikeOwnerService = bikeOwnerService;
         this.testBenchService = testBenchService;
@@ -57,12 +54,33 @@ public class TechnicianAPIController {
         this.testReportEntryService = testReportEntryService;
         this.visualInspectionService = visualInspectionService;
         this.testReportService = testReportService;
+        this.technicianService = technicianService;
+    }
+
+    @GetMapping("/filteredBikeOwners")
+    public ResponseEntity<List<BikeOwnerDto>> getFilteredBikeOwners(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String email
+    ) {
+        List<BikeOwnerDto> filteredOwners = bikeOwnerService.getFiltered(name, email)
+                .stream()
+                .map(BikeOwnerDto::fromBikeOwner)
+                .toList();
+        return ResponseEntity.ok(filteredOwners);
     }
 
     @GetMapping("/bikeOwners")
     public ResponseEntity<List<BikeOwnerDto>> getAllAdmins() {
         final List<BikeOwnerDto> bikeOwners = bikeOwnerService.getAll().stream().map(bikeOwnerMapper::toBikeOwnerDto).toList();
         return ResponseEntity.ok(bikeOwners);
+    }
+
+    @GetMapping("/technicians/filter")
+    public List<Technician> filterTechnicians(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String email) {
+
+        return technicianService.getFilteredTechnicians(name, email);
     }
 
     @PostMapping("/bikes")
@@ -74,7 +92,7 @@ public class TechnicianAPIController {
 
     @PostMapping("/bikeOwners")
     public ResponseEntity<BikeOwnerDto> createBikeOwner(@RequestBody @Valid final AddBikeOwnerDto addBikeOwnerDto, @AuthenticationPrincipal final CustomUserDetails userDetails) throws Exception {
-        final BikeOwner bikeOwner = bikeOwnerService.add(addBikeOwnerDto.name(), addBikeOwnerDto.email(), addBikeOwnerDto.phoneNumber(), addBikeOwnerDto.birthDate());
+        final BikeOwner bikeOwner = bikeOwnerService.add(addBikeOwnerDto.name(), addBikeOwnerDto.email(), addBikeOwnerDto.phoneNumber(), addBikeOwnerDto.birthDate(), userDetails.getUserId());
         recentActivityService.save(new RecentActivity(Activity.CREATED_USER, "Created bike owner " + addBikeOwnerDto.name(), LocalDateTime.now(), userDetails.getUserId()));
         return ResponseEntity.status(HttpStatus.CREATED).body(bikeOwnerMapper.toBikeOwnerDto(bikeOwner));
     }
@@ -104,39 +122,39 @@ public class TechnicianAPIController {
         recentActivityService.save(new RecentActivity(Activity.INITIALIZED_TEST, "Test started successfully.", LocalDateTime.now(), userDetails.getUserId()));
 
         return Mono.fromCallable(() -> bikeService.findById(bikeQR))
-                    .flatMap(optionalBike -> optionalBike
-                            .map(Mono::just)
-                            .orElseGet(() -> Mono.error(new RuntimeException("Bike not found with QR: " + bikeQR))))
+                .flatMap(optionalBike -> optionalBike
+                        .map(Mono::just)
+                        .orElseGet(() -> Mono.error(new RuntimeException("Bike not found with QR: " + bikeQR))))
                 .flatMap(bike -> {
-            TestRequestDTO testRequestDTO = new TestRequestDTO(testType.toUpperCase(),
-                                                                bike.getAccuCapacity(),
-                                                                bike.getMaxSupport(),
-                                                                bike.getMaxEnginePower(),
-                                                                bike.getNominalEnginePower(),
-                                                                bike.getEngineTorque());
-            return testBenchService.processTest(testRequestDTO, technicianUsername, bikeQR).flatMap(response -> {
-                // Save partial TestReport
-                TestReport partialReport = new TestReport();
-                partialReport.setId(response.getId());
-                partialReport.setBike(bike); // Set the Bike entity
-                partialReport.setTechnicianName(technicianUsername);
-                try {
-                    testReportService.saveTestReport(partialReport);
-                } catch (Exception e) {
-                    return Mono.error(new RuntimeException("Failed to save partial TestReport", e));
-                }
-                return Mono.just("redirect:/technician/loading?testId=" + response.getId());
-            });
-        }).onErrorResume(e -> {
-            String errorMessage = "Failed to start test";
-            if (e.getMessage().contains("Bike not found")) {
-                errorMessage = "Bike not found with QR: " + bikeQR;
-            } else if (e.getMessage().contains("Bad Request")) {
-                errorMessage = "Invalid test parameters";
-            }
-            String encodedError = URLEncoder.encode(errorMessage, StandardCharsets.UTF_8);
-            return Mono.just("redirect:/technician/bikes?error=" + encodedError);
-        });
+                    TestRequestDTO testRequestDTO = new TestRequestDTO(testType.toUpperCase(),
+                            bike.getAccuCapacity(),
+                            bike.getMaxSupport(),
+                            bike.getMaxEnginePower(),
+                            bike.getNominalEnginePower(),
+                            bike.getEngineTorque());
+                    return testBenchService.processTest(testRequestDTO, technicianUsername, bikeQR).flatMap(response -> {
+                        // Save partial TestReport
+                        TestReport partialReport = new TestReport();
+                        partialReport.setId(response.getId());
+                        partialReport.setBike(bike); // Set the Bike entity
+                        partialReport.setTechnicianName(technicianUsername);
+                        try {
+                            testReportService.saveTestReport(partialReport);
+                        } catch (Exception e) {
+                            return Mono.error(new RuntimeException("Failed to save partial TestReport", e));
+                        }
+                        return Mono.just("redirect:/technician/loading?testId=" + response.getId());
+                    });
+                }).onErrorResume(e -> {
+                    String errorMessage = "Failed to start test";
+                    if (e.getMessage().contains("Bike not found")) {
+                        errorMessage = "Bike not found with QR: " + bikeQR;
+                    } else if (e.getMessage().contains("Bad Request")) {
+                        errorMessage = "Invalid test parameters";
+                    }
+                    String encodedError = URLEncoder.encode(errorMessage, StandardCharsets.UTF_8);
+                    return Mono.just("redirect:/technician/bikes?error=" + encodedError);
+                });
     }
 
     @GetMapping("/test-report-entries/{testId}")
