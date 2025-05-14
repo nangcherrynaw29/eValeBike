@@ -1,5 +1,6 @@
 package integration4.evalebike.service;
 
+import integration4.evalebike.controller.viewModel.ReportViewModel;
 import integration4.evalebike.domain.TestReport;
 import integration4.evalebike.repository.TestReportEntryRepository;
 import integration4.evalebike.repository.TestReportRepository;
@@ -20,7 +21,7 @@ public class TestReportService {
     }
 
     public List<TestReport> getAllReports() {
-        return testReportRepository.findAllWithBike();
+        return testReportRepository.findAllWithBikeAndReportEntries();
     }
 
 
@@ -36,13 +37,12 @@ public class TestReportService {
         testReportRepository.save(testReport);
     }
 
-
-
-
-
-
-
-
+    public List<ReportViewModel> getTestReportsByBikeQR(String bikeQr) {
+        return testReportRepository.findTestReportsByBikeQrWithBikeAndEntries(bikeQr)
+                .stream()
+                .map(ReportViewModel::from)
+                .toList();
+    }
 
 }
 
