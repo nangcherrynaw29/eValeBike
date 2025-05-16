@@ -117,10 +117,7 @@
             </div>
         </div>
 
-        <div class="text-center mt-4 mb-5">
-            <a th:href="@{/technician/test-report-dashboard}" class="btn btn-primary">Back to Test Report Dashboard</a>
-            <button id="downloadPdfBtn" class="btn btn-success">Save as PDF</button>
-        </div>
+
         <div class="row">
             <div class="col-12 mb-4">
                 <div class="card shadow-sm w-100">
@@ -151,7 +148,10 @@
         </div>
 
     </div>
-
+    <div class="text-center mt-4">
+        <a th:href="@{/technician/test-report-dashboard}" class="btn btn-primary">Back to Test Report Dashboard</a>
+        <button id="downloadPdfBtn" class="btn btn-success">Save as PDF</button>
+    </div>
     <div th:insert="~{fragments/footer.html}"></div>
 </div>
 <script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}"></script>
