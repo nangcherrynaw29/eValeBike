@@ -7,18 +7,17 @@ import integration4.evalebike.controller.admin.dto.response.TestBenchResponseDTO
 import integration4.evalebike.controller.superAdmin.dto.PendingUserDto;
 import integration4.evalebike.domain.*;
 import integration4.evalebike.security.CustomUserDetails;
-import integration4.evalebike.service.RecentActivityService;
-import integration4.evalebike.service.TechnicianService;
-import integration4.evalebike.service.TestBenchService;
-import integration4.evalebike.service.UserService;
+import integration4.evalebike.service.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -29,13 +28,15 @@ public class AdminApiController {
     private final TestBenchMapper testBenchMapper;
     private final RecentActivityService recentActivityService;
     private final UserService userService;
+    private final AdminService adminService;
 
-    public AdminApiController(TechnicianService technicianService, TestBenchService testBenchService, TestBenchMapper testBenchMapper, RecentActivityService recentActivityService, UserService userService) {
+    public AdminApiController(TechnicianService technicianService, TestBenchService testBenchService, TestBenchMapper testBenchMapper, RecentActivityService recentActivityService, UserService userService, AdminService adminService) {
         this.technicianService = technicianService;
         this.testBenchService = testBenchService;
         this.testBenchMapper = testBenchMapper;
         this.recentActivityService = recentActivityService;
         this.userService = userService;
+        this.adminService = adminService;
     }
 
     // Create a new technician
@@ -140,4 +141,26 @@ public class AdminApiController {
         userService.updateUserStatusAndNotify(id, UserStatus.REJECTED, userDetails.getUserId());
         return ResponseEntity.ok("User rejected successfully.");
     }
+
+    @GetMapping("/filterAdmin")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    public List<Administrator> filterAdmin(
+            @RequestParam String type,
+            @RequestParam String value) {
+
+        // Call the service method based on the type to filter accordingly
+        switch (type) {
+            case "name":
+                return adminService.filterAdminsByName(value);
+            case "email":
+                return adminService.filterAdminsByEmail(value);
+            case "companyName":
+                return adminService.filterAdminsByCompany(value);
+            default:
+                throw new IllegalArgumentException("Invalid filter type");
+        }
+    }
+
+
+
 }

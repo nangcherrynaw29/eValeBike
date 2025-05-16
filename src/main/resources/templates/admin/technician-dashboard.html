@@ -88,15 +88,17 @@
                     <h5>Technician Profiles</h5>
                 </div>
 
-                <div class="d-flex align-items-center gap-3 mb-3">
-                    <input type="text" id="filterValue" class="form-control w-auto" placeholder="Enter filter value" />
-                    <select id="filterType" class="form-select w-auto">
+            <div class="row mb-3">
+                 <div class="d-flex align-content-between">
+                    <input type="text" id="filterValue" class="me-2" placeholder="Enter name" />
+                    <select id="filterType" class="me-2">
                         <option value="name">Name</option>
                         <option value="email">Email</option>
                     </select>
                     <button class="btn btn-primary" id="search-btn">Search</button>
-                    <div id="no-results-message" style="display: none;">No results found</div>
                 </div>
+                <div id="no-results-message" class="text-danger" style="display: none;">No results found</div>
+            </div>
 
                 <div class="table-responsive">
                     <table class="table table-striped">

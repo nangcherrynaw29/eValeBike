@@ -28,7 +28,19 @@
     <div class="table-column">
         <div class="table-container">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5>All Bikes</h5>
+                <h4>All Bikes</h4>
+            </div>
+            <div class="row mb-3">
+                <div class="d-flex align-content-between">
+                    <input type="text" id="filterValue" class="me-2" placeholder="Enter name" />
+                    <select id="filterType" class="me-2">
+                        <option value="brand">Brand</option>
+                        <option value="model">Model</option>
+                        <option value="chassisNumber">Chassis Number</option>
+                    </select>
+                    <button id="searchBtn" class="btn btn-primary">Search</button>
+                </div>
+                <div id="no-results-message" class="text-danger" style="display: none;">No results found</div>
             </div>
             <table class="table table-striped">
                 <thead>
@@ -61,7 +73,6 @@
                             <img th:src="${bike.qrCodeImage}" alt="QR Code" class="img-thumbnail qr-code-img">
                         </div>
                     </td>
-
                     <td th:text="${bike.brand}"></td>
                     <td th:text="${bike.model}"></td>
                     <td th:text="${bike.chassisNumber}"></td>

@@ -11,4 +11,8 @@ import java.util.Optional;
 public interface BikeRepository extends JpaRepository<Bike, String> {
     Optional<Bike> findByBikeQR(String bikeQR);
 
+    List<Bike> findByBrandContainingIgnoreCase(String brand);
+    List<Bike> findByModelContainingIgnoreCase(String model);
+    List<Bike> findByChassisNumberContainingIgnoreCase(String chassisNumber);
+
 }

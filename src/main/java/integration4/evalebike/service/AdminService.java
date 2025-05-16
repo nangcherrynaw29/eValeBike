@@ -1,7 +1,6 @@
 package integration4.evalebike.service;
 
 import integration4.evalebike.domain.Administrator;
-import integration4.evalebike.domain.User;
 import integration4.evalebike.domain.UserStatus;
 import integration4.evalebike.exception.NotFoundException;
 import integration4.evalebike.repository.AdminRepository;
@@ -57,4 +56,18 @@ public class AdminService {
         Administrator admin = adminRepository.findById(id).orElseThrow(() -> new RuntimeException("Admin not found"));
         adminRepository.deleteById(id);
     }
+
+    public List<Administrator> filterAdminsByName(String name) {
+        return adminRepository.findByNameContainingIgnoreCase(name); // Adjust to your repo method
+    }
+
+    public List<Administrator> filterAdminsByEmail(String email) {
+        return adminRepository.findByEmailContainingIgnoreCase(email); // Adjust to your repo method
+    }
+
+    public List<Administrator> filterAdminsByCompany(String companyName) {
+        return adminRepository.findByCompanyNameContainingIgnoreCase(companyName); // Adjust to your repo method
+    }
+
+
 }

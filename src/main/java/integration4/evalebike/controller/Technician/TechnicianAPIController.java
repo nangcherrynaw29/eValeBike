@@ -194,5 +194,28 @@ public class TechnicianAPIController {
         }
     }
 
+    @GetMapping("/bikes/filterBikes")
+    public ResponseEntity<List<BikeDto>> filterBikes(
+            @RequestParam String filterType,
+            @RequestParam String filterValue
+    ) {
+        List<Bike> filtered = bikeService.getAll().stream()
+                .filter(bike -> {
+                    return switch (filterType.toLowerCase()) {
+                        case "brand" -> bike.getBrand() != null && bike.getBrand().toLowerCase().contains(filterValue.toLowerCase());
+                        case "model" -> bike.getModel() != null && bike.getModel().toLowerCase().contains(filterValue.toLowerCase());
+                        case "chassisnumber" -> bike.getChassisNumber() != null && bike.getChassisNumber().toLowerCase().contains(filterValue.toLowerCase());
+                        default -> false;
+                    };
+                })
+                .toList();
+
+        List<BikeDto> dtos = filtered.stream().map(BikeDto::toBikeDto).toList();
+        return ResponseEntity.ok(dtos);
+    }
+
+
+
+
 
 }

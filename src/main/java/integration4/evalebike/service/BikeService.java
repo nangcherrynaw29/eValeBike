@@ -18,10 +18,12 @@ import java.util.Optional;
 public class BikeService {
     private final BikeRepository bikeRepository;
     private final BikeOwnerBikeRepository bikeOwnerBikeRepository;
+    private final QrCodeService qrCodeService;
 
-    public BikeService(BikeRepository bikeRepository, BikeOwnerBikeRepository bikeOwnerBikeRepository) {
+    public BikeService(BikeRepository bikeRepository, BikeOwnerBikeRepository bikeOwnerBikeRepository, QrCodeService qrCodeService) {
         this.bikeRepository = bikeRepository;
         this.bikeOwnerBikeRepository = bikeOwnerBikeRepository;
+        this.qrCodeService = qrCodeService;
     }
 
     public List<Bike> getAll() {
@@ -65,4 +67,15 @@ public class BikeService {
         }).orElseThrow(() -> new RuntimeException("Bike not found"));
     }
 
+    public List<Bike> findByBrand(String brand) {
+        return bikeRepository.findByBrandContainingIgnoreCase(brand);
+    }
+
+    public List<Bike> findByModel(String model) {
+        return bikeRepository.findByModelContainingIgnoreCase(model);
+    }
+
+    public List<Bike> findByChassisNumber(String chassisNumber) {
+        return bikeRepository.findByChassisNumberContainingIgnoreCase(chassisNumber);
+    }
 }

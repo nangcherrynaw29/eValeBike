@@ -66,7 +66,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (backToDashboardBtn) {
         backToDashboardBtn.addEventListener("click", function () {
             console.log("Back to dashboard button clicked!");
-            window.history.back();
+            window.location.href = "/technician/bikes";  // needs to be changed to window.history.back(); after
         });
     }
 });

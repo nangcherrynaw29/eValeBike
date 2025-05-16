@@ -3,6 +3,70 @@ document.addEventListener("DOMContentLoaded", async () => {
     const adminTableBody = document.getElementById("admin-table-body");
     const paginationContainer = document.querySelector(".pagination");
 
+    const filterInput = document.getElementById("filter-input");
+    const filterDropDown = document.getElementById("filter-dropdown");
+    const searchBtn = document.getElementById("search-btn");
+    const tableBody = document.getElementById("admin-table-body");
+    const noResultMessage = document.getElementById("no-results-message");
+
+
+    searchBtn.addEventListener('click', () => {
+        const query = filterInput.value.trim();
+        const field = filterDropDown.value;
+        if (query) fetchFilteredAdmins(query, field);
+    });
+
+
+    function fetchFilteredAdmins(query, field) {
+        let params = new URLSearchParams();
+        params.append('type', field);
+        params.append('value', query);
+
+        const url = `/api/admin/technicians/filterAdmin?${params.toString()}`;
+        console.log('Request URL:', url);
+
+        fetch(url, {
+            method: 'GET'
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                updateAdminTable(data);
+            })
+            .catch(error => {
+                console.error('Error fetching admins:', error);
+            });
+    }
+
+
+    function updateAdminTable(admins) {
+        tableBody.innerHTML = '';
+
+        if (admins.length === 0) {
+            noResultMessage.style.display = 'block';
+            return;
+        }
+
+        noResultMessage.style.display = 'none';
+
+        admins.forEach(admin => {
+            const row = document.createElement('tr');
+
+            row.innerHTML = `
+            <td>${admin.name}</td>
+            <td>${admin.email}</td>
+            <td>${admin.companyName || ''}</td>
+        `;
+
+            tableBody.appendChild(row);
+        });
+    }
+
+
     const adminsPerPage = 5;
     let currentPage = 1;
     let adminData = [];
@@ -13,6 +77,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             window.location.href = "/super-admin/admins/add";
         });
     }
+
 
     async function loadAdminData() {
         try {
