@@ -441,3 +441,6 @@ SELECT setval('app_user_id_seq', COALESCE((SELECT MAX(id) FROM app_user), 0) + 1
 
 -- Reset recent_activity sequence
 SELECT setval('recent_activity_id_seq', COALESCE((SELECT MAX(id) FROM recent_activity), 0) + 1, false);
+
+-- Reset company sequence
+SELECT setval('company_id_seq', COALESCE((SELECT MAX(id) FROM company), 0) + 1, false);
