@@ -24,8 +24,11 @@
         <li class="nav-item" sec:authorize="hasRole('SUPER_ADMIN')">
           <a class="nav-link" th:href="@{/super-admin/admins}">Admin Dashboard</a>
         </li>
-        <li class="nav-item" sec:authorize="hasAnyRole('SUPER_ADMIN','TECHNICIAN')">
+        <li class="nav-item" sec:authorize="hasAnyRole('SUPER_ADMIN', 'ADMIN', 'TECHNICIAN')">
           <a class="nav-link" th:href="@{/technician/test-report-dashboard}">Test Report Dashboard</a>
+        </li>
+        <li class="nav-item" sec:authorize="hasRole('SUPER_ADMIN')">
+          <a class="nav-link" th:href="@{/super-admin/companies/add}">Add Company</a>
         </li>
 
       </ul>

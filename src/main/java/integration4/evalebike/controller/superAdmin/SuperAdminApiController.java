@@ -6,6 +6,7 @@ import integration4.evalebike.controller.superAdmin.dto.PendingUserDto;
 import integration4.evalebike.domain.*;
 import integration4.evalebike.security.CustomUserDetails;
 import integration4.evalebike.service.AdminService;
+import integration4.evalebike.service.CompanyService;
 import integration4.evalebike.service.RecentActivityService;
 import integration4.evalebike.service.UserService;
 import org.springframework.http.HttpStatus;
@@ -24,12 +25,14 @@ public class SuperAdminApiController {
     private final AdminMapper adminMapper;
     private final RecentActivityService recentActivityService;
     private final UserService userService;
+    private final CompanyService companyService;
 
-    public SuperAdminApiController(AdminService adminService, AdminMapper adminMapper, RecentActivityService recentActivityService, UserService userService) {
+    public SuperAdminApiController(AdminService adminService, AdminMapper adminMapper, RecentActivityService recentActivityService, UserService userService, CompanyService companyService) {
         this.adminService = adminService;
         this.adminMapper = adminMapper;
         this.recentActivityService = recentActivityService;
         this.userService = userService;
+        this.companyService = companyService;
     }
 
     //  A list of administrator
@@ -46,7 +49,7 @@ public class SuperAdminApiController {
         final Administrator administrator = adminService.saveAdmin(
                 addAdminDto.name(),
                 addAdminDto.email(),
-                addAdminDto.companyName(),
+                companyService.findById(addAdminDto.companyId()),
                 userDetails.getUserId());
         recentActivityService.save(new RecentActivity(Activity.PENDING_APPROVAL, "There is a new admin waiting for an approval: " + administrator.getEmail(), LocalDateTime.now(), userDetails.getUserId()));
         return ResponseEntity

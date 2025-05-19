@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import java.nio.file.*;
+
 @Controller
 @RequestMapping("/api/technician")
 public class TechnicianAPIController {
@@ -70,8 +72,8 @@ public class TechnicianAPIController {
     }
 
     @GetMapping("/bikeOwners")
-    public ResponseEntity<List<BikeOwnerDto>> getAllAdmins() {
-        final List<BikeOwnerDto> bikeOwners = bikeOwnerService.getAll().stream().map(bikeOwnerMapper::toBikeOwnerDto).toList();
+    public ResponseEntity<List<BikeOwnerDto>> getAllAdmins(@AuthenticationPrincipal final CustomUserDetails userDetails) {
+        final List<BikeOwnerDto> bikeOwners = bikeOwnerService.getAll(userDetails).stream().map(bikeOwnerMapper::toBikeOwnerDto).toList();
         return ResponseEntity.ok(bikeOwners);
     }
 
@@ -213,6 +215,38 @@ public class TechnicianAPIController {
         List<BikeDto> dtos = filtered.stream().map(BikeDto::toBikeDto).toList();
         return ResponseEntity.ok(dtos);
     }
+
+
+    @PostMapping("/send-report-email/{reportId}")
+    public ResponseEntity<?> sendReportEmail(@PathVariable String reportId) {
+        try {
+            testReportService.sendTestReportEmail(reportId);
+            return ResponseEntity.ok("Email sent successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to send email: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/upload-report-pdf/{reportId}")
+    public ResponseEntity<?> uploadPdf(@PathVariable String reportId,
+                                       @RequestBody byte[] pdfData) {
+        try {
+            if (pdfData == null || pdfData.length == 0) {
+                return ResponseEntity.badRequest().body("No PDF data received.");
+            }
+
+            Path pdfPath = Paths.get("uploads", reportId + ".pdf");
+            Files.createDirectories(pdfPath.getParent());
+            Files.write(pdfPath, pdfData);
+
+            return ResponseEntity.ok("PDF uploaded successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to upload PDF: " + e.getMessage());
+        }
+    }
+
 
 
 

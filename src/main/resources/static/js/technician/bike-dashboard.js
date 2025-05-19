@@ -1,3 +1,4 @@
+
 document.addEventListener("DOMContentLoaded", () => {
     const removeBikeButtons = document.querySelectorAll('.remove-bike-button');
     removeBikeButtons.forEach(button => button.addEventListener('click', async e => {

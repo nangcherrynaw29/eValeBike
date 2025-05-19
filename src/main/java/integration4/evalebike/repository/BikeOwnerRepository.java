@@ -1,6 +1,7 @@
 package integration4.evalebike.repository;
 
 import integration4.evalebike.domain.BikeOwner;
+import integration4.evalebike.domain.Company;
 import integration4.evalebike.domain.UserStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -15,6 +16,7 @@ public interface BikeOwnerRepository extends JpaRepository<BikeOwner, Integer> {
     long countByBirthdayToday(@Param("month") int month, @Param("day") int day);
 
     List<BikeOwner> findByUserStatus(UserStatus userStatus);
+    List<BikeOwner> findByUserStatusAndCompany(UserStatus status, Company company);
 
     @Query("SELECT b FROM BikeOwner b " +
             "WHERE b.userStatus = :status " +

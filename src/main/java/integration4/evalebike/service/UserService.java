@@ -3,11 +3,13 @@ package integration4.evalebike.service;
 import integration4.evalebike.domain.Role;
 import integration4.evalebike.domain.User;
 import integration4.evalebike.domain.UserStatus;
+import integration4.evalebike.exception.NotFoundException;
 import integration4.evalebike.repository.UserRepository;
 import integration4.evalebike.utility.PasswordUtility;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.expression.ExpressionException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 

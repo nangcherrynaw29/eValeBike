@@ -1,3 +1,4 @@
+
 const metricDefinitions = [
     { label: "Battery Voltage", field: "batteryVoltage", color: "#1D4ED8" },
     { label: "Battery Current", field: "batteryCurrent", color: "#F97316" },

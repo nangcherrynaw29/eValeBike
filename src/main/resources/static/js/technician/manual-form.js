@@ -1,3 +1,4 @@
+
 document.addEventListener('DOMContentLoaded', function () {
     const saveAndStartButton = document.querySelector('button[type="submit"].btn-primary');
     const manualTestForm = document.getElementById('manualTestForm');
