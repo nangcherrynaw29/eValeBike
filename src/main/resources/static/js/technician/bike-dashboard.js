@@ -1,12 +1,26 @@
 document.addEventListener("DOMContentLoaded", () => {
     const removeBikeButtons = document.querySelectorAll('.remove-bike-button');
     removeBikeButtons.forEach(button => button.addEventListener('click', async e => {
+        e.preventDefault();
         const bikeId = button.getAttribute('data-bike-id');
+
+        const confirmed = confirm("Are you sure you want to delete this bike? \nThis action is irreversible.");
+        if (!confirmed) return;
+
         button.disabled = true;
-        const result = await fetch(`/api/technician/bikes/${bikeId}`, {method: 'DELETE'});
-        button.disabled = false;
-        if (result.status === 204) {
-            document.querySelector(`#bike-${bikeId}`).remove();
+        try {
+            const result = await fetch(`/api/technician/bikes/${bikeId}`, {method: 'DELETE'});
+            button.disabled = false;
+
+            if (result.status === 204) {
+                document.querySelector(`#bike-${bikeId}`)?.remove();
+            } else {
+                alert("Failed to delete the bike. Please try again.");
+            }
+        } catch (error) {
+            console.error("Error deleting bike:", error);
+            alert("An error occurred while deleting the bike.");
+            button.disabled = false;
         }
     }));
 });

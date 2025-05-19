@@ -50,7 +50,7 @@ public class UserService {
         User approver = userRepository.findById(approverUser)
                 .orElseThrow(() -> new RuntimeException("User not found with ID: " + id));
 
-        // Validate if approver has permission
+        // Validate if the approver has permission
         if (!isValidApproval(userToApprove, approver)) {
             throw new AccessDeniedException("You are not authorized to approve this user.");
         }

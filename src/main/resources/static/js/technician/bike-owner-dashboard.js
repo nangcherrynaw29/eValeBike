@@ -121,12 +121,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
         document.querySelectorAll('.remove-bikeOwners-button').forEach(button => {
             button.addEventListener('click', async e => {
+                e.preventDefault();
                 const bikeOwnerId = button.getAttribute('data-bikeOwner-id');
+
+                const confirmed = confirm("Are you sure you want to delete this customer? \nThis action cannot be undone.");
+                if (!confirmed) return;
+
                 button.disabled = true;
-                const result = await fetch(`/api/technician/bikeOwners/${bikeOwnerId}`, { method: 'DELETE' });
-                button.disabled = false;
-                if (result.status === 204) {
-                    document.querySelector(`#owner-${bikeOwnerId}`).remove();
+                try {
+                    const result = await fetch(`/api/technician/bikeOwners/${bikeOwnerId}`, {method: 'DELETE'});
+                    button.disabled = false;
+
+                    if (result.status === 204) {
+                        document.querySelector(`#owner-${bikeOwnerId}`).remove();
+                    } else {
+                        alert("Failed to delete the customer. Please try again.");
+                    }
+                } catch (error) {
+                    console.error("Error deleting customer:", error);
+                    alert("An error occurred while deleting the customer.");
+                    button.disabled = false;
                 }
             });
         });
@@ -164,6 +178,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         addPageItem('Next', currentPage + 1, currentPage === totalPages);
     }
+
     const addBikeOwnerBtn = document.querySelector("#add-bikeowner-btn");
     if (addBikeOwnerBtn) {
         addBikeOwnerBtn.addEventListener("click", (e) => {
