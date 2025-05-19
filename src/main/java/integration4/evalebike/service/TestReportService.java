@@ -4,9 +4,17 @@ import integration4.evalebike.controller.viewModel.ReportViewModel;
 import integration4.evalebike.domain.TestReport;
 import integration4.evalebike.repository.TestReportEntryRepository;
 import integration4.evalebike.repository.TestReportRepository;
+import jakarta.mail.internet.MimeMessage;
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @Service
@@ -14,6 +22,9 @@ import java.util.List;
 public class TestReportService {
     private final TestReportRepository testReportRepository;
     private final TestReportEntryRepository repoTestReportEntry;
+
+    @Autowired
+    private JavaMailSender mailSender;
 
     public TestReportService(TestReportRepository testReportRepository, TestReportEntryRepository repoTestReportEntry) {
         this.testReportRepository = testReportRepository;
@@ -44,7 +55,40 @@ public class TestReportService {
                 .toList();
     }
 
-}
+    public void sendTestReportEmail(String reportId) throws Exception {
+        TestReport report = testReportRepository.findById(reportId)
+                .orElseThrow(() -> new Exception("Report not found"));
+
+        // Get bike owner's email
+        String email = report.getBike()
+                .getBikeList()
+                .stream()
+                .findFirst()
+                .map(bikeOwnerBike -> bikeOwnerBike.getBikeOwner().getEmail())
+                .orElseThrow(() -> new Exception("Bike owner email not found"));
+
+        // Read the uploaded PDF from disk
+        Path pdfPath = Paths.get("uploads", reportId + ".pdf");
+        if (!Files.exists(pdfPath)) {
+            throw new Exception("PDF file not found for report: " + reportId);
+        }
+        byte[] pdfBytes = Files.readAllBytes(pdfPath);
+
+        // Prepare and send email
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+        helper.setTo(email);
+        helper.setSubject("Your Test Report");
+        helper.setText("Please find attached the test report for your bike.");
+        helper.addAttachment("TestReport.pdf", new ByteArrayResource(pdfBytes));
+
+        mailSender.send(message);
+    }
+    }
+
+
+
 
 
 

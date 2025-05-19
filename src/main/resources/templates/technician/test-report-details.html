@@ -5,13 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Test Report Detail</title>
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}">
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
     <link rel="stylesheet" href="/css/dashboard.css">
     <link rel="stylesheet" href="/css/global.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="/js/technician/download-pdf.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <script src="/js/technician/download-pdf.js" type="module" defer></script>
+    <script src="/js/technician/email.js" defer type="module"></script>
+
 </head>
-<body>
+<body th:attr="data-report-id=${report.id}">
 <div class="page-wrapper d-flex flex-column min-vh-100">
     <div th:insert="~{fragments/menu.html}"></div>
 
@@ -150,7 +156,12 @@
     </div>
     <div class="text-center mt-4">
         <a th:href="@{/technician/test-report-dashboard}" class="btn btn-primary">Back to Test Report Dashboard</a>
+
         <button id="downloadPdfBtn" class="btn btn-success">Save as PDF</button>
+
+        <button id="sendEmailBtn" class="btn btn-info" ><i class="fas fa-paper-plane"></i> Send to Email</button>
+
+
     </div>
     <div th:insert="~{fragments/footer.html}"></div>
 </div>

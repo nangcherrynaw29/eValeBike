@@ -28,7 +28,6 @@ public class BikeOwnerService {
     private final PasswordUtility passwordUtility;
     private final UserRepository userRepository;
 
-    @Autowired
     public BikeOwnerService(BikeOwnerRepository bikeOwnerRepository, BikeOwnerBikeRepository bikeOwnerBikeRepository, BikeRepository bikeRepository, QrCodeService qrCodeService, PasswordUtility passwordUtility, UserRepository userRepository) {
         this.bikeOwnerRepository = bikeOwnerRepository;
         this.bikeOwnerBikeRepository = bikeOwnerBikeRepository;

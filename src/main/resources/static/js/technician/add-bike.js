@@ -1,3 +1,4 @@
+import { csrfToken, csrfHeader } from '/js/util/csrf.js';
 const form = document.querySelector('#add-bike-form');
 const dateInput = document.querySelector('#lastTestDate');
 
@@ -29,7 +30,9 @@ form.addEventListener('submit', async e => {
     const response = await fetch('/api/technician/bikes', {
         headers: {
             'Content-Type': 'application/json',
-            'Accept': 'application/json'
+            'Accept': 'application/json',
+            [csrfHeader]: csrfToken
+
         },
         method: 'POST',
         body: JSON.stringify({

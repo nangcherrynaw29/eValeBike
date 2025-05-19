@@ -17,7 +17,6 @@ import java.util.List;
 public class RecentActivityService {
     private final RecentActivityRepository recentActivityRepository;
 
-    @Autowired
     public RecentActivityService(RecentActivityRepository recentActivityRepository) {
         this.recentActivityRepository = recentActivityRepository;
     }

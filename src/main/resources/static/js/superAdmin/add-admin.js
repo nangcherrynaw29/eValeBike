@@ -1,4 +1,5 @@
 //Create a new admin
+import { csrfToken, csrfHeader } from '/js/util/csrf.js';
 
 document.addEventListener("DOMContentLoaded", function () {
     const form = document.querySelector('#add-admin-form');
@@ -24,7 +25,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json', // Send JSON data
-                    'Accept': 'application/json' // Expect JSON response
+                    'Accept': 'application/json', // Expect JSON response
+                    [csrfHeader]: csrfToken
+
                 },
                 body: jsonBody // Attach the JSON data
             });

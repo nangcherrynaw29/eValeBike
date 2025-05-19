@@ -1,3 +1,4 @@
+
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.querySelector('form');
     const checkboxes = document.querySelectorAll('.form-check-input');

@@ -1,10 +1,14 @@
+import { csrfToken, csrfHeader } from '/js/util/csrf.js';
+
 const form = document.querySelector('#add-bikeOwner-form');
 form.addEventListener('submit', async e => {
     e.preventDefault();
     const response = await fetch('/api/technician/bikeOwners', {
         headers: {
             'Content-Type': 'application/json',
-            'Accept': 'application/json'
+            'Accept': 'application/json',
+            [csrfHeader]: csrfToken
+
         },
         method: 'POST',
         body: JSON.stringify({

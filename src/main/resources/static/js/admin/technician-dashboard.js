@@ -1,3 +1,4 @@
+
 document.addEventListener("DOMContentLoaded", () => {
     const addTechnicianBtn = document.getElementById("add-technician-btn");
 
