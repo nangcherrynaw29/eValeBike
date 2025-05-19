@@ -5,6 +5,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const testIdInput = document.getElementById("testId");
     const testId = testIdInput ? testIdInput.value : null;
 
+    const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+
+
     form.addEventListener("submit", async (event) => {
         event.preventDefault();
         const submitButton = form.querySelector('button[type="submit"]');
@@ -44,7 +48,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const headers = {
             'Content-Type': 'application/json',
-            'Accept': 'application/json'
+            'Accept': 'application/json',
+                [csrfHeader]: csrfToken
         };
 
 
