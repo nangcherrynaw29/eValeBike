@@ -9,13 +9,13 @@ document.addEventListener("DOMContentLoaded", function () {
         // Collect form data
         const name = document.querySelector('#name').value;
         const email = document.querySelector('#email').value;
-        const companyName = document.querySelector('#companyName').value;
+        const company = document.querySelector('#company').value;
 
         // Create the data to send as a JSON object
         const jsonBody = JSON.stringify({
             name: name,
             email: email,
-            companyName: companyName
+            companyId: company
         });
 
         try {

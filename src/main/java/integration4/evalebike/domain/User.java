@@ -21,6 +21,9 @@ public abstract class User {
     @ManyToOne
     @JoinColumn(name = "created_by_id")
     private User createdBy;
+    @ManyToOne
+    @JoinColumn(name = "company_id", nullable = true)
+    private Company company;
 
     public User(Integer id, String name, String email, String password, UserStatus userStatus) {
         this.id = id;
@@ -29,6 +32,16 @@ public abstract class User {
         this.password = password;
         this.userStatus = userStatus;
         this.role = assignRole();
+    }
+
+    public User(String name, String email, String password, UserStatus userStatus, User createdBy, Company company) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.role = assignRole();
+        this.userStatus = userStatus;
+        this.createdBy = createdBy;
+        this.company = company;
     }
 
     public User(String name, String email) {
@@ -66,6 +79,10 @@ public abstract class User {
 
     public User() {
 
+    }
+
+    public boolean isActive() {
+        return this.userStatus == UserStatus.APPROVED;
     }
 
     public Integer getId() {
@@ -116,15 +133,19 @@ public abstract class User {
         this.userStatus = userStatus;
     }
 
-    public boolean isActive() {
-        return this.userStatus == UserStatus.APPROVED;
-    }
-
     public User getCreatedBy() {
         return createdBy;
     }
 
     public void setCreatedBy(User createdBy) {
         this.createdBy = createdBy;
+    }
+
+    public Company getCompany() {
+        return company;
+    }
+
+    public void setCompany(Company company) {
+        this.company = company;
     }
 }

@@ -1,4 +1,6 @@
 package integration4.evalebike.controller.superAdmin.dto;
 
-public record AdministratorDto(Integer id, String name, String email,String companyName) {
+import integration4.evalebike.domain.Company;
+
+public record AdministratorDto(Integer id, String name, String email, Company company) {
 }

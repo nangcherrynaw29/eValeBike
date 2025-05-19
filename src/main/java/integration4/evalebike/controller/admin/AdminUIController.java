@@ -37,7 +37,7 @@ public class AdminUIController {
                 .orElse("UNKNOWN");
         String userRole = role.replace("ROLE_", "");
 
-        modelAndView.addObject("technicians", TechniciansViewModel.fromTechnician(technicianService.getAll()));
+        modelAndView.addObject("technicians", TechniciansViewModel.fromTechnician(technicianService.getAll(userDetails)));
         modelAndView.addObject("testBenches", testBenchService.getAllTestBenches());
         modelAndView.addObject("userRole", userRole);
         return modelAndView;

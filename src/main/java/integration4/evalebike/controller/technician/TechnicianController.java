@@ -66,7 +66,7 @@ public class TechnicianController {
 
     @GetMapping("/bike-owners")
     public String logBikeOwners(Model model, @AuthenticationPrincipal CustomUserDetails userDetails) {
-        List<BikeOwner> bikeOwners = bikeOwnerService.getAll();
+        List<BikeOwner> bikeOwners = bikeOwnerService.getAll(userDetails);
         long totalBikes = bikeService.countAllBikes();
         long birthdayCount = bikeOwnerService.countOwnersWithBirthdayToday();
 

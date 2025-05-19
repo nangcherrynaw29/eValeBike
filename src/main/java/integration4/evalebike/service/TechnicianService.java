@@ -1,11 +1,13 @@
 package integration4.evalebike.service;
 
+import integration4.evalebike.domain.Role;
 import integration4.evalebike.domain.Technician;
 import integration4.evalebike.domain.UserStatus;
 import integration4.evalebike.exception.NotFoundException;
 import integration4.evalebike.repository.TechnicianRepository;
 import integration4.evalebike.repository.TestBenchRepository;
 import integration4.evalebike.repository.UserRepository;
+import integration4.evalebike.security.CustomUserDetails;
 import jakarta.transaction.Transactional;
 import integration4.evalebike.utility.PasswordUtility;
 import org.springframework.stereotype.Service;
@@ -26,8 +28,15 @@ public class TechnicianService {
         this.userRepository = userRepository;
     }
 
-    public List<Technician> getAll() {
-        return technicianRepository.findByUserStatus(UserStatus.APPROVED);
+    public List<Technician> getAll(CustomUserDetails currentUser) {
+        if (currentUser.getRole() == Role.SUPER_ADMIN) {
+            return technicianRepository.findByUserStatus(UserStatus.APPROVED);
+        } else {
+            return technicianRepository.findByUserStatusAndCompany(
+                    UserStatus.APPROVED,
+                    currentUser.getCompany()
+            );
+        }
     }
 
     public Technician getTechnicianById(Integer id) {
@@ -42,6 +51,7 @@ public class TechnicianService {
         Technician technician = new Technician(name, email);
         technician.setPassword(hashedPassword);
         technician.setCreatedBy(userRepository.findById(createdBy).orElseThrow(() -> NotFoundException.forAdmin(createdBy)));
+        technician.setCompany(userRepository.findById(createdBy).orElseThrow(() -> NotFoundException.forAdmin(createdBy)).getCompany());
         passwordUtility.sendPasswordEmail(email, rawPassword);
         return technicianRepository.save(technician);
     }

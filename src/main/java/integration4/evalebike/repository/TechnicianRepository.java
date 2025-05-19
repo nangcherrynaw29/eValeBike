@@ -1,5 +1,6 @@
 package integration4.evalebike.repository;
 
+import integration4.evalebike.domain.Company;
 import integration4.evalebike.domain.Technician;
 import integration4.evalebike.domain.UserStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,6 +13,7 @@ import java.util.List;
 @Repository
 public interface TechnicianRepository extends JpaRepository<Technician, Integer> {
     List<Technician> findByUserStatus(UserStatus userStatus);
+    List<Technician> findByUserStatusAndCompany(UserStatus status, Company company);
 
     @Query("SELECT t FROM Technician t " +
             "WHERE (:name IS NULL OR LOWER(t.name) LIKE LOWER(CONCAT('%', :name, '%'))) " +

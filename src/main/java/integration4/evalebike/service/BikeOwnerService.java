@@ -1,16 +1,14 @@
 package integration4.evalebike.service;
 
 import integration4.evalebike.controller.technician.dto.BikeDto;
-import integration4.evalebike.domain.Bike;
-import integration4.evalebike.domain.BikeOwner;
-import integration4.evalebike.domain.BikeOwnerBike;
+import integration4.evalebike.domain.*;
 
-import integration4.evalebike.domain.UserStatus;
 import integration4.evalebike.exception.NotFoundException;
 import integration4.evalebike.repository.BikeOwnerBikeRepository;
 import integration4.evalebike.repository.BikeOwnerRepository;
 import integration4.evalebike.repository.BikeRepository;
 import integration4.evalebike.repository.UserRepository;
+import integration4.evalebike.security.CustomUserDetails;
 import integration4.evalebike.utility.PasswordUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,8 +38,15 @@ public class BikeOwnerService {
         this.userRepository = userRepository;
     }
 
-    public List<BikeOwner> getAll() {
-        return bikeOwnerRepository.findByUserStatus(UserStatus.APPROVED);
+    public List<BikeOwner> getAll(CustomUserDetails currentUser) {
+        if (currentUser.getRole() == Role.SUPER_ADMIN) {
+            return bikeOwnerRepository.findByUserStatus(UserStatus.APPROVED);
+        } else {
+            return bikeOwnerRepository.findByUserStatusAndCompany(
+                    UserStatus.APPROVED,
+                    currentUser.getCompany()
+            );
+        }
     }
 
     public BikeOwner add(String name, String email, String phoneNumber, LocalDate birthDate, int createdBy) {
@@ -51,6 +56,7 @@ public class BikeOwnerService {
         bikeOwner.setPassword(hashedPassword);
         bikeOwner.setUserStatus(UserStatus.APPROVED);
         bikeOwner.setCreatedBy(userRepository.findById(createdBy).orElseThrow((() -> NotFoundException.forTechnician(createdBy))));
+        bikeOwner.setCompany(userRepository.findById(createdBy).orElseThrow((() -> NotFoundException.forTechnician(createdBy))).getCompany());
         passwordUtility.sendPasswordEmail(email, rawPassword);
         return bikeOwnerRepository.save(bikeOwner);
     }

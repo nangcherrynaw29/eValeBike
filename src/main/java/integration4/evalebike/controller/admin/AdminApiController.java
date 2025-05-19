@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RestController
@@ -51,8 +52,8 @@ public class AdminApiController {
 
     // Retrieve all technicians
     @GetMapping()
-    public ResponseEntity<List<TechnicianResponseDTO>> getAllTechnicians() {
-        List<TechnicianResponseDTO> technicians = technicianService.getAll()
+    public ResponseEntity<List<TechnicianResponseDTO>> getAllTechnicians(@AuthenticationPrincipal final CustomUserDetails userDetails) {
+        List<TechnicianResponseDTO> technicians = technicianService.getAll(userDetails)
                 .stream()
                 .map(TechnicianResponseDTO::toDto)
                 .collect(Collectors.toList());
@@ -103,8 +104,8 @@ public class AdminApiController {
                     return (targetRole == Role.TECHNICIAN && currentRole == Role.ADMIN);
                 })
                 .filter(user -> {
-                    User targetedCreator = user.getCreatedBy();
-                    return (targetedCreator.getId() == userDetails.getUserId());
+                    Company targetedCompany = user.getCompany();
+                    return (Objects.equals(targetedCompany.getId(), userDetails.getCompany().getId()));
                 })
                 .map(PendingUserDto::fromUser)
                 .collect(Collectors.toList());

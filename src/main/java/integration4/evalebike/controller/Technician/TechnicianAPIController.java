@@ -70,8 +70,8 @@ public class TechnicianAPIController {
     }
 
     @GetMapping("/bikeOwners")
-    public ResponseEntity<List<BikeOwnerDto>> getAllAdmins() {
-        final List<BikeOwnerDto> bikeOwners = bikeOwnerService.getAll().stream().map(bikeOwnerMapper::toBikeOwnerDto).toList();
+    public ResponseEntity<List<BikeOwnerDto>> getAllAdmins(@AuthenticationPrincipal final CustomUserDetails userDetails) {
+        final List<BikeOwnerDto> bikeOwners = bikeOwnerService.getAll(userDetails).stream().map(bikeOwnerMapper::toBikeOwnerDto).toList();
         return ResponseEntity.ok(bikeOwners);
     }
 

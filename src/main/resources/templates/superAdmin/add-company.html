@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Add Company</title>
+    <script src="/js/superAdmin/add-company.js" defer></script>
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/add-admin.css">
+    <link rel="stylesheet" href="/css/form.css">
+</head>
+<body>
+<div th:insert="~{fragments/menu.html}"></div>
+<div class="form-container">
+    <div class="card p-4 shadow form-card">
+        <h2 class="text-center mb-4">Add New Company</h2>
+        <form id="add-company-form">
+            <div class="mb-3">
+                <label for="name" class="form-label">Company Name:</label><br>
+                <input type="text" id="name" name="name" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="address" class="form-label">Address:</label><br>
+                <input type="text" id="address" name="address" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="email" class="form-label">Email:</label><br>
+                <input type="email" id="email" name="email" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="phone" class="form-label">Phone:</label><br>
+                <input type="text" id="phone" name="phone" class="form-control" required>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4">
+                <button type="submit" class="btn btn-primary">Save Company</button>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
