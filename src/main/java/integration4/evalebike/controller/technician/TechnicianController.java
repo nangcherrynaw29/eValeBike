@@ -70,11 +70,7 @@ public class TechnicianController {
         long totalBikes = bikeService.countAllBikes();
         long birthdayCount = bikeOwnerService.countOwnersWithBirthdayToday();
 
-        String role = userDetails.getAuthorities()
-                .stream()
-                .map(GrantedAuthority::getAuthority)
-                .findFirst()
-                .orElse("UNKNOWN");
+        String role = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).findFirst().orElse("UNKNOWN");
         String userRole = role.replace("ROLE_", "");
 
         model.addAttribute("bikeOwners", bikeOwners);
@@ -132,11 +128,8 @@ public class TechnicianController {
     @ResponseBody
     public Mono<TestResponseDTO> getTestStatus(@PathVariable String testId) {
         logger.info("Fetching status for testId: {}", testId);
-        return testBenchService.getTestStatusById(testId)
-                .doOnNext(response -> logger.debug("Status for testId {}: {}", testId, response.getState()))
-                .doOnError(e -> logger.error("Error fetching status for testId {}: {}", testId, e.getMessage()));
+        return testBenchService.getTestStatusById(testId).doOnNext(response -> logger.debug("Status for testId {}: {}", testId, response.getState())).doOnError(e -> logger.error("Error fetching status for testId {}: {}", testId, e.getMessage()));
     }
-
 
 
     @GetMapping("/report/{testId}")
@@ -148,9 +141,7 @@ public class TechnicianController {
 
             ReportViewModel reportVm = ReportViewModel.from(report);
             List<TestReportEntry> entries = report.getReportEntries();
-            TestReportEntryViewModel summaryVm = (entries != null && !entries.isEmpty())
-                    ? TestReportEntryViewModel.summarize(entries)
-                    : null;
+            TestReportEntryViewModel summaryVm = (entries != null && !entries.isEmpty()) ? TestReportEntryViewModel.summarize(entries) : null;
 
             VisualInspection inspection = visualInspectionService.getInspectionByReportID(testId);
             VisualInspectionViewModel inspectionViewModel = VisualInspectionViewModel.toViewModel(inspection);
@@ -168,12 +159,22 @@ public class TechnicianController {
     }
 
 
-
-    //this shows a list of test report
+    // This shows a list of a test report
     @GetMapping("/test-report-dashboard")
-    public ModelAndView showReportDashboard(Model model) {
-        final ModelAndView modelAndView = new ModelAndView("technician/test-report-dashboard");
-        modelAndView.addObject("reports", ReportsViewModel.from(testReportService.getAllReports()));
+    public ModelAndView showReportDashboard() {
+        // Get all data from services
+        List<TestReport> reports = testReportService.getAllReports();
+        long totalTests = testReportService.getTotalTestCount();
+        long completedTests = testReportService.getCompletedTestCount();
+        long incompleteTests = testReportService.getIncompleteTestCount();
+
+        // Create and populate ModelAndView
+        ModelAndView modelAndView = new ModelAndView("technician/test-report-dashboard");
+        modelAndView.addObject("reports", ReportsViewModel.from(reports));  // Just reports
+        modelAndView.addObject("totalTests", totalTests);
+        modelAndView.addObject("completedTests", completedTests);
+        modelAndView.addObject("incompleteTests", incompleteTests);
+
         return modelAndView;
     }
 
@@ -209,10 +210,9 @@ public class TechnicianController {
     }
 
 
-
     @GetMapping("/reports-by-bike/{qr}")
     public String getReportsByBike(@PathVariable("qr") String bikeQr, Model model) {
-        List<ReportViewModel> reports = testReportService.getTestReportsByBikeQR(bikeQr) ;
+        List<ReportViewModel> reports = testReportService.getTestReportsByBikeQR(bikeQr);
         model.addAttribute("bikeQr", bikeQr);
         model.addAttribute("reports", reports);
 
@@ -249,25 +249,4 @@ public class TechnicianController {
             return "error";
         }
     }
-
-
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

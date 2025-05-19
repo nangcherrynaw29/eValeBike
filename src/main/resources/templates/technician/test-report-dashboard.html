@@ -6,18 +6,41 @@
     <title>Test Report Dashboard</title>
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}">
     <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" href="/css/global.css">
 </head>
 <body>
 <div class="page-wrapper">
-
     <div th:insert="~{fragments/menu.html}"></div>
-
     <div class="dashboard-container">
         <div class="dashboard-header">
             <h2 class="dashboard-title">Report Dashboard</h2>
             <div class="user-info">
                 <span>Welcome, <strong><span sec:authentication="name"></span></strong>!</span>
                 <div class="user-avatar">T</div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card stat-card">
+                    <div class="stat-number" th:text="${totalTests}">0</div>
+                    <div class="stat-label">Total Tests</div>
+                    <small>In the System</small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card stat-card">
+                    <div class="stat-number" th:text="${completedTests}">0</div>
+                    <div class="stat-label">Completed Tests</div>
+                    <small>In the System</small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card stat-card">
+                    <div class="stat-number" th:text="${incompleteTests}">0</div>
+                    <div class="stat-label">Incomplete Tests</div>
+                    <small>In the System</small>
+                </div>
             </div>
         </div>
 
@@ -35,7 +58,8 @@
                     </thead>
                     <tbody>
                     <tr th:each="report : ${reports.reportViewModels()}">
-                        <td><a th:href="@{/technician/reports-by-bike/{qr}(qr=${report.bikeQR()})}" th:text="${report.bikeQR()}">QR</a></td>
+                        <td><a th:href="@{/technician/reports-by-bike/{qr}(qr=${report.bikeQR()})}"
+                               th:text="${report.bikeQR()}">QR</a></td>
                         <td th:text="${report.technicianName()}">Technician</td>
                         <td th:text="${report.state}">State</td>
                         <td th:text="${report.type}">Type</td>
@@ -55,9 +79,7 @@
             </div>
         </div>
     </div>
-
     <div th:insert="~{fragments/footer.html}" class="footer"></div>
-
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
 </body>

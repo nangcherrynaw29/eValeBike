@@ -1,0 +1,14 @@
+.checklist-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.card .card-body {
+    padding: 1rem;
+}
+
+.card {
+    min-height: 150px;
+}

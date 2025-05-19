@@ -85,12 +85,16 @@ public class TestReportService {
 
         mailSender.send(message);
     }
+
+    public long getTotalTestCount() {
+        return testReportRepository.count();
     }
 
+    public long getCompletedTestCount() {
+        return testReportRepository.countByStateIgnoreCase("completed");
+    }
 
-
-
-
-
-
-
+    public long getIncompleteTestCount() {
+        return testReportRepository.count() - testReportRepository.countByStateIgnoreCase("completed");
+    }
+}
