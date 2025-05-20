@@ -2,6 +2,7 @@ package integration4.evalebike.service;
 
 import integration4.evalebike.domain.Role;
 import integration4.evalebike.domain.Technician;
+import integration4.evalebike.domain.User;
 import integration4.evalebike.domain.UserStatus;
 import integration4.evalebike.exception.NotFoundException;
 import integration4.evalebike.repository.TechnicianRepository;
@@ -61,8 +62,6 @@ public class TechnicianService {
         return technicianRepository.findByFilters(name, email);
     }
 
-
-
     public Technician updateTechnician(Integer id, Technician updatedTechnician) {
         Technician technician = technicianRepository.findById(id)
                 .orElseThrow(() -> NotFoundException.forTechnician(id));
@@ -76,7 +75,18 @@ public class TechnicianService {
     public void deleteTechnician(Integer id) {
         Technician technician = technicianRepository.findById(id)
                 .orElseThrow(() -> NotFoundException.forTechnician(id));
+
+        // Find all users created by this technician
+        List<User> createdUsers = userRepository.findByCreatedById(id);
+        if (!createdUsers.isEmpty()) {
+             createdUsers.forEach(user -> user.setCreatedBy(null));
+             userRepository.saveAll(createdUsers);
+        }
+
+//        TODO: will be deleted after unassignment is complete
         testBenchRepository.deleteByTechnicianId(id);
+
         technicianRepository.delete(technician);
+        userRepository.deleteById(id);
     }
 }

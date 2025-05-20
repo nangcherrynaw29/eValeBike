@@ -1,6 +1,7 @@
 package integration4.evalebike.service;
 
 import integration4.evalebike.domain.Administrator;
+import integration4.evalebike.domain.Company;
 import integration4.evalebike.exception.NotFoundException;
 import integration4.evalebike.repository.AdminRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
@@ -34,7 +34,9 @@ public class AdminServiceTest {
         admin.setId(1);
         admin.setName("John Doe");
         admin.setEmail("john@example.com");
-        admin.setCompanyName("Bike Co.");
+        Company company = new Company();
+        company.setName("Bike Co.");
+        admin.setCompany(company);
     }
 
     @Test
@@ -76,16 +78,20 @@ public class AdminServiceTest {
     @Test
     public void testSaveAdmin() {
         // Arrange
+        Company company = new Company();
+        company.setName("Bike Co.");  // Initialize the company
+
         when(adminRepository.save(any(Administrator.class))).thenReturn(admin);
 
         // Act
-        var result = adminService.saveAdmin("John Doe", "john@example.com", "Bike Co.");
+        var result = adminService.saveAdmin("John Doe", "john@example.com", company, 4);
 
         // Assert
         assertNotNull(result);
         assertEquals("John Doe", result.getName());
         assertEquals("john@example.com", result.getEmail());
-        assertEquals("Bike Co.", result.getCompanyName());
+        assertEquals("Bike Co.", result.getCompany().getName());
+        assertEquals(4, result.getCreatedBy().getId());
     }
 
     @Test
@@ -95,7 +101,9 @@ public class AdminServiceTest {
         updatedAdmin.setId(1);
         updatedAdmin.setName("Jane Doe");
         updatedAdmin.setEmail("jane@example.com");
-        updatedAdmin.setCompanyName("New Bike Co.");
+        Company company = new Company();
+        company.setName("Bike Co.");
+        updatedAdmin.setCompany(company);
 
         when(adminRepository.findById(1)).thenReturn(Optional.of(admin));
         when(adminRepository.save(any(Administrator.class))).thenReturn(updatedAdmin);
@@ -107,7 +115,7 @@ public class AdminServiceTest {
         assertNotNull(result);
         assertEquals("Jane Doe", result.getName());
         assertEquals("jane@example.com", result.getEmail());
-        assertEquals("New Bike Co.", result.getCompanyName());
+        assertEquals("New Bike Co.", result.getCompany().getName());
     }
 
     @Test
@@ -117,7 +125,9 @@ public class AdminServiceTest {
         updatedAdmin.setId(1);
         updatedAdmin.setName("Jane Doe");
         updatedAdmin.setEmail("jane@example.com");
-        updatedAdmin.setCompanyName("New Bike Co.");
+        Company company = new Company();
+        company.setName("Bike Co.");
+        updatedAdmin.setCompany(company);
 
         when(adminRepository.findById(1)).thenReturn(Optional.empty());
 

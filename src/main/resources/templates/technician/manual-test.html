@@ -1,52 +1,52 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>Manual Test Form</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <script src="/js/technician/manual-form.js"></script>
+    <meta charset="UTF-8">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <title>Manual Test Form</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="/js/technician/manual-form.js"></script>
 </head>
 <body class="bg-light">
-
 <div class="container mt-5">
-  <div class="card shadow-sm">
-    <div class="card-header text-center bg-primary text-white">
-      <h2 class="mb-0">Manual Test Form</h2>
+    <div class="card shadow-sm">
+        <div class="card-header text-center bg-primary text-white">
+            <h2 class="mb-0">Manual Test Form</h2>
+        </div>
+        <div class="card-body">
+            <form id="manualTestForm" th:object="${bike}" th:attr="data-bike-qr=${bike.bikeQR}">
+                <div class="mb-3">
+                    <label class="form-label" for="accuCapacity">Battery Capacity (kWh)</label>
+                    <input type="number" step="0.01" class="form-control" min="1" max="2000" th:field="*{accuCapacity}"
+                           id="accuCapacity" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="maxSupport">Max Support</label>
+                    <input type="number" step="0.01" class="form-control" min="1" max="2000" th:field="*{maxSupport}"
+                           id="maxSupport" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="maxEnginePower">Engine Power Max (kW)</label>
+                    <input type="number" step="0.01" class="form-control" min="1" max="2000"
+                           th:field="*{maxEnginePower}" id="maxEnginePower" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="nominalEnginePower">Engine Power Nominal (kW)</label>
+                    <input type="number" step="0.01" class="form-control" min="1" max="2000"
+                           th:field="*{nominalEnginePower}" id="nominalEnginePower" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="engineTorque">Engine Torque (Nm)</label>
+                    <input type="number" step="0.01" class="form-control" min="1" max="2000" th:field="*{engineTorque}"
+                           id="engineTorque" required>
+                </div>
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary px-5 py-2">Manual Update & Start Test</button>
+                </div>
+            </form>
+        </div>
     </div>
-    <div class="card-body">
-      <form id="manualTestForm" th:object="${bike}" th:attr="data-bike-qr=${bike.bikeQR}">
-        <div class="mb-3">
-          <label class="form-label" for="accuCapacity">Battery Capacity (kWh)</label>
-          <input type="number" step="0.01" class="form-control" min="1" max="2000" th:field="*{accuCapacity}" id="accuCapacity" required>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label" for="maxSupport">Max Support</label>
-          <input type="number" step="0.01" class="form-control" min="1" max="2000" th:field="*{maxSupport}" id="maxSupport" required>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label" for="maxEnginePower">Engine Power Max (kW)</label>
-          <input type="number" step="0.01" class="form-control" min="1" max="2000" th:field="*{maxEnginePower}" id="maxEnginePower" required>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label" for="nominalEnginePower">Engine Power Nominal (kW)</label>
-          <input type="number" step="0.01" class="form-control" min="1" max="2000" th:field="*{nominalEnginePower}" id="nominalEnginePower" required>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label" for="engineTorque">Engine Torque (Nm)</label>
-          <input type="number" step="0.01" class="form-control" min="1" max="2000" th:field="*{engineTorque}" id="engineTorque" required>
-        </div>
-
-        <div class="text-center">
-          <button type="submit" class="btn btn-primary px-5 py-2">Manual Update & Start Test</button>
-        </div>
-      </form>
-    </div>
-  </div>
 </div>
-
 </body>
 </html>

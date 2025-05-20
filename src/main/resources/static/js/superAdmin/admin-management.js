@@ -1,3 +1,5 @@
+const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
 
 document.addEventListener("DOMContentLoaded", async () => {
     const addAdminBtn = document.querySelector("#add-admin-btn");
@@ -16,7 +18,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         const field = filterDropDown.value;
         if (query) fetchFilteredAdmins(query, field);
     });
-
 
     function fetchFilteredAdmins(query, field) {
         let params = new URLSearchParams();
@@ -43,7 +44,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             });
     }
 
-
     function updateAdminTable(admins) {
         tableBody.innerHTML = '';
 
@@ -67,7 +67,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
-
     const adminsPerPage = 5;
     let currentPage = 1;
     let adminData = [];
@@ -78,7 +77,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             window.location.href = "/super-admin/admins/add";
         });
     }
-
 
     async function loadAdminData() {
         try {
@@ -164,10 +162,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                 if (!adminId) return alert("No admin ID found.");
 
+                const confirmed = confirm("Are you sure you want to delete this admin? \nThis action cannot be undone.");
+                if (!confirmed) return;
+
                 try {
                     const response = await fetch(`/api/super-admin/admins/${adminId}`, {
-                        method: "DELETE",
-                        headers: { "Accept": "application/json" }
+                        method: "DELETE", headers: {[csrfHeader]: csrfToken, "Accept": "application/json"}
                     });
 
                     if (response.ok) {

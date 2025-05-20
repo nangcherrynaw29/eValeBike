@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <script src="/js/admin/technician-dashboard.js" type="module" defer></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="/css/global.css">
@@ -22,7 +24,6 @@
                 <div class="user-avatar">A</div>
             </div>
         </div>
-
         <div class="row mb-4">
             <div class="col-md-4">
                 <div class="card stat-card">
@@ -47,7 +48,6 @@
                 </div>
             </div>
         </div>
-
         <div class="main-content-row">
             <!-- Test Bench Status Column -->
             <div class="test-bench-column">
@@ -81,7 +81,6 @@
                     </div>
                 </div>
             </div>
-
             <!-- Technician Table Column -->
             <div class="table-column">
                 <div class="table-container">
@@ -100,7 +99,6 @@
                         </div>
                         <div id="no-results-message" class="text-danger" style="display: none;">No results found</div>
                     </div>
-
                     <div class="table-responsive">
                         <table class="table table-striped">
                             <thead>

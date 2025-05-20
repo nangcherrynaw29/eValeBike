@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <script>
         window.history.replaceState({}, '', '?filter=approval');
     </script>
@@ -70,10 +72,10 @@
                     <div class="row mb-3">
                         <div class="d-flex align-content-between">
                             <input type="text" id="filter-input" class="me-2" placeholder="Enter name">
-                                <select id="filter-dropdown" class="me-2">
-                                    <option value="name" id="nameQuery">Name</option>
-                                    <option value="email" id="emailQuery">Email</option>
-                                </select>
+                            <select id="filter-dropdown" class="me-2">
+                                <option value="name" id="nameQuery">Name</option>
+                                <option value="email" id="emailQuery">Email</option>
+                            </select>
                             <button id="search-btn" class="btn btn-primary">Search</button>
                         </div>
                         <p id="no-results-message" class="text-danger" style="display: none;">Not found</p>

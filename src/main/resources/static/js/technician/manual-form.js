@@ -1,3 +1,5 @@
+const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
 
 document.addEventListener('DOMContentLoaded', function () {
     const saveAndStartButton = document.querySelector('button[type="submit"].btn-primary');
@@ -25,18 +27,18 @@ document.addEventListener('DOMContentLoaded', function () {
         errorMessages.forEach(msg => msg.remove());
 
         // Define fields to validate
-        const fieldNames = [
-            { field: "accuCapacity", label: "Battery Capacity" },
-            { field: "maxSupport", label: "Max Support" },
-            { field: "maxEnginePower", label: "Engine Power Max" },
-            { field: "nominalEnginePower", label: "Engine Power Nominal" },
-            { field: "engineTorque", label: "Engine Torque" }
-        ];
+        const fieldNames = [{field: "accuCapacity", label: "Battery Capacity"}, {
+            field: "maxSupport",
+            label: "Max Support"
+        }, {field: "maxEnginePower", label: "Engine Power Max"}, {
+            field: "nominalEnginePower",
+            label: "Engine Power Nominal"
+        }, {field: "engineTorque", label: "Engine Torque"}];
 
         let isValid = true;
 
         // Check each field
-        fieldNames.forEach(({ field, label }) => {
+        fieldNames.forEach(({field, label}) => {
             const input = document.querySelector(`[name="${field}"]`);
             if (!input) {
                 console.warn(`Field ${field} not found`);
@@ -67,17 +69,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // First API call to update bike
         fetch(`/api/technician/manual-test-form/${bikeQR}`, {
-            method: 'POST',
-            body: new URLSearchParams(formData),
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
+            method: 'POST', body: new URLSearchParams(formData), headers: {
+                'Content-Type': 'application/x-www-form-urlencoded', [csrfHeader]: csrfToken
             }
         })
             .then(response => {
                 if (response.ok) {
                     successMessageDiv.style.display = 'block';
                     const startTestUrl = `/api/technician/start/${bikeQR}?testType=MANUAL`;
-                    return fetch(startTestUrl, { method: 'POST' });
+                    return fetch(startTestUrl, {
+                        method: 'POST', headers: {
+                            [csrfHeader]: csrfToken
+                        }
+                    });
                 } else {
                     return response.text().then(text => {
                         errorMessageDiv.innerHTML = `<i class="bi bi-x-circle"></i> <strong>Failed to update bike:</strong> ${text}`;
