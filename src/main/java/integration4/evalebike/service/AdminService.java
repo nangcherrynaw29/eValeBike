@@ -1,14 +1,12 @@
 package integration4.evalebike.service;
 
-import integration4.evalebike.domain.Administrator;
-import integration4.evalebike.domain.Company;
-import integration4.evalebike.domain.Role;
-import integration4.evalebike.domain.UserStatus;
+import integration4.evalebike.domain.*;
 import integration4.evalebike.exception.NotFoundException;
 import integration4.evalebike.repository.AdminRepository;
 import integration4.evalebike.repository.UserRepository;
 import integration4.evalebike.utility.PasswordUtility;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -58,8 +56,17 @@ public class AdminService {
         return adminRepository.save(existingAdmin);
     }
 
+    @Transactional
     public void deleteAdmin(Integer id) {
         Administrator admin = adminRepository.findById(id).orElseThrow(() -> new RuntimeException("Admin not found"));
+
+        // Find all users created by this technician
+        List<User> createdUsers = userRepository.findByCreatedById(id);
+        if (!createdUsers.isEmpty()) {
+            createdUsers.forEach(user -> user.setCreatedBy(null));
+            userRepository.saveAll(createdUsers);
+        }
+
         adminRepository.deleteById(id);
     }
 
@@ -74,6 +81,4 @@ public class AdminService {
     public List<Administrator> filterAdminsByCompany(String companyName) {
         return adminRepository.findByCompanyNameContainingIgnoreCase(companyName); // Adjust to your repo method
     }
-
-
 }

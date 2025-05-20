@@ -1,3 +1,5 @@
+const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
 
 document.addEventListener("DOMContentLoaded", () => {
     const addTechnicianBtn = document.getElementById("add-technician-btn");
@@ -14,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const techniciansPerPage = 5;
     let currentPage = 1;
     let techniciansData = [];
-    let allTechnicians = [];  // Store all technicians data for filtering
+    let allTechnicians = [];
 
     const filterInput = document.querySelector("#filterValue"); // Updated ID
     const filterDropdown = document.querySelector("#filterType"); // Updated ID
@@ -35,10 +37,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Add event listener for the search button
+    // Add an event listener for the search button
     searchBtn.addEventListener("click", () => {
         console.log("Search button clicked"); // Debugging
-        filterTechnicians(); // Call the filter function when search button is clicked
+        filterTechnicians(); // Call the filter function when the search button is clicked
     });
 
     function filterTechnicians() {
@@ -71,11 +73,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Update techniciansData and reset pagination
         techniciansData = filteredData;
-        currentPage = 1; // Reset to the first page when filter is applied
+        currentPage = 1; // Reset to the first page when a filter is applied
         renderTable();
         renderPagination();
     }
-
 
     function renderTable() {
         technicianTableBody.innerHTML = "";
@@ -126,19 +127,13 @@ document.addEventListener("DOMContentLoaded", () => {
             return li;
         };
 
-        paginationContainer.appendChild(
-            createPageItem("Previous", currentPage - 1, currentPage === 1)
-        );
+        paginationContainer.appendChild(createPageItem("Previous", currentPage - 1, currentPage === 1));
 
         for (let i = 1; i <= totalPages; i++) {
-            paginationContainer.appendChild(
-                createPageItem(i, i, false, currentPage === i)
-            );
+            paginationContainer.appendChild(createPageItem(i, i, false, currentPage === i));
         }
 
-        paginationContainer.appendChild(
-            createPageItem("Next", currentPage + 1, currentPage === totalPages)
-        );
+        paginationContainer.appendChild(createPageItem("Next", currentPage + 1, currentPage === totalPages));
     }
 
     // Function to attach event listeners to delete buttons
@@ -153,12 +148,14 @@ document.addEventListener("DOMContentLoaded", () => {
                     return;
                 }
 
+                const confirmed = confirm("Are you sure you want to delete this technician? \nThis action cannot be undone.");
+                if (!confirmed) return;
+
                 try {
                     // Send a DELETE request to the backend
                     const response = await fetch(`/api/admin/technicians/${technicianId}`, {
-                        method: "DELETE",
-                        headers: {
-                            "Accept": "application/json",
+                        method: "DELETE", headers: {
+                            [csrfHeader]: csrfToken, 'Content-Type': 'application/json'
                         },
                     });
 
@@ -191,22 +188,17 @@ document.addEventListener("DOMContentLoaded", () => {
             const email = document.getElementById("technician-email").value;
             const password = document.getElementById("technician-password").value;
 
-            // Create JSON body for the request
+            // Create a JSON body for the request
             const jsonBody = JSON.stringify({
-                name: name,
-                email: email,
-                password: password,
+                name: name, email: email, password: password,
             });
 
             try {
                 // Send POST request to add a new technician
                 const response = await fetch("/api/admin/technicians", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Accept": "application/json",
-                    },
-                    body: jsonBody,
+                    method: "POST", headers: {
+                        "Content-Type": "application/json", "Accept": "application/json",
+                    }, body: jsonBody,
                 });
 
                 if (response.status === 201) {

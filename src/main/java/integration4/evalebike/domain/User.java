@@ -19,7 +19,7 @@ public abstract class User {
     @Enumerated(EnumType.STRING)
     private UserStatus userStatus = PENDING;
     @ManyToOne
-    @JoinColumn(name = "created_by_id")
+    @JoinColumn(name = "created_by_id", nullable = true)
     private User createdBy;
     @ManyToOne
     @JoinColumn(name = "company_id", nullable = true)

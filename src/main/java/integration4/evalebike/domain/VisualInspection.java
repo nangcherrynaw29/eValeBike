@@ -31,8 +31,6 @@ public class VisualInspection {
     private String suspensionFront;
     private String saddle;
 
-
-
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "test_report_id", referencedColumnName = "id", unique = true)
     private TestReport testReport;
@@ -222,4 +220,3 @@ public class VisualInspection {
         this.testReport = testReport;
     }
 }
-

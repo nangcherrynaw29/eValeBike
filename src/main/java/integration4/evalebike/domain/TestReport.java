@@ -1,5 +1,7 @@
 package integration4.evalebike.domain;
+
 import jakarta.persistence.*;
+
 import java.util.List;
 
 @Entity
@@ -31,24 +33,24 @@ public class TestReport {
     @Column(name = "engine_torque")
     private double engineTorque;
 
-    @OneToMany(mappedBy = "testReport", fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @OneToMany(mappedBy = "testReport", fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.REMOVE})
     private List<TestReportEntry> reportEntries;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bike_QR", referencedColumnName = "bikeqr")
     private Bike bike;
 
-
+    @OneToOne(mappedBy = "testReport", cascade = CascadeType.ALL, orphanRemoval = true)
+    private VisualInspection visualInspection;
 
     @Column(name = "technician_username")
-    private  String technicianName;
+    private String technicianName;
 
     // Default constructor for JPA
-    public TestReport() {}
+    public TestReport() {
+    }
 
     // Constructor for mapping from DTO
-
-
     public TestReport(double batteryCapacity, Bike bike, double enginePowerMax, double enginePowerNominal, double engineTorque, String expiryDate, String id, double maxSupport, List<TestReportEntry> reportEntries, String state, String technicianName, String type) {
         this.batteryCapacity = batteryCapacity;
         this.bike = bike;
@@ -74,7 +76,6 @@ public class TestReport {
         this.enginePowerMax = enginePowerMax;
         this.enginePowerNominal = enginePowerNominal;
         this.engineTorque = engineTorque;
-
     }
 
     // Getters and setters

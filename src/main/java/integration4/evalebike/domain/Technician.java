@@ -1,10 +1,14 @@
 package integration4.evalebike.domain;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Setter
+@Getter
 @Entity
 @PrimaryKeyJoinColumn(name = "id")
 public class Technician extends User {
@@ -16,7 +20,6 @@ public class Technician extends User {
     }
 
     public Technician() {
-
     }
 
     public List<TestBench> getAssignedTestBench() {

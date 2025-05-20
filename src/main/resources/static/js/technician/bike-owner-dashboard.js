@@ -1,3 +1,5 @@
+const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
 
 document.addEventListener("DOMContentLoaded", () => {
     const addBikeOwnerBtn = document.querySelector("#add-bikeowner-btn");
@@ -14,96 +16,85 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
-
-    const removeBikeOwnersButtons = document.querySelectorAll('.remove-bikeOwners-button');
-    removeBikeOwnersButtons.forEach(button => button.addEventListener('click', async e => {
-        const bikeOwnerId = button.getAttribute('data-bikeOwner-id');
-        button.disabled = true;
-        const result = await fetch(`/api/technician/bikeOwners/${bikeOwnerId}`, {method: 'DELETE'});
-        button.disabled = false;
-        if (result.status === 204) {
-            document.querySelector(`#owner-${bikeOwnerId}`).remove();
-        }
-    }));
 });
 
 document.addEventListener("DOMContentLoaded", () => {
-    const rowsPerPage = 5;
-    let currentPage = 1;
-    let bikeOwners = [];
-    let allBikeOwners = [];
+        const rowsPerPage = 5;
+        let currentPage = 1;
+        let bikeOwners = [];
+        let allBikeOwners = [];
 
-    const tbody = document.getElementById("bike-owner-table-body");
-    const pagination = document.getElementById("pagination-controls");
-    const filterInput = document.querySelector("#filter-input");
-    const filterDropdown = document.querySelector("#filter-dropdown");
-    const notFoundMessage = document.getElementById("no-results-message");
-    const searchBtn = document.querySelector("#search-btn");  // Search button
+        const tbody = document.getElementById("bike-owner-table-body");
+        const pagination = document.getElementById("pagination-controls");
+        const filterInput = document.querySelector("#filter-input");
+        const filterDropdown = document.querySelector("#filter-dropdown");
+        const notFoundMessage = document.getElementById("no-results-message");
+        const searchBtn = document.querySelector("#search-btn");  // Search button
 
-    // Fetch bike owners
-    fetch('/api/technician/bikeOwners')
-        .then(res => res.json())
-        .then(data => {
-            console.log(data);
-            allBikeOwners = data;
-            bikeOwners = data;
+        // Fetch bike owners
+        fetch('/api/technician/bikeOwners')
+            .then(res => res.json())
+            .then(data => {
+                console.log(data);
+                allBikeOwners = data;
+                bikeOwners = data;
+                renderTable();
+                renderPagination();
+            });
+
+        // Add an event listener for the search button
+        searchBtn.addEventListener("click", () => {
+            console.log("Search button clicked"); // Debugging
+            filterCustomers();
+        });
+
+        // Filter functionality triggered by the button click
+        function filterCustomers() {
+            const filterText = filterInput.value.trim().toLowerCase();
+            const filterOption = filterDropdown.value;
+
+            console.log("Filtering by:", filterOption); // Debugging
+            console.log("Search text:", filterText); // Debugging
+
+            const filteredData = allBikeOwners.filter(owner => {
+                if (filterOption === "name") {
+                    return owner.name.toLowerCase().includes(filterText);
+                } else if (filterOption === "email") {
+                    return owner.email.toLowerCase().includes(filterText);
+                } else if (filterOption === "phoneNumber") {
+                    return owner.phoneNumber.toLowerCase().includes(filterText);
+                }
+                return true; // Default case if no filter is selected
+            });
+
+            console.log("Filtered Data:", filteredData); // Debugging
+
+            // Show "Customer not found" if no results match
+            if (filteredData.length === 0) {
+                notFoundMessage.style.display = 'block';
+            } else {
+                notFoundMessage.style.display = 'none';
+            }
+
+            // Update bikeOwners and reset pagination
+            bikeOwners = filteredData;
+            currentPage = 1; // Reset to the first page when filter is applied
             renderTable();
             renderPagination();
-        });
-
-    // Add event listener for the search button
-    searchBtn.addEventListener("click", () => {
-        console.log("Search button clicked"); // Debugging
-        filterCustomers();
-    });
-
-    // Filter functionality triggered by the button click
-    function filterCustomers() {
-        const filterText = filterInput.value.trim().toLowerCase();
-        const filterOption = filterDropdown.value;
-
-        console.log("Filtering by:", filterOption); // Debugging
-        console.log("Search text:", filterText); // Debugging
-
-        const filteredData = allBikeOwners.filter(owner => {
-            if (filterOption === "name") {
-                return owner.name.toLowerCase().includes(filterText);
-            } else if (filterOption === "email") {
-                return owner.email.toLowerCase().includes(filterText);
-            } else if (filterOption === "phoneNumber") {
-                return owner.phoneNumber.toLowerCase().includes(filterText);
-            }
-            return true; // Default case if no filter is selected
-        });
-
-        console.log("Filtered Data:", filteredData); // Debugging
-
-        // Show "Customer not found" if no results match
-        if (filteredData.length === 0) {
-            notFoundMessage.style.display = 'block';
-        } else {
-            notFoundMessage.style.display = 'none';
         }
 
-        // Update bikeOwners and reset pagination
-        bikeOwners = filteredData;
-        currentPage = 1; // Reset to the first page when filter is applied
-        renderTable();
-        renderPagination();
-    }
+        // Render table based on the current page
+        function renderTable() {
+            tbody.innerHTML = ''; // Clear current table rows
+            const start = (currentPage - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+            const pageData = bikeOwners.slice(start, end);
 
-    // Render table based on current page
-    function renderTable() {
-        tbody.innerHTML = ''; // Clear current table rows
-        const start = (currentPage - 1) * rowsPerPage;
-        const end = start + rowsPerPage;
-        const pageData = bikeOwners.slice(start, end);
+            pageData.forEach(owner => {
+                const tr = document.createElement('tr');
+                tr.id = `owner-${owner.id}`;
 
-        pageData.forEach(owner => {
-            const tr = document.createElement('tr');
-            tr.id = `owner-${owner.id}`;
-
-            tr.innerHTML = `
+                tr.innerHTML = `
                 <td>${owner.name}</td>
                 <td>${owner.email}</td>
                 <td>${owner.phoneNumber}</td>
@@ -117,60 +108,83 @@ document.addEventListener("DOMContentLoaded", () => {
                 </button>
                 </td>
             `;
-            tbody.appendChild(tr);
-        });
-
-        document.querySelectorAll('.remove-bikeOwners-button').forEach(button => {
-            button.addEventListener('click', async e => {
-                const bikeOwnerId = button.getAttribute('data-bikeOwner-id');
-                button.disabled = true;
-                const result = await fetch(`/api/technician/bikeOwners/${bikeOwnerId}`, { method: 'DELETE' });
-                button.disabled = false;
-                if (result.status === 204) {
-                    document.querySelector(`#owner-${bikeOwnerId}`).remove();
-                }
+                tbody.appendChild(tr);
             });
-        });
-    }
 
-    // Render pagination
-    function renderPagination() {
-        pagination.innerHTML = '';
-        const totalPages = Math.ceil(bikeOwners.length / rowsPerPage);
+            document.querySelectorAll('.remove-bikeOwners-button').forEach(button => {
+                button.addEventListener('click', async e => {
+                        e.preventDefault();
+                        const bikeOwnerId = button.getAttribute('data-bikeOwner-id');
 
-        const addPageItem = (label, page, disabled = false, active = false) => {
-            const li = document.createElement('li');
-            li.className = `page-item ${disabled ? 'disabled' : ''} ${active ? 'active' : ''}`;
-            const a = document.createElement('a');
-            a.className = 'page-link';
-            a.href = '#';
-            a.textContent = label;
-            if (!disabled) {
-                a.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    currentPage = page;
-                    renderTable();
-                    renderPagination();
-                });
-            }
-            li.appendChild(a);
-            pagination.appendChild(li);
-        };
+                        const confirmed = confirm("Are you sure you want to delete this customer? \nThis action cannot be undone.");
+                        if (!confirmed) return;
 
-        addPageItem('Previous', currentPage - 1, currentPage === 1);
+                        button.disabled = true;
+                        try {
+                            const result = await fetch(`/api/technician/bikeOwners/${bikeOwnerId}`, {
+                                method: 'DELETE',
+                                headers: {
+                                    [csrfHeader]: csrfToken,
+                                    'Content-Type': 'application/json'
+                                }
+                            });
+                            button.disabled = false;
 
-        for (let i = 1; i <= totalPages; i++) {
-            addPageItem(i, i, false, i === currentPage);
+                            if (result.status === 204) {
+                                document.querySelector(`#owner-${bikeOwnerId}`).remove();
+                            } else {
+                                alert("Failed to delete the customer. Please try again.");
+                            }
+                        } catch (error) {
+                            console.error("Error deleting customer:", error);
+                            alert("An error occurred while deleting the customer.");
+                            button.disabled = false;
+                        }
+                    }
+                );
+            });
         }
 
-        addPageItem('Next', currentPage + 1, currentPage === totalPages);
-    }
-    const addBikeOwnerBtn = document.querySelector("#add-bikeowner-btn");
-    if (addBikeOwnerBtn) {
-        addBikeOwnerBtn.addEventListener("click", (e) => {
-            e.preventDefault();
-            window.location.href = "/technician/bike-owners/add";
-        });
-    }
+        // Render pagination
+        function renderPagination() {
+            pagination.innerHTML = '';
+            const totalPages = Math.ceil(bikeOwners.length / rowsPerPage);
 
-});
+            const addPageItem = (label, page, disabled = false, active = false) => {
+                const li = document.createElement('li');
+                li.className = `page-item ${disabled ? 'disabled' : ''} ${active ? 'active' : ''}`;
+                const a = document.createElement('a');
+                a.className = 'page-link';
+                a.href = '#';
+                a.textContent = label;
+                if (!disabled) {
+                    a.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        currentPage = page;
+                        renderTable();
+                        renderPagination();
+                    });
+                }
+                li.appendChild(a);
+                pagination.appendChild(li);
+            };
+
+            addPageItem('Previous', currentPage - 1, currentPage === 1);
+
+            for (let i = 1; i <= totalPages; i++) {
+                addPageItem(i, i, false, i === currentPage);
+            }
+
+            addPageItem('Next', currentPage + 1, currentPage === totalPages);
+        }
+
+        const addBikeOwnerBtn = document.querySelector("#add-bikeowner-btn");
+        if (addBikeOwnerBtn) {
+            addBikeOwnerBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                window.location.href = "/technician/bike-owners/add";
+            });
+        }
+
+    }
+);
