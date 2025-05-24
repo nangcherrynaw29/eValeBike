@@ -9,8 +9,6 @@ import integration4.evalebike.repository.BikeOwnerRepository;
 import integration4.evalebike.repository.BikeRepository;
 import integration4.evalebike.repository.UserRepository;
 import integration4.evalebike.security.CustomUserDetails;
-import integration4.evalebike.utility.PasswordUtility;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,16 +23,18 @@ public class BikeOwnerService {
     private final BikeOwnerBikeRepository bikeOwnerBikeRepository;
     private final BikeRepository bikeRepository;
     private final QrCodeService qrCodeService;
-    private final PasswordUtility passwordUtility;
+    private final PasswordService passwordService;
     private final UserRepository userRepository;
+    private final EmailService emailService;
 
-    public BikeOwnerService(BikeOwnerRepository bikeOwnerRepository, BikeOwnerBikeRepository bikeOwnerBikeRepository, BikeRepository bikeRepository, QrCodeService qrCodeService, PasswordUtility passwordUtility, UserRepository userRepository) {
+    public BikeOwnerService(BikeOwnerRepository bikeOwnerRepository, BikeOwnerBikeRepository bikeOwnerBikeRepository, BikeRepository bikeRepository, QrCodeService qrCodeService, PasswordService passwordService, UserRepository userRepository, EmailService emailService) {
         this.bikeOwnerRepository = bikeOwnerRepository;
         this.bikeOwnerBikeRepository = bikeOwnerBikeRepository;
         this.bikeRepository = bikeRepository;
         this.qrCodeService = qrCodeService;
-        this.passwordUtility = passwordUtility;
+        this.passwordService = passwordService;
         this.userRepository = userRepository;
+        this.emailService = emailService;
     }
 
     public List<BikeOwner> getAll(CustomUserDetails currentUser) {
@@ -49,14 +49,14 @@ public class BikeOwnerService {
     }
 
     public BikeOwner add(String name, String email, String phoneNumber, LocalDate birthDate, int createdBy) {
-        String rawPassword = passwordUtility.generateRandomPassword(8);
-        String hashedPassword = passwordUtility.hashPassword(rawPassword);
+        String rawPassword = passwordService.generateRandomPassword(8);
+        String hashedPassword = passwordService.hashPassword(rawPassword);
         BikeOwner bikeOwner = new BikeOwner(name, email, phoneNumber, birthDate);
         bikeOwner.setPassword(hashedPassword);
         bikeOwner.setUserStatus(UserStatus.APPROVED);
         bikeOwner.setCreatedBy(userRepository.findById(createdBy).orElseThrow((() -> NotFoundException.forTechnician(createdBy))));
         bikeOwner.setCompany(userRepository.findById(createdBy).orElseThrow((() -> NotFoundException.forTechnician(createdBy))).getCompany());
-        passwordUtility.sendPasswordEmail(email, rawPassword);
+        emailService.sendPasswordEmailtoBikeOwner(email, rawPassword);
         return bikeOwnerRepository.save(bikeOwner);
     }
 

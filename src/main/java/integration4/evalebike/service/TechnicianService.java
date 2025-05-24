@@ -10,7 +10,6 @@ import integration4.evalebike.repository.TestBenchRepository;
 import integration4.evalebike.repository.UserRepository;
 import integration4.evalebike.security.CustomUserDetails;
 import jakarta.transaction.Transactional;
-import integration4.evalebike.utility.PasswordUtility;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,13 +17,15 @@ import java.util.List;
 @Service
 public class TechnicianService {
     private final TechnicianRepository technicianRepository;
-    private final PasswordUtility passwordUtility;
+    private final PasswordService passwordService;
+    private final EmailService emailService;
     private final TestBenchRepository testBenchRepository;
     private final UserRepository userRepository;
 
-    public TechnicianService(TechnicianRepository technicianRepository, PasswordUtility passwordUtility, TestBenchRepository testBenchRepository, UserRepository userRepository) {
+    public TechnicianService(TechnicianRepository technicianRepository, PasswordService passwordService, EmailService emailService, TestBenchRepository testBenchRepository, UserRepository userRepository) {
         this.technicianRepository = technicianRepository;
-        this.passwordUtility = passwordUtility;
+        this.passwordService = passwordService;
+        this.emailService = emailService;
         this.testBenchRepository = testBenchRepository;
         this.userRepository = userRepository;
     }
@@ -46,14 +47,14 @@ public class TechnicianService {
     }
 
     public Technician saveTechnician(final String name, final String email, int createdBy) {
-        String rawPassword = passwordUtility.generateRandomPassword(8);
-        String hashedPassword = passwordUtility.hashPassword(rawPassword);
+        String rawPassword = passwordService.generateRandomPassword(8);
+        String hashedPassword = passwordService.hashPassword(rawPassword);
 
         Technician technician = new Technician(name, email);
         technician.setPassword(hashedPassword);
         technician.setCreatedBy(userRepository.findById(createdBy).orElseThrow(() -> NotFoundException.forAdmin(createdBy)));
         technician.setCompany(userRepository.findById(createdBy).orElseThrow(() -> NotFoundException.forAdmin(createdBy)).getCompany());
-        passwordUtility.sendPasswordEmail(email, rawPassword);
+        emailService.sendPasswordEmail(email, rawPassword);
         return technicianRepository.save(technician);
     }
 
