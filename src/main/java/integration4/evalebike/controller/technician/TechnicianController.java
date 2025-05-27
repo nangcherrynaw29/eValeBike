@@ -223,25 +223,23 @@ public class TechnicianController {
     public String compare(@PathVariable String id1, @PathVariable String id2, Model model) {
         try {
             List<ReportViewModel> reportViewModels = new ArrayList<>();
-            List<TestReportEntryViewModel> summaries = new ArrayList<>();
+            List<List<TestReportEntryViewModel>> reportEntries = new ArrayList<>();
 
-            // Add each report based on the IDs
-            for (String id : new String[]{id1, id2}) {  // Loop over id1 and id2
+            for (String id : new String[]{id1, id2}) {
                 TestReport report = testReportService.getTestReportWithEntriesById(id);
                 ReportViewModel reportVm = ReportViewModel.from(report);
                 reportViewModels.add(reportVm);
 
                 List<TestReportEntry> entries = report.getReportEntries();
-                TestReportEntryViewModel summaryVm = (entries != null && !entries.isEmpty())
-                        ? TestReportEntryViewModel.summarize(entries)
-                        : null;
-                summaries.add(summaryVm);
+                List<TestReportEntryViewModel> entryVMs = entries.stream()
+                        .map(TestReportEntryViewModel::from)
+                        .collect(Collectors.toList());
+
+                reportEntries.add(entryVMs);
             }
 
-            // Add the reports and summaries to the model
             model.addAttribute("reports", reportViewModels);
-            model.addAttribute("summaries", summaries);
-
+            model.addAttribute("entries", reportEntries);
             return "technician/compare";
         } catch (RuntimeException e) {
             logger.error("Error fetching reports for testIds {} and {}: {}", id1, id2, e.getMessage(), e);
@@ -249,4 +247,5 @@ public class TechnicianController {
             return "error";
         }
     }
+
 }

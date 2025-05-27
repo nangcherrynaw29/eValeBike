@@ -247,7 +247,49 @@ public class TechnicianAPIController {
         }
     }
 
+    @GetMapping("/compare-reports")
+    public ResponseEntity<Map<String, List<TestReportEntryDTO>>> compareReports(
+            @RequestParam String testId1,
+            @RequestParam String testId2
+    ) {
+        List<TestReportEntryDTO> report1Entries = testReportEntryService.getEntriesByReportId(testId1)
+                .stream().map(TestReportEntryDTO::fromEntity).toList();
 
+        List<TestReportEntryDTO> report2Entries = testReportEntryService.getEntriesByReportId(testId2)
+                .stream().map(TestReportEntryDTO::fromEntity).toList();
+
+        Map<String, List<TestReportEntryDTO>> response = new HashMap<>();
+        response.put("report1", report1Entries);
+        response.put("report2", report2Entries);
+
+        return ResponseEntity.ok(response);
+    }
+
+    // ✅ Convert one entity to a DTO (for sending to frontend)
+    public static TestReportEntryDTO fromEntity(TestReportEntry e) {
+        return new TestReportEntryDTO(
+                e.getTimestamp(),
+                e.getBatteryVoltage(),
+                e.getBatteryCurrent(),
+                e.getBatteryCapacity(),
+                e.getBatteryTemperatureCelsius(),
+                e.getChargeStatus(),
+                e.getAssistanceLevel(),
+                e.getTorqueCrankNm(),
+                e.getBikeWheelSpeedKmh(),
+                e.getCadanceRpm(),
+                e.getEngineRpm(),
+                e.getEnginePowerWatt(),
+                e.getWheelPowerWatt(),
+                e.getRollTorque(),
+                e.getLoadcellN(),
+                e.getRolHz(),
+                e.getHorizontalInclination(),
+                e.getVerticalInclination(),
+                e.getLoadPower(),
+                e.isStatusPlug()
+        );
+    }
 
 
 

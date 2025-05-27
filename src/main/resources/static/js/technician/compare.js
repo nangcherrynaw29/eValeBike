@@ -1,4 +1,4 @@
-
+//from reports by qr (button)
 document.getElementById('compareButton').addEventListener('click', function () {
     const selected = Array.from(document.querySelectorAll('input[name="selectedReports"]:checked'))
         .map(cb => cb.value);

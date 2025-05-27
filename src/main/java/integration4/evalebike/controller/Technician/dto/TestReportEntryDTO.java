@@ -56,5 +56,29 @@ public record TestReportEntryDTO(
                 ))
                 .collect(Collectors.toList());
     }
-
+    // ✅ Convert one entity to a DTO (for sending to frontend)
+    public static TestReportEntryDTO fromEntity(TestReportEntry e) {
+        return new TestReportEntryDTO(
+                e.getTimestamp(),
+                e.getBatteryVoltage(),
+                e.getBatteryCurrent(),
+                e.getBatteryCapacity(),
+                e.getBatteryTemperatureCelsius(),
+                e.getChargeStatus(),
+                e.getAssistanceLevel(),
+                e.getTorqueCrankNm(),
+                e.getBikeWheelSpeedKmh(),
+                e.getCadanceRpm(),
+                e.getEngineRpm(),
+                e.getEnginePowerWatt(),
+                e.getWheelPowerWatt(),
+                e.getRollTorque(),
+                e.getLoadcellN(),
+                e.getRolHz(),
+                e.getHorizontalInclination(),
+                e.getVerticalInclination(),
+                e.getLoadPower(),
+                e.isStatusPlug()
+        );
+    }
 }
