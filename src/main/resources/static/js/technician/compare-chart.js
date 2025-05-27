@@ -1,3 +1,25 @@
+const metricLabels = {
+    batteryVoltage: "Battery Voltage",
+    batteryCurrent: "Battery Current",
+    batteryCapacity: "Battery Capacity",
+    batteryTemperatureCelsius: "Battery Temp (°C)",
+    chargeStatus: "Charge Status",
+    assistanceLevel: "Assistance Level",
+    torqueCrankNm: "Torque Crank (Nm)",
+    bikeWheelSpeedKmh: "Wheel Speed (km/h)",
+    cadanceRpm: "Cadence (RPM)",
+    engineRpm: "Engine RPM",
+    enginePowerWatt: "Engine Power (W)",
+    wheelPowerWatt: "Wheel Power (W)",
+    rollTorque: "Roll Torque",
+    loadcellN: "Load Cell (N)",
+    rolHz: "Rol Hz",
+    horizontalInclination: "Horizontal Inclination",
+    verticalInclination: "Vertical Inclination",
+    loadPower: "Load Power",
+    statusPlug: "Status Plug"
+};
+
 document.addEventListener("DOMContentLoaded", () => {
     const chartCanvas = document.getElementById('comparisonChart');
     let chartInstance;
@@ -38,15 +60,25 @@ document.addEventListener("DOMContentLoaded", () => {
                     legend: { position: 'top' }
                 },
                 scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'nth entry'
+                        }
+                    },
                     y: {
                         beginAtZero: true,
                         title: {
                             display: true,
-                            text: metric
+                            text: metricLabels[metric] || metric // fallback to code name
                         }
                     }
                 }
             }
+
+
+
+
         });
     }
 

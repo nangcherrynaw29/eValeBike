@@ -232,15 +232,14 @@ public class TechnicianController {
 
                 List<TestReportEntry> entries = report.getReportEntries();
                 List<TestReportEntryViewModel> entryVMs = entries.stream()
-                        .map(TestReportEntryViewModel::from) // Ensure you have a `from()` method
+                        .map(TestReportEntryViewModel::from)
                         .collect(Collectors.toList());
 
                 reportEntries.add(entryVMs);
             }
 
             model.addAttribute("reports", reportViewModels);
-            model.addAttribute("entries", reportEntries); // List<List<TestReportEntryViewModel>>
-
+            model.addAttribute("entries", reportEntries);
             return "technician/compare";
         } catch (RuntimeException e) {
             logger.error("Error fetching reports for testIds {} and {}: {}", id1, id2, e.getMessage(), e);
