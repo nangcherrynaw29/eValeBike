@@ -1,5 +1,5 @@
 //Create a new admin
-import { csrfToken, csrfHeader } from '/js/util/csrf.js';
+import { csrfToken, csrfHeader } from '../util/csrf.js';
 
 document.addEventListener("DOMContentLoaded", function () {
     const form = document.querySelector('#add-admin-form');

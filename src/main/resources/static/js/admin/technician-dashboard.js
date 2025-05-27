@@ -1,5 +1,4 @@
-const csrfToken = document.querySelector('meta[name="_csrf"]').content;
-const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+import { csrfToken, csrfHeader } from '../util/csrf.js';
 
 document.addEventListener("DOMContentLoaded", () => {
     const addTechnicianBtn = document.getElementById("add-technician-btn");
@@ -327,7 +326,10 @@ function attachApprovalEventListeners() {
 async function approveUser(userId) {
     try {
         const response = await fetch(`/api/admin/technicians/${userId}/approve`, {
-            method: 'POST'
+            method: 'POST', headers: {
+                [csrfHeader]: csrfToken, 'Content-Type': 'application/json'
+            },
+
         });
 
         if (!response.ok) throw new Error('Failed to approve user');
@@ -343,7 +345,9 @@ async function approveUser(userId) {
 async function rejectUser(userId) {
     try {
         const response = await fetch(`/api/admin/technicians/${userId}/reject`, {
-            method: 'POST'
+            method: 'POST', headers: {
+                [csrfHeader]: csrfToken, 'Content-Type': 'application/json'
+            },
         });
 
         if (!response.ok) throw new Error('Failed to reject user');

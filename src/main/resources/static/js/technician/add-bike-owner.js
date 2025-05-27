@@ -1,4 +1,4 @@
-import { csrfToken, csrfHeader } from '/js/util/csrf.js';
+import { csrfToken, csrfHeader } from '../util/csrf.js';
 
 const form = document.querySelector('#add-bikeOwner-form');
 form.addEventListener('submit', async e => {
