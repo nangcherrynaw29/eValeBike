@@ -1,116 +1,79 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Test Report Comparison</title>
-  <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compare Test Reports</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="/css/compare-chart.css">
+
 </head>
 <body>
 
 <div th:insert="~{fragments/menu.html}"></div>
 
-<div class="container-fluid mt-4 ">
+<div class="container-fluid mt-4">
+    <div class="content-wrapper">
 
-
-    <!-- Bike Under Test -->
-    <div class="row mb-4">
-      <div class="col-12">
-        <div class="card w-100">
-          <div class="card-header bg-primary text-white" >Bike Under Test</div>
-          <div class="card-body">
-            <span th:text="${reports[0].bikeQR()}"></span>
-          </div>
+        <!-- Bike Under Test -->
+        <div class="section-block">
+            <h5 class="section-title">Bike Under Test</h5>
+            <p><strong>Test A (QR):</strong> <span th:text="${reports[0].id()}"></span></p>
+            <p><strong>Test B (QR):</strong> <span th:text="${reports[1].id()}"></span></p>
         </div>
-      </div>
-    </div>
 
-    <!-- Test Reports Comparison -->
-    <div class="row mb-4">
-      <div class="col-12">
-        <div class="card w-100">
-          <div class="card-header bg-primary text-white" >Test Reports Comparison</div>
-          <div class="card-body">
-            <div class="table-responsive">
-              <table class="table table-bordered table-sm w-100">
-                <thead class="table-light">
-                <tr>
-                  <th>Detail</th>
-                  <th>Test A</th>
-                  <th>Test B</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr><th>Test ID</th><td th:text="${reports[0].id()}">-</td><td th:text="${reports[1].id()}">-</td></tr>
-                <tr><th>Test Run By</th><td th:text="${reports[0].technicianName()}">-</td><td th:text="${reports[1].technicianName()}">-</td></tr>
-                <tr><th>Test Type</th><td th:text="${reports[0].type()}">-</td><td th:text="${reports[1].type()}">-</td></tr>
-                <tr><th>Status</th><td th:text="${reports[0].state()}">-</td><td th:text="${reports[1].state()}">-</td></tr>
-                <tr>
-                  <th>Test Date</th>
-                  <td th:text="${#strings.substring(reports[0].testReportEntries()[0].timestamp, 0, 10)}">-</td>
-                  <td th:text="${#strings.substring(reports[1].testReportEntries()[0].timestamp, 0, 10)}">-</td>
-                </tr>
-                <tr><th>Battery Capacity</th><td th:text="${reports[0].batteryCapacity()}">-</td><td th:text="${reports[1].batteryCapacity()}">-</td></tr>
-                </tbody>
-              </table>
+        <!-- Metric Selector -->
+        <div class="section-block">
+            <h5 class="section-title">Select Metric to Compare</h5>
+            <div id="metricSelector" class="d-flex flex-wrap gap-3 pt-2">
+                <label><input type="radio" name="metric" value="batteryVoltage" checked> Battery Voltage</label>
+                <label><input type="radio" name="metric" value="batteryCurrent"> Battery Current</label>
+                <label><input type="radio" name="metric" value="batteryCapacity"> Battery Capacity</label>
+                <label><input type="radio" name="metric" value="batteryTemperatureCelsius"> Battery Temp (°C)</label>
+                <label><input type="radio" name="metric" value="chargeStatus"> Charge Status</label>
+                <label><input type="radio" name="metric" value="assistanceLevel"> Assistance Level</label>
+                <label><input type="radio" name="metric" value="torqueCrankNm"> Torque Crank (Nm)</label>
+                <label><input type="radio" name="metric" value="bikeWheelSpeedKmh"> Wheel Speed (km/h)</label>
+                <label><input type="radio" name="metric" value="cadanceRpm"> Cadence (RPM)</label>
+                <label><input type="radio" name="metric" value="engineRpm"> Engine RPM</label>
+                <label><input type="radio" name="metric" value="enginePowerWatt"> Engine Power (W)</label>
+                <label><input type="radio" name="metric" value="wheelPowerWatt"> Wheel Power (W)</label>
+                <label><input type="radio" name="metric" value="rollTorque"> Roll Torque</label>
+                <label><input type="radio" name="metric" value="loadcellN"> Load Cell (N)</label>
+                <label><input type="radio" name="metric" value="rolHz"> Rol Hz</label>
+                <label><input type="radio" name="metric" value="horizontalInclination"> Horizontal Inclination</label>
+                <label><input type="radio" name="metric" value="verticalInclination"> Vertical Inclination</label>
+                <label><input type="radio" name="metric" value="loadPower"> Load Power</label>
+                <label><input type="radio" name="metric" value="statusPlug"> Status Plug</label>
             </div>
-          </div>
         </div>
-      </div>
-    </div>
 
+        <!-- Chart Section -->
+        <div class="section-block">
+            <h5 class="section-title">Metric Comparison Chart</h5>
+            <div class="chart-container">
+                <canvas id="comparisonChart" style="width: 100%; height: 100%;"></canvas>
+            </div>
 
-
-  <!-- Test Metrics Comparison -->
-  <div class="row mb-4">
-    <div class="col-12">
-      <div class="card w-100">
-        <div class="card-header bg-primary text-white"  >Test Reports Comparison</div>
-        <div class="card-body">
-          <div class="table-responsive">
-            <table class="table table-bordered table-sm w-100">
-                <thead class="table-light">
-                <tr>
-                  <th>Metric</th>
-                  <th>Test A</th>
-                  <th>Test B</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr><th>Avg Battery Voltage</th><td th:text="${summaries[0].batteryVoltage()}">-</td><td th:text="${summaries[1].batteryVoltage()}">-</td></tr>
-                <tr><th>Avg Battery Current</th><td th:text="${summaries[0].batteryCurrent()}">-</td><td th:text="${summaries[1].batteryCurrent()}">-</td></tr>
-                <tr><th>Avg Battery Capacity</th><td th:text="${summaries[0].batteryCapacity()}">-</td><td th:text="${summaries[1].batteryCapacity()}">-</td></tr>
-                <tr><th>Battery Temp (°C)</th><td th:text="${summaries[0].batteryTemperatureCelsius()}">-</td><td th:text="${summaries[1].batteryTemperatureCelsius()}">-</td></tr>
-                <tr><th>Charge Status</th><td th:text="${summaries[0].chargeStatus()}">-</td><td th:text="${summaries[1].chargeStatus()}">-</td></tr>
-                <tr><th>Assistance Level</th><td th:text="${summaries[0].assistanceLevel()}">-</td><td th:text="${summaries[1].assistanceLevel()}">-</td></tr>
-                <tr><th>Torque Crank (Nm)</th><td th:text="${summaries[0].torqueCrankNm()}">-</td><td th:text="${summaries[1].torqueCrankNm()}">-</td></tr>
-                <tr><th>Wheel Speed (km/h)</th><td th:text="${summaries[0].bikeWheelSpeedKmh()}">-</td><td th:text="${summaries[1].bikeWheelSpeedKmh()}">-</td></tr>
-                <tr><th>Cadence (RPM)</th><td th:text="${summaries[0].cadanceRpm()}">-</td><td th:text="${summaries[1].cadanceRpm()}">-</td></tr>
-                <tr><th>Engine RPM</th><td th:text="${summaries[0].engineRpm()}">-</td><td th:text="${summaries[1].engineRpm()}">-</td></tr>
-                <tr><th>Engine Power (W)</th><td th:text="${summaries[0].enginePowerWatt()}">-</td><td th:text="${summaries[1].enginePowerWatt()}">-</td></tr>
-                <tr><th>Wheel Power (W)</th><td th:text="${summaries[0].wheelPowerWatt()}">-</td><td th:text="${summaries[1].wheelPowerWatt()}">-</td></tr>
-                <tr><th>Roll Torque</th><td th:text="${summaries[0].rollTorque()}">-</td><td th:text="${summaries[1].rollTorque()}">-</td></tr>
-                <tr><th>Load cell (N)</th><td th:text="${summaries[0].loadcellN()}">-</td><td th:text="${summaries[1].loadcellN()}">-</td></tr>
-                <tr><th>Rol Hz</th><td th:text="${summaries[0].rolHz()}">-</td><td th:text="${summaries[1].rolHz()}">-</td></tr>
-                <tr><th>Horizontal Inclination</th><td th:text="${summaries[0].horizontalInclination()}">-</td><td th:text="${summaries[1].horizontalInclination()}">-</td></tr>
-                <tr><th>Vertical Inclination</th><td th:text="${summaries[0].verticalInclination()}">-</td><td th:text="${summaries[1].verticalInclination()}">-</td></tr>
-                <tr><th>Load Power</th><td th:text="${summaries[0].loadPower()}">-</td><td th:text="${summaries[1].loadPower()}">-</td></tr>
-                <tr><th>Status Plug</th><td th:text="${summaries[0].statusPlug()}">-</td><td th:text="${summaries[1].statusPlug()}">-</td></tr>
-                </tbody>
-            </table>
-          </div>
         </div>
-      </div>
+
+        <!-- Navigation -->
+        <div class="text-center mt-4">
+            <a th:href="@{/technician/test-report-dashboard}" class="btn btn-primary">Back to Test Report Dashboard</a>
+        </div>
+
     </div>
-  </div>
-
-  <!-- Navigation -->
-  <div class="text-center mt-4">
-    <a th:href="@{/technician/test-report-dashboard}" class="btn btn-primary">Back to Test Report Dashboard</a>
-  </div>
-
-  <div th:insert="~{fragments/footer.html}" class="mt-4"></div>
 </div>
+
+<div th:insert="~{fragments/footer.html}" class="mt-4"></div>
+
+<script th:inline="javascript">
+    const dataReport1 = /*[[${entries[0]}]]*/ [];
+    const dataReport2 = /*[[${entries[1]}]]*/ [];
+</script>
+
+<script src="/js/technician/compare-chart.js"></script>
 
 </body>
 </html>
