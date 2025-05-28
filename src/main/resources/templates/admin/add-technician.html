@@ -1,41 +1,40 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="_csrf" th:content="${_csrf.token}" />
-  <meta name="_csrf_header" th:content="${_csrf.headerName}" />
-
-  <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}">
-  <link rel="stylesheet" href="/css/global.css">
-  <link rel="stylesheet" href="/css/add-technician.css">
-  <link rel="stylesheet" href="/css/form.css">
-  <script src="/js/admin/add-technician.js" type="module" defer></script>
-  <title>Add Technician</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/add-technician.css">
+    <link rel="stylesheet" href="/css/form.css">
+    <script src="/js/admin/add-technician.js" type="module" defer></script>
+    <title>Add Technician</title>
 </head>
 <body>
 <div th:insert="~{fragments/menu.html}"></div>
 <div class="form-container">
-  <div class="card p-4 shadow">
-    <h2 class="text-center mb-4">Add Technician</h2>
-    <form id="add-technician-form">
-      <div class="mb-3">
-        <label for="technician-name" class="form-label">Name</label>
-        <input type="text" class="form-control" id="technician-name" required>
-      </div>
-      <div class="mb-3">
-        <label for="technician-email" class="form-label">Email</label>
-        <input type="email" class="form-control" id="technician-email" required>
-      </div>
+    <div class="card p-4 shadow">
+        <h2 class="text-center mb-4">Add Technician</h2>
+        <form id="add-technician-form">
+            <div class="mb-3">
+                <label for="technician-name" class="form-label">Name</label>
+                <input type="text" class="form-control" id="technician-name" required>
+            </div>
+            <div class="mb-3">
+                <label for="technician-email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="technician-email" required>
+            </div>
 
-      <div class="d-flex justify-content-between mt-4">
-        <button type="button" id="back-to-dashboard-btn" class="btn btn-secondary">
-          Back to Dashboard
-        </button>
-        <button type="submit" class="btn btn-primary">Add Technician</button>
-      </div>
-    </form>
-  </div>
+            <div class="d-flex justify-content-between mt-4">
+                <button type="button" id="back-to-dashboard-btn" class="btn btn-secondary">
+                    Back to Dashboard
+                </button>
+                <button type="submit" class="btn btn-primary">Add Technician</button>
+            </div>
+        </form>
+    </div>
 </div>
 </body>
 </html>

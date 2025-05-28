@@ -1,8 +1,6 @@
 package integration4.evalebike.controller;
 
-import integration4.evalebike.domain.Status;
 import integration4.evalebike.domain.Technician;
-import integration4.evalebike.domain.TestBench;
 import integration4.evalebike.security.CustomUserDetails;
 import integration4.evalebike.service.TechnicianService;
 import integration4.evalebike.service.TestBenchService;
@@ -13,8 +11,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import java.util.List;
 
 @Controller
 public class HomeController {
@@ -51,17 +47,5 @@ public class HomeController {
 
         testBenchService.assignTestBench(testBenchNumber, technicianId);
         return "redirect:/technician/bikes/test-types/" + bikeQR;
-    }
-
-    @GetMapping("/admin/admin-dashboard")
-    public String technicianDashboard(Model model, Authentication authentication) {
-        if (authentication == null) {
-            return "redirect:/login";
-        }
-        int technicianId = ((CustomUserDetails) authentication.getPrincipal()).getUserId();
-        List<TestBench> activeTestBenches = testBenchService.findByTechnicianIdAndStatus(
-                technicianId, Status.ACTIVE);
-        model.addAttribute("activeTestBenches", activeTestBenches);
-        return "/admin/admin-dashboard";
     }
 }
