@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -105,7 +104,10 @@ public class AdminApiController {
                 })
                 .filter(user -> {
                     Company targetedCompany = user.getCompany();
-                    return (Objects.equals(targetedCompany.getId(), userDetails.getCompany().getId()));
+                    Company currentCompany = userDetails.getCompany();
+                    return targetedCompany != null
+                            && currentCompany != null
+                            && Objects.equals(targetedCompany.getId(), currentCompany.getId());
                 })
                 .map(PendingUserDto::fromUser)
                 .collect(Collectors.toList());
@@ -161,7 +163,4 @@ public class AdminApiController {
                 throw new IllegalArgumentException("Invalid filter type");
         }
     }
-
-
-
 }
