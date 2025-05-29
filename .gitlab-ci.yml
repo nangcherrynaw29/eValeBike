@@ -1,0 +1,136 @@
+services:
+  - docker:20.10.24-dind
+
+include:
+  - template: Security/SAST.gitlab-ci.yml
+
+variables:
+  DOCKER_HOST: tcp://docker:2375
+  DOCKER_TLS_CERTDIR: ""
+  SSH_PRIVATE_KEY: $SSH_PRIVATE_KEYY
+  APP_SERVER: $APP_SERVER
+  IMAGE_NAME: $CI_REGISTRY_IMAGE
+  IMAGE_TAG: $CI_COMMIT_REF_SLUG
+  DOCKERHUB_USER: $DOCKERHUB_USERNAME
+  DOCKERHUB_PASS: $DOCKERHUB_PASSWORD
+
+stages:
+  - build
+  - test
+  - sast
+  - deploy
+  - destroy
+
+before_script:
+  - echo "Starting CI/CD pipeline..."
+
+build_job:
+  stage: build
+  image: gradle:8.4.0-jdk21
+  tags:
+    - docker
+    - gradle
+    - java
+  script:
+    - echo "Listing files before build..."
+    - ls -la
+    - gradle build -x test
+    - echo "Listing artifacts after build..."
+    - ls -la build.gradle.kts settings.gradle.kts src/ gradle/ gradlew gradlew.bat build/libs/
+  artifacts:
+    paths:
+      - build/libs/*.jar
+      - build/libs/
+      - build.gradle.kts
+      - settings.gradle.kts
+      - src/
+      - gradle/
+      - gradlew
+      - gradlew.bat
+    expire_in: 1 week
+
+test_job:
+  stage: test
+  image: gradle:8.4.0-jdk21
+  tags:
+    - docker
+    - gradle
+    - java
+  script:
+    - echo "Running tests with in-memory H2..."
+    - gradle test --info
+    - echo "Listing test results..."
+    - ls -la build/test-results/test/
+  artifacts:
+    when: always
+    reports:
+      junit: build/test-results/test/TEST-*.xml
+    paths:
+      - build/test-results/test/
+  needs:
+    - build_job
+
+sast:
+  stage: sast
+  script:
+    - echo "Running SAST analysis..."
+  artifacts:
+    paths:
+      - gl-sast-report.json
+    expire_in: 1 week
+  allow_failure: false
+
+deploy_job:
+  stage: deploy
+  image: docker:stable
+  services:
+    - name: docker:20.10.24-dind
+      alias: docker
+  tags:
+    - docker
+  before_script:
+    - echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USER" --password-stdin
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEYY" | base64 -d > ~/.ssh/gitlabrunner
+    - chmod 600 ~/.ssh/gitlabrunner
+    - eval "$(ssh-agent -s)"
+    - ssh-add ~/.ssh/gitlabrunner
+    - ssh-keyscan -H $APP_SERVER >> ~/.ssh/known_hosts
+  script:
+    - echo "Building Docker image..."
+    - docker build -t $IMAGE_NAME:$IMAGE_TAG .
+    - echo "Pushing Docker image to registry..."
+    - docker push $IMAGE_NAME:$IMAGE_TAG
+    - echo "Deploying to app server..."
+    - ssh team4@$APP_SERVER "sudo docker stop spring-app || true"
+    - ssh team4@$APP_SERVER "sudo docker rm spring-app || true"
+    - ssh team4@$APP_SERVER "sudo docker pull $IMAGE_NAME:$IMAGE_TAG"
+    - ssh team4@$APP_SERVER "sudo docker run -d --name spring-app -p 80:8080 -e SPRING_DATASOURCE_URL='jdbc:sqlserver://evalebike.database.windows.net:1433;database=eValeBike;user=user@evalebike;password=password!1;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30' -e SPRING_DATASOURCE_USERNAME=user -e SPRING_DATASOURCE_PASSWORD=password!1 $IMAGE_NAME:$IMAGE_TAG"
+
+destroy_job:
+  stage: destroy
+  when: manual
+  image: docker:stable
+  services:
+    - name: docker:20.10.24-dind
+      alias: docker
+  tags:
+    - docker
+  before_script:
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEYY" | base64 -d > ~/.ssh/gitlabrunner
+    - chmod 600 ~/.ssh/gitlabrunner
+    - eval "$(ssh-agent -s)"
+    - ssh-add ~/.ssh/gitlabrunner
+    - ssh-keyscan -H $APP_SERVER >> ~/.ssh/known_hosts
+  script:
+    - echo "Stopping and removing the container..."
+    - |
+      ssh -tt team4@$APP_SERVER << EOF
+        sudo docker stop spring-app || true
+        sudo docker rm spring-app || true
+        exit
+      EOF
+      
+    
+      
