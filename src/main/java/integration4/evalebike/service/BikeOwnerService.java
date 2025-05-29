@@ -21,18 +21,20 @@ public class BikeOwnerService {
     private final BikeOwnerBikeRepository bikeOwnerBikeRepository;
     private final BikeRepository bikeRepository;
     private final QrCodeService qrCodeService;
-    private final PasswordUtility passwordUtility;
+    private final PasswordService passwordService;
     private final UserRepository userRepository;
     private final CompanyRepository companyRepository;
+    private final EmailService emailService;
 
-    public BikeOwnerService(BikeOwnerRepository bikeOwnerRepository, BikeOwnerBikeRepository bikeOwnerBikeRepository, BikeRepository bikeRepository, QrCodeService qrCodeService, PasswordUtility passwordUtility, UserRepository userRepository, CompanyRepository companyRepository) {
+    public BikeOwnerService(BikeOwnerRepository bikeOwnerRepository, BikeOwnerBikeRepository bikeOwnerBikeRepository, BikeRepository bikeRepository, QrCodeService qrCodeService, PasswordService passwordService, UserRepository userRepository, EmailService emailService, CompanyRepository companyRepository) {
         this.bikeOwnerRepository = bikeOwnerRepository;
         this.bikeOwnerBikeRepository = bikeOwnerBikeRepository;
         this.bikeRepository = bikeRepository;
         this.qrCodeService = qrCodeService;
-        this.passwordUtility = passwordUtility;
+        this.passwordService = passwordService;
         this.userRepository = userRepository;
         this.companyRepository = companyRepository;
+        this.emailService = emailService;
     }
 
     public List<BikeOwner> getAll(CustomUserDetails currentUser) {
@@ -47,8 +49,8 @@ public class BikeOwnerService {
     }
 
     public BikeOwner add(String name, String email, String phoneNumber, LocalDate birthDate, int createdBy, Integer companyId) {
-        String rawPassword = passwordUtility.generateRandomPassword(8);
-        String hashedPassword = passwordUtility.hashPassword(rawPassword);
+        String rawPassword = passwordService.generateRandomPassword(8);
+        String hashedPassword = passwordService.hashPassword(rawPassword);
         BikeOwner bikeOwner = new BikeOwner(name, email, phoneNumber, birthDate);
         bikeOwner.setPassword(hashedPassword);
         bikeOwner.setUserStatus(UserStatus.APPROVED);
@@ -56,11 +58,10 @@ public class BikeOwnerService {
         if (companyId != null) {
             Company company = companyRepository.findById(companyId).orElse(null);
             bikeOwner.setCompany(company);
-        }
-        else{
+        } else {
             bikeOwner.setCompany(userRepository.findById(createdBy).orElseThrow((() -> NotFoundException.forTechnician(createdBy))).getCompany());
         }
-        passwordUtility.sendPasswordEmail(email, rawPassword);
+        emailService.sendPasswordEmail(email, rawPassword);
         return bikeOwnerRepository.save(bikeOwner);
     }
 

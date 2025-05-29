@@ -49,21 +49,6 @@ SELECT 1,
 WHERE NOT EXISTS (SELECT 1 FROM app_user WHERE id = 1);
 
 INSERT INTO app_user (id, name, email, password, role, user_status, created_by_id, company_id)
-SELECT 2,
-       'Jane Smith',
-       'jane.smith@example.com',
-       '$2a$10$kU6clDpBtcQAiul4xa9GP.Liy2GmP3QCPXHeZNjBSLj240YukGx7K',
-       'TECHNICIAN',
-       'APPROVED',
-       4,
-       1
-WHERE NOT EXISTS (SELECT 1 FROM app_user WHERE id = 2);
-
-INSERT INTO technician (id)
-SELECT 2
-WHERE NOT EXISTS (SELECT 1 FROM technician WHERE id = 2);
-
-INSERT INTO app_user (id, name, email, password, role, user_status, created_by_id, company_id)
 SELECT 3,
        'Alice Johnson',
        'alice.johnson@example.com',
@@ -73,6 +58,22 @@ SELECT 3,
        4,
        1
 WHERE NOT EXISTS (SELECT 1 FROM app_user WHERE id = 3);
+
+
+INSERT INTO app_user (id, name, email, password, role, user_status, created_by_id, company_id)
+SELECT 2,
+       'Jane Smith',
+       'jane.smith@example.com',
+       '$2a$10$kU6clDpBtcQAiul4xa9GP.Liy2GmP3QCPXHeZNjBSLj240YukGx7K',
+       'TECHNICIAN',
+       'APPROVED',
+       3,
+       1
+WHERE NOT EXISTS (SELECT 1 FROM app_user WHERE id = 2);
+
+INSERT INTO technician (id)
+SELECT 2
+WHERE NOT EXISTS (SELECT 1 FROM technician WHERE id = 2);
 
 INSERT INTO administrator (id)
 SELECT 3
@@ -286,6 +287,12 @@ WHERE NOT EXISTS (SELECT 1 FROM bike_owner WHERE id = 18);
 INSERT INTO bike_owner (id, phone_number, birth_date)
 SELECT 20, '555-1234', '1990-05-20'
 WHERE NOT EXISTS (SELECT 1 FROM bike_owner WHERE id = 20);
+
+INSERT INTO bike_owner (id, phone_number, birth_date)
+SELECT 5, '555-1234', '1990-05-20'
+WHERE NOT EXISTS (SELECT 1 FROM bike_owner WHERE id = 5);
+
+
 
 -- Insert bikes
 INSERT INTO bike (bikeqr, brand, model, production_year, bike_size, mileage, gear_type, engine_type, power_train,

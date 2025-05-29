@@ -12,7 +12,7 @@ import java.util.List;
 @Entity
 @PrimaryKeyJoinColumn(name = "id")
 public class Technician extends User {
-    @OneToMany(mappedBy = "technician")
+    @OneToMany(mappedBy = "technician", fetch = FetchType.EAGER)
     private List<TestBench> assignedTestBench = new ArrayList<>();
 
     public Technician(String name, String email) {

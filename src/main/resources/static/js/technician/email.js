@@ -1,4 +1,4 @@
-import { csrfToken, csrfHeader } from '/js/util/csrf.js';
+import { csrfToken, csrfHeader } from '../util/csrf.js';
 
 async function sendPDFtoServer() {
     const button = document.getElementById('sendEmailBtn');

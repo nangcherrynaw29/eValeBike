@@ -1,5 +1,4 @@
-const csrfToken = document.querySelector('meta[name="_csrf"]').content;
-const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+import {csrfToken, csrfHeader} from '../util/csrf.js';
 
 document.addEventListener("DOMContentLoaded", async () => {
     const addAdminBtn = document.querySelector("#add-admin-btn");
@@ -28,7 +27,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         console.log('Request URL:', url);
 
         fetch(url, {
-            method: 'GET'
+            method: 'GET',
+            headers: {
+                [csrfHeader]: csrfToken,
+                'Accept': 'application/json'
+            }
         })
             .then(response => {
                 if (!response.ok) {
@@ -80,7 +83,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     async function loadAdminData() {
         try {
-            const response = await fetch("/api/super-admin/admins");
+            const response = await fetch("/api/super-admin/admins", {
+                headers: {
+                    [csrfHeader]: csrfToken,
+                    "Accept": "application/json"
+                }
+            });
             if (!response.ok) throw new Error("Failed to load admins");
             adminData = await response.json();
             renderTable();
@@ -167,7 +175,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                 try {
                     const response = await fetch(`/api/super-admin/admins/${adminId}`, {
-                        method: "DELETE", headers: {[csrfHeader]: csrfToken, "Accept": "application/json"}
+                        method: "DELETE",
+                        headers: {[csrfHeader]: csrfToken, "Accept": "application/json"}
                     });
 
                     if (response.ok) {
@@ -236,7 +245,13 @@ async function loadPendingUsers() {
     if (!tableBody) return;
 
     try {
-        const response = await fetch('/api/super-admin/admins/pending');
+        const response = await fetch('/api/super-admin/admins/pending', {
+                headers: {
+                    [csrfHeader]: csrfToken,
+                    'Accept': 'application/json'
+                }
+            }
+        );
         if (!response.ok) {
             const errorText = await response.text();
             throw new Error(`Failed to fetch pending users: ${response.status} ${errorText}`);
@@ -297,7 +312,9 @@ function attachApprovalEventListeners() {
 async function approveUser(userId) {
     try {
         const response = await fetch(`/api/super-admin/admins/${userId}/approve`, {
-            method: 'POST'
+            method: 'POST', headers: {
+                [csrfHeader]: csrfToken, 'Content-Type': 'application/json'
+            },
         });
 
         if (!response.ok) throw new Error('Failed to approve user');
@@ -313,7 +330,9 @@ async function approveUser(userId) {
 async function rejectUser(userId) {
     try {
         const response = await fetch(`/api/super-admin/admins/${userId}/reject`, {
-            method: 'POST'
+            method: 'POST', headers: {
+                [csrfHeader]: csrfToken, 'Content-Type': 'application/json'
+            },
         });
 
         if (!response.ok) throw new Error('Failed to reject user');
@@ -328,7 +347,12 @@ async function rejectUser(userId) {
 
 async function fetchPendingRequestsCount() {
     try {
-        const response = await fetch('/api/super-admin/admins/pending/count');
+        const response = await fetch('/api/super-admin/admins/pending/count', {
+            headers: {
+                [csrfHeader]: csrfToken,
+                'Accept': 'application/json'
+            }
+        });
         if (!response.ok) throw new Error('Failed to fetch pending requests count');
 
         const count = await response.json();

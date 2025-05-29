@@ -8,7 +8,6 @@ import integration4.evalebike.repository.TestBenchRepository;
 import integration4.evalebike.repository.UserRepository;
 import integration4.evalebike.security.CustomUserDetails;
 import jakarta.transaction.Transactional;
-import integration4.evalebike.utility.PasswordUtility;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,17 +15,20 @@ import java.util.List;
 @Service
 public class TechnicianService {
     private final TechnicianRepository technicianRepository;
-    private final PasswordUtility passwordUtility;
+    private final PasswordService passwordService;
+    private final EmailService emailService;
     private final TestBenchRepository testBenchRepository;
     private final UserRepository userRepository;
     private final CompanyRepository companyRepository;
 
-    public TechnicianService(TechnicianRepository technicianRepository, PasswordUtility passwordUtility, TestBenchRepository testBenchRepository, UserRepository userRepository, CompanyRepository companyRepository) {
+    public TechnicianService(TechnicianRepository technicianRepository, PasswordUtility passwordUtility, PasswordService passwordService, EmailService emailService, TestBenchRepository testBenchRepository, UserRepository userRepository, CompanyRepository companyRepository) {
         this.technicianRepository = technicianRepository;
+        this.passwordService = passwordService;
+        this.emailService = emailService;
+        this.companyRepository = companyRepository;
         this.passwordUtility = passwordUtility;
         this.testBenchRepository = testBenchRepository;
         this.userRepository = userRepository;
-        this.companyRepository = companyRepository;
     }
 
     public List<Technician> getAll(CustomUserDetails currentUser) {
@@ -46,8 +48,8 @@ public class TechnicianService {
     }
 
     public Technician saveTechnician(final String name, final String email, int createdBy, Integer companyId) {
-        String rawPassword = passwordUtility.generateRandomPassword(8);
-        String hashedPassword = passwordUtility.hashPassword(rawPassword);
+        String rawPassword = passwordService.generateRandomPassword(8);
+        String hashedPassword = passwordService.hashPassword(rawPassword);
 
         Technician technician = new Technician(name, email);
         technician.setPassword(hashedPassword);
@@ -59,7 +61,7 @@ public class TechnicianService {
         else{
             technician.setCompany(userRepository.findById(createdBy).orElseThrow((() -> NotFoundException.forTechnician(createdBy))).getCompany());
         }
-        passwordUtility.sendPasswordEmail(email, rawPassword);
+        emailService.sendPasswordEmail(email, rawPassword);
         return technicianRepository.save(technician);
     }
 
@@ -88,9 +90,6 @@ public class TechnicianService {
              createdUsers.forEach(user -> user.setCreatedBy(null));
              userRepository.saveAll(createdUsers);
         }
-
-//        TODO: will be deleted after unassignment is complete
-        testBenchRepository.deleteByTechnicianId(id);
 
         technicianRepository.delete(technician);
         userRepository.deleteById(id);

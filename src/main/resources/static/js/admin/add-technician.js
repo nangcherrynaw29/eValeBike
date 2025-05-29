@@ -1,4 +1,4 @@
-import { csrfToken, csrfHeader } from '/js/util/csrf.js';
+import { csrfToken, csrfHeader } from '../util/csrf.js';
 
 document.addEventListener("DOMContentLoaded", function () {
     const addTechnicianForm = document.querySelector("#add-technician-form");

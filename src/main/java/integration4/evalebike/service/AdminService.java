@@ -4,7 +4,6 @@ import integration4.evalebike.domain.*;
 import integration4.evalebike.exception.NotFoundException;
 import integration4.evalebike.repository.AdminRepository;
 import integration4.evalebike.repository.UserRepository;
-import integration4.evalebike.utility.PasswordUtility;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,12 +12,14 @@ import java.util.List;
 @Service
 public class AdminService {
     private final AdminRepository adminRepository;
-    private final PasswordUtility passwordUtility;
+    private final PasswordService passwordService;
+    private final EmailService emailService;
     private final UserRepository userRepository;
 
-    public AdminService(AdminRepository adminRepository, PasswordUtility passwordUtility, UserRepository userRepository) {
+    public AdminService(AdminRepository adminRepository, PasswordService passwordService, EmailService emailService, UserRepository userRepository) {
         this.adminRepository = adminRepository;
-        this.passwordUtility = passwordUtility;
+        this.passwordService = passwordService;
+        this.emailService = emailService;
         this.userRepository = userRepository;
     }
 
@@ -32,8 +33,8 @@ public class AdminService {
 
     public Administrator saveAdmin(final String name, final String email, final Company company, int createdBy) {
         // Generate and hash the password using PasswordUtility
-        String rawPassword = passwordUtility.generateRandomPassword(8);
-        String hashedPassword = passwordUtility.hashPassword(rawPassword);
+        String rawPassword = passwordService.generateRandomPassword(8);
+        String hashedPassword = passwordService.hashPassword(rawPassword);
 
         // Create and save the Administrator
         final Administrator admin = new Administrator();
@@ -43,7 +44,7 @@ public class AdminService {
         admin.setPassword(hashedPassword);
         admin.setRole(Role.ADMIN);
         admin.setCreatedBy(userRepository.findById(createdBy).orElseThrow(() -> NotFoundException.forSuperAdmin(createdBy)));
-        passwordUtility.sendPasswordEmail(email, rawPassword);
+        emailService.sendPasswordEmail(email, rawPassword);
         return adminRepository.save(admin);
     }
 

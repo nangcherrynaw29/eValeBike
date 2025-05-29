@@ -1,3 +1,5 @@
+import {csrfHeader, csrfToken} from "../util/csrf";
+
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("add-company-form");
     form.addEventListener("submit", async (e) => {
@@ -14,7 +16,8 @@ document.addEventListener("DOMContentLoaded", () => {
             const response = await fetch("/api/super-admin/companies", {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    [csrfHeader]: csrfToken,
+                    'Accept': 'application/json'
                 },
                 body: JSON.stringify(companyData)
             });

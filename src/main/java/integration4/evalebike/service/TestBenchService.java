@@ -101,7 +101,13 @@ public class TestBenchService {
                                 response.bodyToMono(String.class)
                                         .flatMap(errorBody -> Mono.error(new RuntimeException("Failed to fetch test status: " + errorBody))))
                         .bodyToMono(TestResponseDTO.class))
-                .doOnNext(status -> logger.info("Test {} status: {}", testId, status.getState()))
+                .doOnNext(status -> {
+                    logger.info("Test {} status: {}", testId, status.getState());
+                    if ("COMPLETED".equalsIgnoreCase(status.getState())) {
+                        // Find and unassign the test bench used for this test
+                        handleTestCompletion(testId);
+                    }
+                })
                 .repeatWhen(flux -> flux.delayElements(Duration.ofSeconds(2)))
                 .takeUntil(status -> "COMPLETED".equalsIgnoreCase(status.getState()))
                 .timeout(Duration.ofMinutes(30))
@@ -121,7 +127,6 @@ public class TestBenchService {
                 .doOnNext(response -> logger.info("Fetched test result for testId {}: ID = {}", testId, response.getId()))
                 .doOnError(e -> logger.error("Error fetching test result for testId {}: {}", testId, e.getMessage()));
     }
-
 
     //to get the whole test report (including test entries)
     public Mono<TestReportDTO> getTestReportById(String testId) {
@@ -151,7 +156,6 @@ public class TestBenchService {
                 })
                 .doOnError(e -> logger.error("Error fetching report for testId {}: {}", testId, e.getMessage()));
     }
-
 
     public Mono<String> fetchCsvReport(String testId) {
         return testBenchClient.get()
@@ -190,7 +194,6 @@ public class TestBenchService {
                     return Mono.just(response);
                 });
     }
-
 
     public Mono<TestReportDTO> saveTestReport(TestResponseDTO test, List<TestReportEntryDTO> entryDTOs,
                                               String bikeQR, String technicianUsername) {
@@ -294,6 +297,66 @@ public class TestBenchService {
         testBench.setStatus(Status.ACTIVE);
 
         testBenchRepository.save(testBench);
+    }
+
+    @Transactional
+    public void unassignTestBench(Integer testBenchId) {
+        try {
+            TestBench testBench = testBenchRepository.findById(testBenchId)
+                    .orElseThrow(() -> NotFoundException.forTestBench(testBenchId));
+
+            if (testBench.getTechnician() != null) {
+                Integer technicianId = testBench.getTechnician().getId();
+                Technician technician = technicianRepository.findById(technicianId)
+                        .orElseThrow(() -> NotFoundException.forTechnician(technicianId));
+
+                testBench.setTechnician(null);
+                testBench.setStatus(Status.INACTIVE);
+                testBenchRepository.save(testBench);
+
+                // Update technician's test bench list
+                List<TestBench> updatedBenches = technician.getAssignedTestBench();
+                updatedBenches.removeIf(tb -> tb.getTestBenchId().equals(testBenchId));
+                technician.setAssignedTestBench(updatedBenches);
+                technicianRepository.save(technician);
+            } else {
+                // If no technician is assigned, just update the test bench
+                testBench.setStatus(Status.INACTIVE);
+                testBenchRepository.save(testBench);
+            }
+
+        } catch (Exception e) {
+            logger.error("Error unassigning test bench {}: {}", testBenchId, e.getMessage());
+            throw new RuntimeException("Failed to unassign test bench", e);
+        }
+    }
+
+    @Transactional
+    protected void handleTestCompletion(String testId) {
+        try {
+            TestReport report = testReportRepository.findBikeByID(testId)
+                    .orElseThrow(() -> new RuntimeException("No TestReport found for testId: " + testId));
+
+            String technicianUsername = report.getTechnicianName();
+            if (technicianUsername == null || technicianUsername.isEmpty()) {
+                logger.warn("No technician username found for test ID: {}", testId);
+                return;
+            }
+
+            Technician technician = technicianRepository.findByEmail(technicianUsername)
+                    .orElseThrow(() -> new RuntimeException("Technician not found with email (username): " + technicianUsername));
+
+            List<TestBench> activeTestBenches = findByTechnicianIdAndStatus(technician.getId(), Status.ACTIVE);
+            for (TestBench testBench : activeTestBenches) {
+                unassignTestBench(testBench.getTestBenchId());
+                logger.info("Unassigned test bench {} from technician {} after test completion",
+                        testBench.getTestBenchId(), technicianUsername);
+            }
+
+        } catch (Exception e) {
+            logger.error("Error handling test completion for testId {}: {}", testId, e.getMessage());
+            throw new RuntimeException("Failed to handle test completion", e);
+        }
     }
 
     public List<TestBench> findByTechnicianIdAndStatus(Integer technicianId, Status status) {
