@@ -25,7 +25,7 @@ public class CompanyService {
         return companyRepository.findAll();
     }
 
-    public long countAllCompanies(){
+    public long countAllCompanies() {
         return companyRepository.count();
     }
 

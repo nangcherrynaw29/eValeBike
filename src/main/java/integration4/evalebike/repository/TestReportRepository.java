@@ -21,22 +21,22 @@ public interface TestReportRepository extends JpaRepository<TestReport, String> 
     List<TestReport> findAllWithBikeAndReportEntries();
 
     @Query("""
-    SELECT tr FROM TestReport tr 
-    JOIN tr.bike b 
-    JOIN BikeOwnerBike bob ON bob.bike = b 
-    JOIN FETCH tr.reportEntries tre 
-    WHERE bob.bikeOwner.id = :ownerId
-""")
+                SELECT tr FROM TestReport tr 
+                JOIN tr.bike b 
+                JOIN BikeOwnerBike bob ON bob.bike = b 
+                JOIN FETCH tr.reportEntries tre 
+                WHERE bob.bikeOwner.id = :ownerId
+            """)
     List<TestReport> findAllByBikeOwnerId(@Param("ownerId") Integer ownerId);
 
     @Query("""
-    SELECT DISTINCT tr FROM TestReport tr 
-    JOIN tr.bike b 
-    JOIN BikeOwnerBike bob ON bob.bike = b 
-    JOIN bob.bikeOwner owner 
-    JOIN FETCH tr.reportEntries tre 
-    WHERE owner.company.id = :companyId
-""")
+                SELECT DISTINCT tr FROM TestReport tr 
+                JOIN tr.bike b 
+                JOIN BikeOwnerBike bob ON bob.bike = b 
+                JOIN bob.bikeOwner owner 
+                JOIN FETCH tr.reportEntries tre 
+                WHERE owner.company.id = :companyId
+            """)
     List<TestReport> findAllByOwnerCompanyId(@Param("companyId") Integer companyId);
 
     @Query("""

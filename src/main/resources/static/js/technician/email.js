@@ -1,4 +1,4 @@
-import { csrfToken, csrfHeader } from '../util/csrf.js';
+import {csrfToken, csrfHeader} from '../util/csrf.js';
 
 async function sendPDFtoServer() {
     const button = document.getElementById('sendEmailBtn');
@@ -7,7 +7,7 @@ async function sendPDFtoServer() {
     button.textContent = 'Sending PDF...';
 
     try {
-        const { jsPDF } = window.jspdf;
+        const {jsPDF} = window.jspdf;
         const cards = document.querySelectorAll('.row .card');
         if (!cards.length) throw new Error('No tables found');
 

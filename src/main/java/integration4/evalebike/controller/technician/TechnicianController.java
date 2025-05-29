@@ -196,7 +196,6 @@ public class TechnicianController {
         return modelAndView;
     }
 
-
     @GetMapping("/manual-test-form/{bikeQR}")
     public String showManualTestForm(@PathVariable String bikeQR, Model model) {
         Bike bike = bikeService.getByQR(bikeQR);
@@ -211,7 +210,6 @@ public class TechnicianController {
         modelAndView.addObject("testId", testId);
         return modelAndView;
     }
-
 
     @GetMapping("/reports-by-bike/{qr}")
     public String getReportsByBike(@PathVariable("qr") String bikeQr, Model model) {
@@ -250,5 +248,4 @@ public class TechnicianController {
             return "error";
         }
     }
-
 }

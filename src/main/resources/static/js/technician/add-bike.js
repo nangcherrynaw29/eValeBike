@@ -1,8 +1,7 @@
-import { csrfToken, csrfHeader } from '../util/csrf.js';
+import {csrfToken, csrfHeader} from '../util/csrf.js';
 
 const form = document.querySelector('#add-bike-form');
 const dateInput = document.querySelector('#lastTestDate');
-
 
 let dateError = document.querySelector('#date-error');
 if (!dateError) {

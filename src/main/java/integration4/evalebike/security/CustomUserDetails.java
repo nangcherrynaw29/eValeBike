@@ -7,7 +7,6 @@ import integration4.evalebike.domain.Role;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.GrantedAuthority;
 
-
 public class CustomUserDetails extends User {
     private final int userId;
     private final Role role;
@@ -23,8 +22,12 @@ public class CustomUserDetails extends User {
     public int getUserId() {
         return userId;
     }
-    public Role getRole() {return role;}
-    public Company getCompany() {return company;}
+
+    public Role getRole() {
+        return role;
+    }
+
+    public Company getCompany() {
+        return company;
+    }
 }
-
-

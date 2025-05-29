@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const email = document.getElementById("email").value;
         const phone = document.getElementById("phone").value;
 
-        const companyData = { name, address, email, phone };
+        const companyData = {name, address, email, phone};
 
         try {
             const response = await fetch("/api/super-admin/companies", {

@@ -6,7 +6,6 @@ import integration4.evalebike.domain.*;
 import integration4.evalebike.exception.NotFoundException;
 import integration4.evalebike.repository.*;
 import integration4.evalebike.security.CustomUserDetails;
-import integration4.evalebike.utility.PasswordUtility;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -61,14 +60,13 @@ public class BikeOwnerService {
         } else {
             bikeOwner.setCompany(userRepository.findById(createdBy).orElseThrow((() -> NotFoundException.forTechnician(createdBy))).getCompany());
         }
-        emailService.sendPasswordEmail(email, rawPassword);
+        emailService.sendPasswordEmailtoBikeOwner(email, rawPassword);
         return bikeOwnerRepository.save(bikeOwner);
     }
 
     public List<BikeOwner> getFiltered(String name, String email) {
         return bikeOwnerRepository.findByFilters(name, email);
     }
-
 
     public List<BikeDto> getAllBikes(Integer bikeOwnerId) {
         List<Bike> bikes = bikeOwnerBikeRepository.findByBikeOwnerId(bikeOwnerId)

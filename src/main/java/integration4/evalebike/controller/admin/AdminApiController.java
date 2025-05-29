@@ -97,41 +97,33 @@ public class AdminApiController {
     @GetMapping("/pending")
     public ResponseEntity<List<PendingUserDto>> getPendingApprovals(@AuthenticationPrincipal CustomUserDetails userDetails) {
         Role currentRole = userDetails.getRole();
-        List<PendingUserDto> pendingUsers = userService.getUsersByStatus(UserStatus.PENDING).stream()
-                .filter(user -> {
-                    Role targetRole = user.getRole();
-                    return (targetRole == Role.TECHNICIAN && currentRole == Role.ADMIN);
-                })
-                .filter(user -> {
-                    Company targetedCompany = user.getCompany();
-                    Company currentCompany = userDetails.getCompany();
-                    return targetedCompany != null
-                            && currentCompany != null
-                            && Objects.equals(targetedCompany.getId(), currentCompany.getId());
-                })
-                .map(PendingUserDto::fromUser)
-                .collect(Collectors.toList());
+        List<PendingUserDto> pendingUsers = userService.getUsersByStatus(UserStatus.PENDING).stream().filter(user -> {
+            Role targetRole = user.getRole();
+            return (targetRole == Role.TECHNICIAN && currentRole == Role.ADMIN);
+        }).filter(user -> {
+            Company targetedCompany = user.getCompany();
+            Company currentCompany = userDetails.getCompany();
+            return targetedCompany != null && currentCompany != null && Objects.equals(targetedCompany.getId(), currentCompany.getId());
+        }).map(PendingUserDto::fromUser).collect(Collectors.toList());
         return ResponseEntity.ok(pendingUsers);
     }
 
     @GetMapping("/pending/count")
     public ResponseEntity<Integer> getPendingCount(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        Role currentUserRole = userDetails.getRole();
-        List<User> pendingUsers = userService.getUsersByStatus(UserStatus.PENDING);
+        List<User> pendingUsers = userService.getUsersByStatus(UserStatus.PENDING)
+                .stream()
+                .filter(user -> user.getRole() == Role.TECHNICIAN)
+                .toList();
+
+        Integer currentUserCompanyID = userDetails.getCompany().getId();
 
         long count = pendingUsers.stream()
-                .filter(user -> {
-                    Role pendingRole = user.getRole();
-                    return (pendingRole == Role.TECHNICIAN && currentUserRole == Role.ADMIN);
-                })
-                .filter(user -> {
-                    User targetedCreator = user.getCreatedBy();
-                    return (targetedCreator.getId() == userDetails.getUserId());
-                })
+                .filter(user -> Objects.equals(user.getCompany().getId(), currentUserCompanyID))
                 .count();
 
         return ResponseEntity.ok((int) count);
     }
+
 
     @PostMapping("/{id}/approve")
     public ResponseEntity<String> approveUser(@PathVariable Integer id, @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -147,9 +139,7 @@ public class AdminApiController {
 
     @GetMapping("/filterAdmin")
     @PreAuthorize("hasRole('SUPER_ADMIN')")
-    public List<Administrator> filterAdmin(
-            @RequestParam String type,
-            @RequestParam String value) {
+    public List<Administrator> filterAdmin(@RequestParam String type, @RequestParam String value) {
 
         // Call the service method based on the type to filter accordingly
         switch (type) {

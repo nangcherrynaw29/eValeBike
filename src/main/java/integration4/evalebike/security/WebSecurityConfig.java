@@ -17,7 +17,7 @@ public class WebSecurityConfig {
     @Bean
 //       ? `/api/technician/normalized-test-report-entries/${testId}`
 //            : `/api/technician/test-report-entries/${testId}`;
-    SecurityFilterChain securityFilterChain(HttpSecurity security) throws Exception{
+    SecurityFilterChain securityFilterChain(HttpSecurity security) throws Exception {
         return security
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/login", "/home").permitAll()
@@ -28,7 +28,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/technician/report/**").permitAll()
                         .requestMatchers("/technician/visualization-for-test-entry/**").permitAll()
                         .requestMatchers("/technician/test-report-dashboard").permitAll()
-                        .requestMatchers("technician/compare/**").permitAll()
+                        .requestMatchers("/technician/compare/**").permitAll()
                         .requestMatchers("/api/technician/normalized-test-report-entries/**").permitAll()
                         .requestMatchers("/api/technician/test-report-entries/**").permitAll()
                         .requestMatchers("/technician/**").hasAnyRole("TECHNICIAN", "ADMIN", "SUPER_ADMIN")
@@ -66,5 +66,4 @@ public class WebSecurityConfig {
     BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
 }

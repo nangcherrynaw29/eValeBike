@@ -21,12 +21,11 @@ public class TechnicianService {
     private final UserRepository userRepository;
     private final CompanyRepository companyRepository;
 
-    public TechnicianService(TechnicianRepository technicianRepository, PasswordUtility passwordUtility, PasswordService passwordService, EmailService emailService, TestBenchRepository testBenchRepository, UserRepository userRepository, CompanyRepository companyRepository) {
+    public TechnicianService(TechnicianRepository technicianRepository, PasswordService passwordService, EmailService emailService, TestBenchRepository testBenchRepository, UserRepository userRepository, CompanyRepository companyRepository) {
         this.technicianRepository = technicianRepository;
         this.passwordService = passwordService;
         this.emailService = emailService;
         this.companyRepository = companyRepository;
-        this.passwordUtility = passwordUtility;
         this.testBenchRepository = testBenchRepository;
         this.userRepository = userRepository;
     }
@@ -57,14 +56,12 @@ public class TechnicianService {
         if (companyId != null) {
             Company company = companyRepository.findById(companyId).orElse(null);
             technician.setCompany(company);
-        }
-        else{
+        } else {
             technician.setCompany(userRepository.findById(createdBy).orElseThrow((() -> NotFoundException.forTechnician(createdBy))).getCompany());
         }
         emailService.sendPasswordEmail(email, rawPassword);
         return technicianRepository.save(technician);
     }
-
 
     public List<Technician> getFilteredTechnicians(String name, String email) {
         return technicianRepository.findByFilters(name, email);
@@ -87,8 +84,8 @@ public class TechnicianService {
         // Find all users created by this technician
         List<User> createdUsers = userRepository.findByCreatedById(id);
         if (!createdUsers.isEmpty()) {
-             createdUsers.forEach(user -> user.setCreatedBy(null));
-             userRepository.saveAll(createdUsers);
+            createdUsers.forEach(user -> user.setCreatedBy(null));
+            userRepository.saveAll(createdUsers);
         }
 
         technicianRepository.delete(technician);

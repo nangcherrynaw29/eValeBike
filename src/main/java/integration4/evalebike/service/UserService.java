@@ -5,8 +5,6 @@ import integration4.evalebike.domain.User;
 import integration4.evalebike.domain.UserStatus;
 import integration4.evalebike.repository.UserRepository;
 import jakarta.transaction.Transactional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
