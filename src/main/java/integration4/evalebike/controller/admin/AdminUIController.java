@@ -1,6 +1,5 @@
 package integration4.evalebike.controller.admin;
 
-
 import integration4.evalebike.controller.viewModel.TechniciansViewModel;
 import integration4.evalebike.security.CustomUserDetails;
 import integration4.evalebike.service.CompanyService;
@@ -43,6 +42,7 @@ public class AdminUIController {
         modelAndView.addObject("technicians", TechniciansViewModel.fromTechnician(technicianService.getAll(userDetails)));
         modelAndView.addObject("testBenches", testBenchService.getAllTestBenches());
         modelAndView.addObject("userRole", userRole);
+        modelAndView.addObject("activeTestBenches", testBenchService.countActiveTestBenches());
         return modelAndView;
     }
 

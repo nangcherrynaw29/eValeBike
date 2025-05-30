@@ -115,15 +115,18 @@ public class AdminApiController {
                 .filter(user -> user.getRole() == Role.TECHNICIAN)
                 .toList();
 
+        if (userDetails.getCompany() == null && userDetails.getRole() == Role.SUPER_ADMIN) {
+            return ResponseEntity.ok(0);
+        }
+
         Integer currentUserCompanyID = userDetails.getCompany().getId();
 
         long count = pendingUsers.stream()
-                .filter(user -> Objects.equals(user.getCompany().getId(), currentUserCompanyID))
+                .filter(user -> user.getCompany() != null && Objects.equals(user.getCompany().getId(), currentUserCompanyID))
                 .count();
 
         return ResponseEntity.ok((int) count);
     }
-
 
     @PostMapping("/{id}/approve")
     public ResponseEntity<String> approveUser(@PathVariable Integer id, @AuthenticationPrincipal CustomUserDetails userDetails) {

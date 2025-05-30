@@ -40,11 +40,18 @@
                     <small>In the System</small>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div th:if="${userRole == 'ADMIN'}" class="col-md-4">
                 <div class="card stat-card clickable" id="pending-requests-card">
                     <div class="stat-number" id="new-requests">0</div>
                     <div class="stat-label">New Requests</div>
                     <small>Pending Approval</small>
+                </div>
+            </div>
+            <div th:if="${userRole == 'SUPER_ADMIN'}" class="col-md-4">
+                <div class="card stat-card">
+                    <div class="stat-number" th:text="${activeTestBenches}">0</div>
+                    <div class="stat-label">Active Test Benches</div>
+                    <small>Currently in Use</small>
                 </div>
             </div>
         </div>
