@@ -52,6 +52,7 @@ public class TechnicianController {
     public String showBikesForOwner(@PathVariable("id") Integer ownerId, Model model) {
         List<BikeDto> bikeOwnerBikes = bikeOwnerService.getAllBikes(ownerId);
         model.addAttribute("bikes", bikeOwnerBikes);
+        model.addAttribute("ownerId", ownerId);
         return "technician/bike-dashboard";
     }
 
