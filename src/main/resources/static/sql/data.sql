@@ -1,277 +1,96 @@
--- Insert into the app_user table if the id doesn't already exist
-IF NOT EXISTS (SELECT 1 FROM app_user WHERE id = 1)
-    BEGIN
-        INSERT INTO app_user (name, email, password, role, user_status)
-        VALUES ('John Doe', 'john.doe@example.com', '$2a$10$kU6clDpBtcQAiul4xa9GP.Liy2GmP3QCPXHeZNjBSLj240YukGx7K', 'BIKE_OWNER', 'APPROVED');
-    END
+--------------------------------------
+-- Companies
+--------------------------------------
+INSERT INTO company (name, address, email, phone)
+SELECT 'E-Nursing', 'Lauveut 14 Antwerpen 2000 Belgium', 'e.nursing@example.com', '555-859-7456'
+WHERE NOT EXISTS (SELECT 1 FROM company WHERE name = 'E-Nursing');
 
-IF NOT EXISTS (SELECT 1 FROM app_user WHERE id = 2)
-    BEGIN
-        INSERT INTO app_user (name, email, password, role, user_status)
-        VALUES ('Jane Smith', 'jane.smith@example.com', '$2a$10$kU6clDpBtcQAiul4xa9GP.Liy2GmP3QCPXHeZNjBSLj240YukGx7K', 'TECHNICIAN', 'APPROVED');
-    END
+INSERT INTO company (name, address, email, phone)
+SELECT 'Bike-Corp', 'Nationalstraat 19 Antwerpen 2000 Belgium', 'bike.corp@example.com', '420-723-7966'
+WHERE NOT EXISTS (SELECT 1 FROM company WHERE name = 'Bike-Corp');
 
-IF NOT EXISTS (SELECT 1 FROM app_user WHERE id = 3)
-    BEGIN
-        INSERT INTO app_user (name, email, password, role, user_status)
-        VALUES ('Alice Johnson', 'alice.johnson@example.com', '$2a$10$kU6clDpBtcQAiul4xa9GP.Liy2GmP3QCPXHeZNjBSLj240YukGx7K', 'ADMIN', 'APPROVED');
-    END
+INSERT INTO company (name, address, email, phone)
+SELECT 'Pita', 'Hoopland 240 Breda 3650 Netherlands', 'pita@example.com', '520-690-4587'
+WHERE NOT EXISTS (SELECT 1 FROM company WHERE name = 'Pita');
 
-IF NOT EXISTS (SELECT 1 FROM app_user WHERE id = 4)
-    BEGIN
-        INSERT INTO app_user (name, email, password, role, user_status)
-        VALUES ('Bob Brown', 'bob.brown@example.com', '$2a$10$kU6clDpBtcQAiul4xa9GP.Liy2GmP3QCPXHeZNjBSLj240YukGx7K', 'SUPER_ADMIN', 'APPROVED');
-    END
-
-IF NOT EXISTS (SELECT 1 FROM app_user WHERE id = 5)
-    BEGIN
-        INSERT INTO app_user (name, email, password, role, user_status)
-        VALUES ('Michael Green', 'michael.green@example.com', '$2a$10$kU6clDpBtcQAiul4xa9GP.Liy2GmP3QCPXHeZNjBSLj240YukGx7K', 'BIKE_OWNER', 'APPROVED');
-    END
-
-IF NOT EXISTS (SELECT 1 FROM app_user WHERE id = 6)
-    BEGIN
-        INSERT INTO app_user (name, email, password, role, user_status)
-        VALUES ('Sarah White', 'sarah.white@example.com', '$2a$10$kU6clDpBtcQAiul4xa9GP.Liy2GmP3QCPXHeZNjBSLj240YukGx7K', 'BIKE_OWNER', 'APPROVED');
-    END
-
-IF NOT EXISTS (SELECT 1 FROM app_user WHERE id = 7)
-    BEGIN
-        INSERT INTO app_user (name, email, password, role, user_status)
-        VALUES ('Nathan', 'nathan@example.com', '$2a$10$kU6clDpBtcQAiul4xa9GP.Liy2GmP3QCPXHeZNjBSLj240YukGx7K', 'TECHNICIAN', 'APPROVED');
-    END
-
-IF NOT EXISTS (SELECT 1 FROM app_user WHERE id = 8)
-    BEGIN
-        INSERT INTO app_user (name, email, password, role, user_status)
-        VALUES ('Nathaniel', 'nathaniel@example.com', '$2a$10$kU6clDpBtcQAiul4xa9GP.Liy2GmP3QCPXHeZNjBSLj240YukGx7K', 'BIKE_OWNER', 'APPROVED');
-    END
-
-IF NOT EXISTS (SELECT 1 FROM app_user WHERE id = 9)
-    BEGIN
-        INSERT INTO app_user (name, email, password, role, user_status)
-        VALUES ('Jean', 'jean@example.com', '$2a$10$kU6clDpBtcQAiul4xa9GP.Liy2GmP3QCPXHeZNjBSLj240YukGx7K', 'BIKE_OWNER', 'APPROVED');
-    END
-
-IF NOT EXISTS (SELECT 1 FROM app_user WHERE id = 10)
-    BEGIN
-        INSERT INTO app_user (name, email, password, role, user_status)
-        VALUES ('Jeremy', 'jeremy@example.com', '$2a$10$kU6clDpBtcQAiul4xa9GP.Liy2GmP3QCPXHeZNjBSLj240YukGx7K', 'BIKE_OWNER', 'APPROVED');
-    END
-
-IF NOT EXISTS (SELECT 1 FROM app_user WHERE id = 11)
-    BEGIN
-        INSERT INTO app_user (name, email, password, role, user_status)
-        VALUES ('Kevin', 'kevine@example.com', '$2a$10$kU6clDpBtcQAiul4xa9GP.Liy2GmP3QCPXHeZNjBSLj240YukGx7K', 'BIKE_OWNER', 'APPROVED');
-    END
-
-IF NOT EXISTS (SELECT 1 FROM app_user WHERE id = 12)
-    BEGIN
-        INSERT INTO app_user (name, email, password, role, user_status)
-        VALUES ('Andrew', 'andrew@example.com', '$2a$10$kU6clDpBtcQAiul4xa9GP.Liy2GmP3QCPXHeZNjBSLj240YukGx7K', 'TECHNICIAN', 'APPROVED');
-    END
-
-IF NOT EXISTS (SELECT 1 FROM app_user WHERE id = 13)
-    BEGIN
-        INSERT INTO app_user (name, email, password, role, user_status)
-        VALUES ('Nicky', 'nicky@example.com', '$2a$10$kU6clDpBtcQAiul4xa9GP.Liy2GmP3QCPXHeZNjBSLj240YukGx7K', 'TECHNICIAN', 'APPROVED');
-    END
-
-IF NOT EXISTS (SELECT 1 FROM app_user WHERE id = 14)
-    BEGIN
-        INSERT INTO app_user (name, email, password, role, user_status)
-        VALUES ('Aaron', 'aaron@example.com', '$2a$10$kU6clDpBtcQAiul4xa9GP.Liy2GmP3QCPXHeZNjBSLj240YukGx7K', 'TECHNICIAN', 'APPROVED');
-    END
-
-IF NOT EXISTS (SELECT 1 FROM app_user WHERE id = 15)
-    BEGIN
-        INSERT INTO app_user (name, email, password, role, user_status)
-        VALUES ('Riko', 'riko@example.com', '$2a$10$kU6clDpBtcQAiul4xa9GP.Liy2GmP3QCPXHeZNjBSLj240YukGx7K', 'TECHNICIAN', 'APPROVED');
-    END
-
-IF NOT EXISTS (SELECT 1 FROM app_user WHERE id = 16)
-    BEGIN
-        INSERT INTO app_user (name, email, password, role, user_status)
-        VALUES ('Nora', 'nora@example.com', '$2a$10$kU6clDpBtcQAiul4xa9GP.Liy2GmP3QCPXHeZNjBSLj240YukGx7K', 'ADMIN', 'APPROVED');
-    END
-
-IF NOT EXISTS (SELECT 1 FROM app_user WHERE id = 17)
-    BEGIN
-        INSERT INTO app_user (name, email, password, role, user_status)
-        VALUES ('Waymack', 'waymack@example.com', '$2a$10$kU6clDpBtcQAiul4xa9GP.Liy2GmP3QCPXHeZNjBSLj240YukGx7K', 'TECHNICIAN', 'APPROVED');
-    END
--- Insert into app_user table with id check
+--------------------------------------
+-- SUPER_ADMIN user
+--------------------------------------
 INSERT INTO app_user (name, email, password, role, user_status)
-SELECT
-    'Sara',
-    'sara@example.com',
-    '$2a$10$kU6clDpBtcQAiul4xa9GP.Liy2GmP3QCPXHeZNjBSLj240YukGx7K',
-    'BIKE_OWNER',
-    'APPROVED'
-WHERE NOT EXISTS (SELECT 1 FROM app_user WHERE id = 18);
+SELECT 'Bob Brown', 'bob.brown@example.com', '$2a$10$kU6clDpBtcQAiul4xa9GP.Liy2GmP3QCPXHeZNjBSLj240YukGx7K', 'SUPER_ADMIN', 'APPROVED'
+WHERE NOT EXISTS (SELECT 1 FROM app_user WHERE email = 'bob.brown@example.com');
 
-INSERT INTO app_user (name, email, password, role, user_status)
-SELECT
-    'Abby',
-    'abby@example.com',
-    '$2a$10$kU6clDpBtcQAiul4xa9GP.Liy2GmP3QCPXHeZNjBSLj240YukGx7K',
-    'TECHNICIAN',
-    'APPROVED'
-WHERE NOT EXISTS (SELECT 1 FROM app_user WHERE id = 19);
-
-INSERT INTO app_user (name, email, password, role, user_status)
-SELECT
-    'Lila',
-    'lila@example.com',
-    '$2a$10$kU6clDpBtcQAiul4xa9GP.Liy2GmP3QCPXHeZNjBSLj240YukGx7K',
-    'BIKE_OWNER',
-    'APPROVED'
-WHERE NOT EXISTS (SELECT 1 FROM app_user WHERE id = 20);
-
--- Insert into bike_owner table with id check
-INSERT INTO bike_owner (id, phone_number, birth_date)
-SELECT 1, '555-1234', '1990-05-20'
-WHERE NOT EXISTS (SELECT 1 FROM bike_owner WHERE id = 1);
+-- Insert into super_admin table only if not already present
+INSERT INTO super_admin (id)
+SELECT TOP 1 id
+FROM app_user
+WHERE email = 'bob.brown@example.com'
+  AND NOT EXISTS (
+    SELECT 1 FROM super_admin WHERE id = (SELECT TOP 1 id FROM app_user WHERE email = 'bob.brown@example.com')
+);
+--------------------------------------
+-- Example BikeOwner
+--------------------------------------
+INSERT INTO app_user (name, email, password, role, user_status, created_by_id, company_id)
+SELECT 'John Doe', 'john.doe@example.com', '$2a$10$kU6clDpBtcQAiul4xa9GP.Liy2GmP3QCPXHeZNjBSLj240YukGx7K', 'BIKE_OWNER', 'APPROVED', 4, 1
+WHERE NOT EXISTS (SELECT 1 FROM app_user WHERE email = 'john.doe@example.com');
 
 INSERT INTO bike_owner (id, phone_number, birth_date)
-SELECT 6, '555-7890', '1992-07-22'
-WHERE NOT EXISTS (SELECT 1 FROM bike_owner WHERE id = 6);
+SELECT id, '555-1234', '1990-05-20'
+FROM app_user
+WHERE email = 'john.doe@example.com'
+  AND NOT EXISTS (
+    SELECT 1 FROM bike_owner WHERE id = (SELECT id FROM app_user WHERE email = 'john.doe@example.com')
+);
 
-INSERT INTO bike_owner (id, phone_number, birth_date)
-SELECT 8, '555-1234', '1990-05-20'
-WHERE NOT EXISTS (SELECT 1 FROM bike_owner WHERE id = 8);
-
-INSERT INTO bike_owner (id, phone_number, birth_date)
-SELECT 9, '555-1234', '1990-05-20'
-WHERE NOT EXISTS (SELECT 1 FROM bike_owner WHERE id = 9);
-
-INSERT INTO bike_owner (id, phone_number, birth_date)
-SELECT 10, '555-1234', '1990-05-20'
-WHERE NOT EXISTS (SELECT 1 FROM bike_owner WHERE id = 10);
-
-INSERT INTO bike_owner (id, phone_number, birth_date)
-SELECT 11, '555-1234', '1990-05-20'
-WHERE NOT EXISTS (SELECT 1 FROM bike_owner WHERE id = 11);
-
-INSERT INTO bike_owner (id, phone_number, birth_date)
-SELECT 18, '555-1234', '1990-05-20'
-WHERE NOT EXISTS (SELECT 1 FROM bike_owner WHERE id = 18);
-
-INSERT INTO bike_owner (id, phone_number, birth_date)
-SELECT 20, '555-1234', '1990-05-20'
-WHERE NOT EXISTS (SELECT 1 FROM bike_owner WHERE id = 20);
-
--- Insert bikes with unique QR check
+--------------------------------------
+-- Insert bikes
+--------------------------------------
 INSERT INTO bike (bikeqr, brand, model, production_year, bike_size, mileage, gear_type, engine_type, power_train,
                   accu_capacity, max_support, max_engine_power, nominal_engine_power, engine_torque, last_test_date)
-SELECT '123e4567-e89b-12d3-a456-426614174001',
-       'Giant',
-       'Talon',
-       2022,
-       'M',
-       1000,
-       'Shimano',
-       'Electric',
-       'Chain Drive',
-       500.0,
-       25.0,
-       750.0,
-       500.0,
-       85.0,
-       '2024-01-01'
+SELECT '123e4567-e89b-12d3-a456-426614174001', 'Giant', 'Talon', 2022, 'M', 1000, 'Shimano', 'Electric', 'Chain Drive',
+       500.0, 25.0, 750.0, 500.0, 85.0, '2024-01-01'
 WHERE NOT EXISTS (SELECT 1 FROM bike WHERE bikeqr = '123e4567-e89b-12d3-a456-426614174001');
 
-INSERT INTO bike (bikeqr, brand, model, production_year, bike_size, mileage, gear_type, engine_type, power_train,
-                  accu_capacity, max_support, max_engine_power, nominal_engine_power, engine_torque, last_test_date)
-SELECT '223e4567-e89b-12d3-a456-426614174002',
-       'Trek',
-       'Marlin',
-       2023,
-       'L',
-       500,
-       'SRAM',
-       'Electric',
-       'Belt Drive',
-       600.0,
-       28.0,
-       800.0,
-       600.0,
-       90.0,
-       '2024-02-01'
-WHERE NOT EXISTS (SELECT 1 FROM bike WHERE bikeqr = '223e4567-e89b-12d3-a456-426614174002');
-
--- Insert into bike_owner_bike table with bike assignment check
+--------------------------------------
+-- Assign bikes to owners
+--------------------------------------
 INSERT INTO bike_owner_bike (bike_owner_id, bike_qr)
 SELECT 1, '123e4567-e89b-12d3-a456-426614174001'
-WHERE NOT EXISTS (SELECT 1
-                  FROM bike_owner_bike
-                  WHERE bike_owner_id = 1
-                    AND bike_qr = '123e4567-e89b-12d3-a456-426614174001');
+WHERE NOT EXISTS (
+    SELECT 1 FROM bike_owner_bike WHERE bike_owner_id = 1 AND bike_qr = '123e4567-e89b-12d3-a456-426614174001'
+);
 
-INSERT INTO bike_owner_bike (bike_owner_id, bike_qr)
-SELECT 1, '223e4567-e89b-12d3-a456-426614174002'
-WHERE NOT EXISTS (SELECT 1
-                  FROM bike_owner_bike
-                  WHERE bike_owner_id = 1
-                    AND bike_qr = '223e4567-e89b-12d3-a456-426614174002');
-
--- Insert into technician table with id check
+--------------------------------------
+-- Insert into technician / admin tables
+--------------------------------------
 INSERT INTO technician (id)
-SELECT 2
-WHERE NOT EXISTS (SELECT 1 FROM technician WHERE id = 2);
+SELECT 2 WHERE NOT EXISTS (SELECT 1 FROM technician WHERE id = 2);
 
-INSERT INTO technician (id)
-SELECT 7
-WHERE NOT EXISTS (SELECT 1 FROM technician WHERE id = 7);
+INSERT INTO administrator (id)
+SELECT 3 WHERE NOT EXISTS (SELECT 1 FROM administrator WHERE id = 3);
 
-INSERT INTO technician (id)
-SELECT 12
-WHERE NOT EXISTS (SELECT 1 FROM technician WHERE id = 12);
-
-INSERT INTO technician (id)
-SELECT 13
-WHERE NOT EXISTS (SELECT 1 FROM technician WHERE id = 13);
-
-INSERT INTO technician (id)
-SELECT 14
-WHERE NOT EXISTS (SELECT 1 FROM technician WHERE id = 14);
-
--- Insert into administrator table with company name check
-INSERT INTO administrator (id, company_name)
-SELECT 3, 'E-Bike Corp'
-WHERE NOT EXISTS (SELECT 1 FROM administrator WHERE id = 3);
-
-INSERT INTO administrator (id, company_name)
-SELECT 16, 'E-Nursing'
-WHERE NOT EXISTS (SELECT 1 FROM administrator WHERE id = 16);
-
--- Insert into super_admin table with id check
-INSERT INTO super_admin (id)
-SELECT 4
-WHERE NOT EXISTS (SELECT 1 FROM super_admin WHERE id = 4);
-
+--------------------------------------
 -- Initialize test benches
-INSERT INTO test_bench (last_calibration_date, location, status, test_bench_name, technician_id)
-VALUES (CAST(GETDATE() AS DATE), 'Zone A', 'INACTIVE', 'Test Bench 1', NULL),
-       (CAST(GETDATE() AS DATE), 'Zone A', 'INACTIVE', 'Test Bench 2', NULL),
-       (CAST(GETDATE() AS DATE), 'Zone B', 'INACTIVE', 'Test Bench 3', NULL),
-       (CAST(GETDATE() AS DATE), 'Zone B', 'INACTIVE', 'Test Bench 4', NULL),
-       (CAST(GETDATE() AS DATE), 'Zone C', 'INACTIVE', 'Test Bench 5', NULL);
+--------------------------------------
+INSERT INTO test_bench (test_bench_name, last_calibration_date, location, status, technician_id)
+SELECT 'Test Bench 1', CAST(GETDATE() AS DATE), 'Zone A', 'INACTIVE', NULL
+WHERE NOT EXISTS (SELECT 1 FROM test_bench WHERE test_bench_name = 'Test Bench 1');
 
--- Insert into recent_activity table with activity check
+INSERT INTO test_bench (test_bench_name, last_calibration_date, location, status, technician_id)
+SELECT 'Test Bench 2', CAST(GETDATE() AS DATE), 'Zone B', 'INACTIVE', NULL
+WHERE NOT EXISTS (SELECT 1 FROM test_bench WHERE test_bench_name = 'Test Bench 2');
+
+--------------------------------------
+-- Insert recent_activity
+--------------------------------------
 INSERT INTO recent_activity (activity, description, date, user_id)
-VALUES
-    ('CREATED_USER', 'Created technician Mike', '2025-04-26', 4),
-    ('UPDATED_USER', 'Updated information about Mike', '2025-04-28', 4),
-    ('INITIALIZED_TEST', 'All tests started successfully', '2025-04-28 14:45', 4),
-    ('INITIALIZED_TEST', 'All tests started successfully', '2025-04-23 15:09', 4);
+SELECT 'CREATED_USER', 'Created technician Mike', '2025-04-26', 4
+WHERE NOT EXISTS (
+    SELECT 1 FROM recent_activity WHERE activity = 'CREATED_USER' AND user_id = 4
+);
 
--- Reset the identity seed for app_user table
-DECLARE @maxAppUserId INT;
-SELECT @maxAppUserId = ISNULL(MAX(id), 0) FROM app_user;
-DBCC CHECKIDENT ('app_user', RESEED, @maxAppUserId);
+--------------------------------------
+-- Reset identity seeds didnt find a way to make it work in azure sql
+--------------------------------------
 
--- Reset the identity seed for recent_activity table
-DECLARE @maxRecentActivityId INT;
-SELECT @maxRecentActivityId = ISNULL(MAX(id), 0) FROM recent_activity;
-DBCC CHECKIDENT ('recent_activity', RESEED, @maxRecentActivityId);
