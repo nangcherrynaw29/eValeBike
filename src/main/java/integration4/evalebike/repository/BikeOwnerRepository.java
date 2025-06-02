@@ -7,11 +7,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface BikeOwnerRepository extends JpaRepository<BikeOwner, Integer> {
+    Optional<BikeOwner> findById(Integer id);
+
     @Query("SELECT COUNT(b) FROM BikeOwner b WHERE EXTRACT(MONTH FROM b.birthDate) = :month AND EXTRACT(DAY FROM b.birthDate) = :day")
     long countByBirthdayToday(@Param("month") int month, @Param("day") int day);
 
@@ -27,4 +29,6 @@ public interface BikeOwnerRepository extends JpaRepository<BikeOwner, Integer> {
             @Param("name") String name,
             @Param("email") String email
     );
+
+
 }

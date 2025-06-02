@@ -6,7 +6,7 @@ services:
     ports:
       - "8080:8080"
 
-#for creating postgres in docker for local use.
+# To create Postgres in docker for local use.
 #services:
 #  db:
 #    image: postgres:17.2-alpine
