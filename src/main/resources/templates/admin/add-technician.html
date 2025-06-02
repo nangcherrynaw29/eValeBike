@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="/css/add-technician.css">
     <link rel="stylesheet" href="/css/form.css">
     <script src="/js/admin/add-technician.js" type="module" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/validate.js/0.13.1/validate.min.js"></script>
+
     <title>Add Technician</title>
 </head>
 <body>
@@ -17,14 +19,16 @@
 <div class="form-container">
     <div class="card p-4 shadow">
         <h2 class="text-center mb-4">Add Technician</h2>
-        <form id="add-technician-form">
+        <form id="add-technician-form" novalidate>
+<!--            we skip auto browser validation just to see custom msg from validate.js-->
             <div class="mb-3">
                 <label for="technician-name" class="form-label">Name</label>
-                <input type="text" class="form-control" id="technician-name" required>
+                <input type="text" class="form-control" id="technician-name" >
             </div>
             <div class="mb-3">
                 <label for="technician-email" class="form-label">Email</label>
-                <input type="email" class="form-control" id="technician-email" required>
+                <input type="email"  class="form-control" id="technician-email" >
+<!--             -->
             </div>
             <div class="mb-3" sec:authorize="hasRole('SUPER_ADMIN')">
                 <label for="company" class="form-label">Company</label>

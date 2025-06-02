@@ -1,19 +1,53 @@
-import {csrfToken, csrfHeader} from '../util/csrf.js';
+import { csrfToken, csrfHeader } from '../util/csrf.js';
 
 document.addEventListener("DOMContentLoaded", function () {
     const addTechnicianForm = document.querySelector("#add-technician-form");
+    const backToDashboardBtn = document.getElementById("back-to-dashboard-btn");
+
+    // Handle "Back to Dashboard" button
+    if (backToDashboardBtn) {
+        backToDashboardBtn.addEventListener("click", function () {
+            window.location.href = "/admin/technicians";
+        });
+    }
+
+    // Validation constraints using validate.js
+    const constraints = {
+        name: {
+            presence: { allowEmpty: false, message: "^Name is required" },
+            length: { minimum: 2, message: "^Name must be at least 2 characters" }
+        },
+        email: {
+            presence: { allowEmpty: false, message: "^Email is required" },
+            email: { message: "^Please enter a valid email address" }
+        }
+
+    };
 
     addTechnicianForm.addEventListener("submit", async function (e) {
         e.preventDefault();
 
+        // Clear previous errors
+        clearErrors();
+
         // Collect form data
-        const name = document.querySelector("#technician-name").value;
-        const email = document.querySelector("#technician-email").value;
+        const name = document.querySelector("#technician-name").value.trim();
+        const email = document.querySelector("#technician-email").value.trim();
         const companySelect = document.querySelector('#company');
         const rawCompanyValue = companySelect ? companySelect.value : null;
         const companyId = rawCompanyValue === "" || rawCompanyValue === undefined ? null : parseInt(rawCompanyValue, 10);
 
-        // Create the data to send as a JSON object
+        // Validate form data
+        const formData = { name, email };
+        const errors = validate(formData, constraints);
+
+        if (errors) {
+            // Show validation errors
+            showErrors(errors);
+            return;
+        }
+
+        // If validation passes, create the data to send as a JSON object
         const jsonBody = JSON.stringify({
             name: name,
             email: email,
@@ -25,20 +59,17 @@ document.addEventListener("DOMContentLoaded", function () {
             const response = await fetch("/api/admin/technicians", {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json", // Send JSON data
-                    "Accept": "application/json",// Expect JSON response
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
                     [csrfHeader]: csrfToken
-
                 },
-                body: jsonBody, // Attach the JSON data
+                body: jsonBody
             });
 
             if (response.status === 201) {
-                // If the technician is created successfully (201 Created)
-                const technician = await response.json(); // Get the created technician from the response
-                window.location.href = "/admin/technicians"; // Redirect back to the technician dashboard
+                // Technician created successfully
+                window.location.href = "/admin/technicians";
             } else {
-                // If something goes wrong
                 alert("Something went wrong. Please try again.");
             }
         } catch (error) {
@@ -46,14 +77,24 @@ document.addEventListener("DOMContentLoaded", function () {
             alert("There was an error submitting the form.");
         }
     });
-});
 
-document.addEventListener("DOMContentLoaded", function () {
-    const backToDashboardBtn = document.getElementById("back-to-dashboard-btn");
-    if (backToDashboardBtn) {
-        backToDashboardBtn.addEventListener("click", function () {
-            console.log("Back to dashboard button clicked!");
-            window.location.href = "/admin/technicians";
-        });
+    // Helper function to clear previous errors
+    function clearErrors() {
+        const errorElements = document.querySelectorAll(".validation-error");
+        errorElements.forEach(el => el.remove());
+    }
+
+    // Helper function to show errors under each input
+    function showErrors(errors) {
+        for (const field in errors) {
+            const messages = errors[field];
+            const inputEl = document.querySelector(`#technician-${field}`);
+            if (inputEl) {
+                const errorEl = document.createElement("div");
+                errorEl.className = "validation-error text-danger mt-1 small";
+                errorEl.innerText = messages[0]; // show the first error only
+                inputEl.insertAdjacentElement("afterend", errorEl);
+            }
+        }
     }
 });
