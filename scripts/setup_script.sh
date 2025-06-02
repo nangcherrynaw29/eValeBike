@@ -58,3 +58,4 @@ docker version
 docker compose version
 
 log "Setup complete. Ready for Dockerized app deployment."
+
