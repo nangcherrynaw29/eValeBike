@@ -105,9 +105,9 @@ deploy_job:
     - ssh team4@$APP_SERVER "sudo docker stop spring-app || true"
     - ssh team4@$APP_SERVER "sudo docker rm spring-app || true"
     - ssh team4@$APP_SERVER "sudo docker pull $IMAGE_NAME:$IMAGE_TAG"
-    - ssh team4@$APP_SERVER "sudo docker run -d --name spring-app -e SPRING_DATASOURCE_URL='jdbc:sqlserver://evalebike.database.windows.net:1433;database=eValeBike;user=user@evalebike;password=password!1;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30' -e SPRING_DATASOURCE_USERNAME=user -e SPRING_DATASOURCE_PASSWORD=password!1 $IMAGE_NAME:$IMAGE_TAG"
+    - ssh team4@$APP_SERVER "sudo docker run -p 8080:8080 -d --name spring-app -e SPRING_DATASOURCE_URL='jdbc:sqlserver://evalebike.database.windows.net:1433;database=eValeBike;user=user@evalebike;password=password!1;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30' -e SPRING_DATASOURCE_USERNAME=user -e SPRING_DATASOURCE_PASSWORD=password!1 $IMAGE_NAME:$IMAGE_TAG"
 
-destroy_job:
+destroy_job:c
   stage: destroy
   when: manual
   image: docker:stable
