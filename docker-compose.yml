@@ -6,4 +6,18 @@ services:
     ports:
       - "8080:8080"
 
-
+#for creating postgres in docker for local use.
+#services:
+#  db:
+#    image: postgres:17.2-alpine
+#    restart: always
+#    environment:
+#      POSTGRES_DB: eValeBike
+#      POSTGRES_USER: user
+#      POSTGRES_PASSWORD: password
+#    ports:
+#      - "5436:5432"
+#    volumes:
+#      - postgres_data:/var/lib/postgresql/data
+#volumes:
+#  postgres_data:

@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/validate.js/0.13.1/validate.min.js"></script> <!-- validate.js CDN -->
   <meta name="_csrf" th:content="${_csrf.token}" />
   <meta name="_csrf_header" th:content="${_csrf.headerName}" />
   <script src="/js/superAdmin/add-admin.js" type="module" defer></script>
@@ -18,14 +19,14 @@
 <div class="form-container">
   <div class="card p-4 shadow form-card">
     <h2 class="text-center mb-4">Create New Admin</h2>
-    <form id="add-admin-form">
+    <form id="add-admin-form" novalidate> <!-- Added novalidate to bypass HTML5 built-in validation -->
       <div class="mb-3">
         <label for="name" class="form-label">Name</label>
-        <input type="text" id="name" name="name" class="form-control" required>
+        <input type="text" id="name" name="name" class="form-control">
       </div>
       <div class="mb-3">
         <label for="email" class="form-label">Email</label>
-        <input type="email" id="email" name="email" class="form-control" required>
+        <input type="email" id="email" name="email" class="form-control">
       </div>
       <div class="mb-3">
         <label for="company" class="form-label">Company</label>
@@ -46,4 +47,3 @@
 </div>
 </body>
 </html>
-
