@@ -131,3 +131,4 @@ destroy_job:
         sudo docker rm spring-app || true
         exit
       EOF
+
