@@ -1,8 +1,7 @@
-import { csrfToken, csrfHeader } from '../util/csrf.js';
+import {csrfToken, csrfHeader} from '../util/csrf.js';
 
 const form = document.querySelector('#add-bike-form');
 const dateInput = document.querySelector('#lastTestDate');
-
 
 let dateError = document.querySelector('#date-error');
 if (!dateError) {
@@ -15,6 +14,9 @@ if (!dateError) {
 
 form.addEventListener('submit', async e => {
     e.preventDefault();
+
+    const getQueryParam = name => new URLSearchParams(window.location.search).get(name);
+    const ownerId = parseInt(getQueryParam('ownerId'));
 
     dateError.style.display = 'none';
     dateError.textContent = '';
@@ -51,13 +53,14 @@ form.addEventListener('submit', async e => {
             maxEnginePower: parseFloat(document.querySelector('#maxEnginePower').value),
             nominalEnginePower: parseFloat(document.querySelector('#nominalEnginePower').value),
             engineTorque: parseFloat(document.querySelector('#engineTorque').value),
-            lastTestDate: dateInput.value
+            lastTestDate: dateInput.value,
+            bikeOwnerId: parseInt(ownerId)
         })
     });
 
     if (response.status === 201) {
         await response.json();
-        window.history.back();
+        window.location.href = `/technician/bikes/owner/${ownerId}`;
     } else {
         const errorData = await response.json().catch(() => null);
         dateError.textContent = (errorData && errorData.message) || 'Something went wrong while creating the bike.';

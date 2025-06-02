@@ -2,8 +2,6 @@ package integration4.evalebike.controller.technician;
 
 import integration4.evalebike.controller.technician.dto.*;
 import integration4.evalebike.controller.technician.dto.TestRequestDTO;
-import integration4.evalebike.controller.viewModel.ReportViewModel;
-import integration4.evalebike.controller.viewModel.TestReportEntryViewModel;
 import integration4.evalebike.domain.Bike;
 import integration4.evalebike.domain.BikeOwner;
 import integration4.evalebike.domain.TestReport;
@@ -22,7 +20,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -87,14 +84,14 @@ public class TechnicianAPIController {
 
     @PostMapping("/bikes")
     public ResponseEntity<BikeDto> createBike(@RequestBody @Valid final AddBikeDto addBikeDto, @AuthenticationPrincipal final CustomUserDetails userDetails) throws Exception {
-        final Bike bike = bikeService.add(addBikeDto.brand(), addBikeDto.model(), addBikeDto.chassisNumber(), addBikeDto.productionYear(), addBikeDto.bikeSize(), addBikeDto.mileage(), addBikeDto.gearType(), addBikeDto.engineType(), addBikeDto.powerTrain(), addBikeDto.accuCapacity(), addBikeDto.maxSupport(), addBikeDto.maxEnginePower(), addBikeDto.nominalEnginePower(), addBikeDto.engineTorque(), addBikeDto.lastTestDate());
+        final Bike bike = bikeService.add(addBikeDto.brand(), addBikeDto.model(), addBikeDto.chassisNumber(), addBikeDto.productionYear(), addBikeDto.bikeSize(), addBikeDto.mileage(), addBikeDto.gearType(), addBikeDto.engineType(), addBikeDto.powerTrain(), addBikeDto.accuCapacity(), addBikeDto.maxSupport(), addBikeDto.maxEnginePower(), addBikeDto.nominalEnginePower(), addBikeDto.engineTorque(), addBikeDto.lastTestDate(), addBikeDto.bikeOwnerId());
         recentActivityService.save(new RecentActivity(Activity.BIKE_ADDED, "Created bike with chassis number: " + addBikeDto.chassisNumber(), LocalDateTime.now(), userDetails.getUserId()));
         return ResponseEntity.status(HttpStatus.CREATED).body(BikeDto.toBikeDto(bike));
     }
 
     @PostMapping("/bikeOwners")
     public ResponseEntity<BikeOwnerDto> createBikeOwner(@RequestBody @Valid final AddBikeOwnerDto addBikeOwnerDto, @AuthenticationPrincipal final CustomUserDetails userDetails) throws Exception {
-        final BikeOwner bikeOwner = bikeOwnerService.add(addBikeOwnerDto.name(), addBikeOwnerDto.email(), addBikeOwnerDto.phoneNumber(), addBikeOwnerDto.birthDate(), userDetails.getUserId());
+        final BikeOwner bikeOwner = bikeOwnerService.add(addBikeOwnerDto.name(), addBikeOwnerDto.email(), addBikeOwnerDto.phoneNumber(), addBikeOwnerDto.birthDate(), userDetails.getUserId(), addBikeOwnerDto.companyId());
         recentActivityService.save(new RecentActivity(Activity.CREATED_USER, "Created bike owner " + addBikeOwnerDto.name(), LocalDateTime.now(), userDetails.getUserId()));
         return ResponseEntity.status(HttpStatus.CREATED).body(bikeOwnerMapper.toBikeOwnerDto(bikeOwner));
     }
@@ -204,9 +201,12 @@ public class TechnicianAPIController {
         List<Bike> filtered = bikeService.getAll().stream()
                 .filter(bike -> {
                     return switch (filterType.toLowerCase()) {
-                        case "brand" -> bike.getBrand() != null && bike.getBrand().toLowerCase().contains(filterValue.toLowerCase());
-                        case "model" -> bike.getModel() != null && bike.getModel().toLowerCase().contains(filterValue.toLowerCase());
-                        case "chassisnumber" -> bike.getChassisNumber() != null && bike.getChassisNumber().toLowerCase().contains(filterValue.toLowerCase());
+                        case "brand" ->
+                                bike.getBrand() != null && bike.getBrand().toLowerCase().contains(filterValue.toLowerCase());
+                        case "model" ->
+                                bike.getModel() != null && bike.getModel().toLowerCase().contains(filterValue.toLowerCase());
+                        case "chassisnumber" ->
+                                bike.getChassisNumber() != null && bike.getChassisNumber().toLowerCase().contains(filterValue.toLowerCase());
                         default -> false;
                     };
                 })
@@ -290,8 +290,4 @@ public class TechnicianAPIController {
                 e.isStatusPlug()
         );
     }
-
-
-
-
 }

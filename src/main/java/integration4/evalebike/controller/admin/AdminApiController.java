@@ -42,7 +42,7 @@ public class AdminApiController {
     // Create a new technician
     @PostMapping()
     public ResponseEntity<TechnicianResponseDTO> createTechnician(@RequestBody final TechnicianRequestDTO technicianDTO, @AuthenticationPrincipal final CustomUserDetails userDetails) {
-        final Technician savedTechnician = technicianService.saveTechnician(technicianDTO.name(), technicianDTO.email(), userDetails.getUserId());
+        final Technician savedTechnician = technicianService.saveTechnician(technicianDTO.name(), technicianDTO.email(), userDetails.getUserId(), technicianDTO.companyId());
         recentActivityService.save(new RecentActivity(Activity.CREATED_USER, "Technician " + technicianDTO.name() + " created", LocalDateTime.now(), userDetails.getUserId()));
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -97,37 +97,32 @@ public class AdminApiController {
     @GetMapping("/pending")
     public ResponseEntity<List<PendingUserDto>> getPendingApprovals(@AuthenticationPrincipal CustomUserDetails userDetails) {
         Role currentRole = userDetails.getRole();
-        List<PendingUserDto> pendingUsers = userService.getUsersByStatus(UserStatus.PENDING).stream()
-                .filter(user -> {
-                    Role targetRole = user.getRole();
-                    return (targetRole == Role.TECHNICIAN && currentRole == Role.ADMIN);
-                })
-                .filter(user -> {
-                    Company targetedCompany = user.getCompany();
-                    Company currentCompany = userDetails.getCompany();
-                    return targetedCompany != null
-                            && currentCompany != null
-                            && Objects.equals(targetedCompany.getId(), currentCompany.getId());
-                })
-                .map(PendingUserDto::fromUser)
-                .collect(Collectors.toList());
+        List<PendingUserDto> pendingUsers = userService.getUsersByStatus(UserStatus.PENDING).stream().filter(user -> {
+            Role targetRole = user.getRole();
+            return (targetRole == Role.TECHNICIAN && currentRole == Role.ADMIN);
+        }).filter(user -> {
+            Company targetedCompany = user.getCompany();
+            Company currentCompany = userDetails.getCompany();
+            return targetedCompany != null && currentCompany != null && Objects.equals(targetedCompany.getId(), currentCompany.getId());
+        }).map(PendingUserDto::fromUser).collect(Collectors.toList());
         return ResponseEntity.ok(pendingUsers);
     }
 
     @GetMapping("/pending/count")
     public ResponseEntity<Integer> getPendingCount(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        Role currentUserRole = userDetails.getRole();
-        List<User> pendingUsers = userService.getUsersByStatus(UserStatus.PENDING);
+        List<User> pendingUsers = userService.getUsersByStatus(UserStatus.PENDING)
+                .stream()
+                .filter(user -> user.getRole() == Role.TECHNICIAN)
+                .toList();
+
+        if (userDetails.getCompany() == null && userDetails.getRole() == Role.SUPER_ADMIN) {
+            return ResponseEntity.ok(0);
+        }
+
+        Integer currentUserCompanyID = userDetails.getCompany().getId();
 
         long count = pendingUsers.stream()
-                .filter(user -> {
-                    Role pendingRole = user.getRole();
-                    return (pendingRole == Role.TECHNICIAN && currentUserRole == Role.ADMIN);
-                })
-                .filter(user -> {
-                    User targetedCreator = user.getCreatedBy();
-                    return (targetedCreator.getId() == userDetails.getUserId());
-                })
+                .filter(user -> user.getCompany() != null && Objects.equals(user.getCompany().getId(), currentUserCompanyID))
                 .count();
 
         return ResponseEntity.ok((int) count);
@@ -147,9 +142,7 @@ public class AdminApiController {
 
     @GetMapping("/filterAdmin")
     @PreAuthorize("hasRole('SUPER_ADMIN')")
-    public List<Administrator> filterAdmin(
-            @RequestParam String type,
-            @RequestParam String value) {
+    public List<Administrator> filterAdmin(@RequestParam String type, @RequestParam String value) {
 
         // Call the service method based on the type to filter accordingly
         switch (type) {

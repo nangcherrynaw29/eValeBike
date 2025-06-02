@@ -3,7 +3,6 @@ package integration4.evalebike.domain;
 import jakarta.persistence.*;
 
 @Entity
-
 @Table(name = "company")
 public class Company {
     @Id

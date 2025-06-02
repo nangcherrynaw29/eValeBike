@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
     <title>Add Company</title>
-    <script src="/js/superAdmin/add-company.js" defer></script>
+    <script src="/js/superAdmin/add-company.js" type="module" defer></script>
     <link rel="stylesheet" href="/css/global.css">
     <link rel="stylesheet" href="/css/add-admin.css">
     <link rel="stylesheet" href="/css/form.css">

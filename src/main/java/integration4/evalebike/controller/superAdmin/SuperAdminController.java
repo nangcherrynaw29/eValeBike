@@ -24,14 +24,15 @@ public class SuperAdminController {
     @GetMapping()
     public ModelAndView index() {
         final ModelAndView modelAndView = new ModelAndView("superAdmin/admin-dashboard");
-        modelAndView.addObject("superAdmins", AdminsViewModel.from(adminService.getAllAdmins()));
+        modelAndView.addObject("admins", AdminsViewModel.from(adminService.getAllAdmins()));
+        modelAndView.addObject("companyCount", companyService.countAllCompanies());
         return modelAndView;
     }
 
     @GetMapping("/add")
     public ModelAndView add() {
         final ModelAndView modelAndView = new ModelAndView("superAdmin/add-admin");
-        CompaniesViewModel wrapper = CompaniesViewModel.from(companyService.findAll());
+        CompaniesViewModel wrapper = CompaniesViewModel.from(companyService.getAll());
         modelAndView.addObject("companies", wrapper.companies());
         return modelAndView;
     }

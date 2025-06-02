@@ -21,15 +21,15 @@ public class CompanyService {
         return companyRepository.save(company);
     }
 
-    public List<Company> findAll() {
+    public List<Company> getAll() {
         return companyRepository.findAll();
     }
 
-    public long countAllCompanies(){
+    public long countAllCompanies() {
         return companyRepository.count();
     }
 
-    public Company findById(int id) {
+    public Company getById(int id) {
         return companyRepository.findById(id).orElseThrow(() -> NotFoundException.forCompany(id));
     }
 }

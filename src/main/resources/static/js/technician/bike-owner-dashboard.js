@@ -1,4 +1,4 @@
-import { csrfToken, csrfHeader } from '../util/csrf.js';
+import {csrfToken, csrfHeader} from '../util/csrf.js';
 
 document.addEventListener("DOMContentLoaded", () => {
     const addBikeOwnerBtn = document.querySelector("#add-bikeowner-btn");

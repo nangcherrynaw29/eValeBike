@@ -362,4 +362,10 @@ public class TestBenchService {
     public List<TestBench> findByTechnicianIdAndStatus(Integer technicianId, Status status) {
         return testBenchRepository.findByTechnicianIdAndStatus(technicianId, status);
     }
+
+    public long countActiveTestBenches() {
+        return testBenchRepository.findAll().stream()
+                .filter(tb -> tb.getStatus() == Status.ACTIVE)
+                .count();
+    }
 }

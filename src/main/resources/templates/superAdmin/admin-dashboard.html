@@ -28,20 +28,20 @@
                 <div class="user-avatar">S</div>
             </div>
         </div>
-
         <div class="row mb-4">
             <div class="col-md-4">
                 <div class="card stat-card">
-                    <div class="stat-number" id="total-admins">0</div>
+                    <div class="stat-number" id="total-admins" th:text="${admins != null ? admins.admins.size(): 0}">0
+                    </div>
                     <div class="stat-label">Total Admins</div>
-                    <small>In System</small>
+                    <small>In the System</small>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="card stat-card">
-                    <div class="stat-number" id="active-admins">0</div>
-                    <div class="stat-label">Active Admins</div>
-                    <small>Currently Online</small>
+                    <div class="stat-number" id="active-admins" th:text="${companyCount}">0</div>
+                    <div class="stat-label">Total Companies</div>
+                    <small>In the System</small>
                 </div>
             </div>
             <div class="col-md-4">
@@ -52,7 +52,6 @@
                 </div>
             </div>
         </div>
-
         <div class="main-content-row">
             <div class="activity-column">
                 <div class="card">
@@ -62,7 +61,6 @@
                     </div>
                 </div>
             </div>
-
             <!-- Admin Table Column -->
             <div class="table-column">
                 <div class="table-container">

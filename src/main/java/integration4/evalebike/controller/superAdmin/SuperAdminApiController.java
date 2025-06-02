@@ -49,7 +49,7 @@ public class SuperAdminApiController {
         final Administrator administrator = adminService.saveAdmin(
                 addAdminDto.name(),
                 addAdminDto.email(),
-                companyService.findById(addAdminDto.companyId()),
+                companyService.getById(addAdminDto.companyId()),
                 userDetails.getUserId());
         recentActivityService.save(new RecentActivity(Activity.PENDING_APPROVAL, "There is a new admin waiting for an approval: " + administrator.getEmail(), LocalDateTime.now(), userDetails.getUserId()));
         return ResponseEntity

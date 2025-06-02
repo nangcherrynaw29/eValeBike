@@ -7,5 +7,5 @@ import java.time.LocalDate;
 
 public record AddBikeDto(String brand, String model, String chassisNumber, @Positive int productionYear, BikeSize bikeSize,
                          @Positive int mileage, String gearType, String engineType, String powerTrain, float accuCapacity, float maxSupport,
-                         float maxEnginePower, float nominalEnginePower, float engineTorque, @PastOrPresent LocalDate lastTestDate) {
+                         float maxEnginePower, float nominalEnginePower, float engineTorque, @PastOrPresent LocalDate lastTestDate, @NotNull Integer bikeOwnerId) {
 }

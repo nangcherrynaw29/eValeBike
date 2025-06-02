@@ -2,7 +2,7 @@ package integration4.evalebike.controller.admin.dto.request;
 
 import integration4.evalebike.domain.Technician;
 
-public record TechnicianRequestDTO(String name, String email) {
+public record TechnicianRequestDTO(String name, String email, Integer companyId) {
 
     public static Technician toEntity(TechnicianRequestDTO dto) {
         if (dto == null) {

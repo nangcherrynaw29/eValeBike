@@ -1,10 +1,8 @@
 package integration4.evalebike.service;
 
-import integration4.evalebike.domain.Role;
-import integration4.evalebike.domain.Technician;
-import integration4.evalebike.domain.User;
-import integration4.evalebike.domain.UserStatus;
+import integration4.evalebike.domain.*;
 import integration4.evalebike.exception.NotFoundException;
+import integration4.evalebike.repository.CompanyRepository;
 import integration4.evalebike.repository.TechnicianRepository;
 import integration4.evalebike.repository.TestBenchRepository;
 import integration4.evalebike.repository.UserRepository;
@@ -21,11 +19,13 @@ public class TechnicianService {
     private final EmailService emailService;
     private final TestBenchRepository testBenchRepository;
     private final UserRepository userRepository;
+    private final CompanyRepository companyRepository;
 
-    public TechnicianService(TechnicianRepository technicianRepository, PasswordService passwordService, EmailService emailService, TestBenchRepository testBenchRepository, UserRepository userRepository) {
+    public TechnicianService(TechnicianRepository technicianRepository, PasswordService passwordService, EmailService emailService, TestBenchRepository testBenchRepository, UserRepository userRepository, CompanyRepository companyRepository) {
         this.technicianRepository = technicianRepository;
         this.passwordService = passwordService;
         this.emailService = emailService;
+        this.companyRepository = companyRepository;
         this.testBenchRepository = testBenchRepository;
         this.userRepository = userRepository;
     }
@@ -46,18 +46,22 @@ public class TechnicianService {
                 .orElseThrow(() -> NotFoundException.forTechnician(id));
     }
 
-    public Technician saveTechnician(final String name, final String email, int createdBy) {
+    public Technician saveTechnician(final String name, final String email, int createdBy, Integer companyId) {
         String rawPassword = passwordService.generateRandomPassword(8);
         String hashedPassword = passwordService.hashPassword(rawPassword);
 
         Technician technician = new Technician(name, email);
         technician.setPassword(hashedPassword);
         technician.setCreatedBy(userRepository.findById(createdBy).orElseThrow(() -> NotFoundException.forAdmin(createdBy)));
-        technician.setCompany(userRepository.findById(createdBy).orElseThrow(() -> NotFoundException.forAdmin(createdBy)).getCompany());
+        if (companyId != null) {
+            Company company = companyRepository.findById(companyId).orElse(null);
+            technician.setCompany(company);
+        } else {
+            technician.setCompany(userRepository.findById(createdBy).orElseThrow((() -> NotFoundException.forTechnician(createdBy))).getCompany());
+        }
         emailService.sendPasswordEmail(email, rawPassword);
         return technicianRepository.save(technician);
     }
-
 
     public List<Technician> getFilteredTechnicians(String name, String email) {
         return technicianRepository.findByFilters(name, email);

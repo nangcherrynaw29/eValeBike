@@ -1,4 +1,4 @@
-import { csrfToken, csrfHeader } from '../util/csrf.js';
+import {csrfToken, csrfHeader} from '../util/csrf.js';
 
 document.addEventListener('DOMContentLoaded', function () {
     const saveAndStartButton = document.querySelector('button[type="submit"].btn-primary');

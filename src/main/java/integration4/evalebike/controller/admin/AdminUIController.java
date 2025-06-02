@@ -1,8 +1,8 @@
 package integration4.evalebike.controller.admin;
 
-
 import integration4.evalebike.controller.viewModel.TechniciansViewModel;
 import integration4.evalebike.security.CustomUserDetails;
+import integration4.evalebike.service.CompanyService;
 import integration4.evalebike.service.TechnicianService;
 import integration4.evalebike.service.TestBenchService;
 import org.springframework.security.core.GrantedAuthority;
@@ -19,10 +19,12 @@ import org.springframework.web.servlet.ModelAndView;
 public class AdminUIController {
     private final TechnicianService technicianService;
     private final TestBenchService testBenchService;
+    private final CompanyService companyService;
 
-    public AdminUIController(TechnicianService technicianService, TestBenchService testBenchService) {
+    public AdminUIController(TechnicianService technicianService, TestBenchService testBenchService, CompanyService companyService) {
         this.technicianService = technicianService;
         this.testBenchService = testBenchService;
+        this.companyService = companyService;
     }
 
     @GetMapping()
@@ -40,12 +42,14 @@ public class AdminUIController {
         modelAndView.addObject("technicians", TechniciansViewModel.fromTechnician(technicianService.getAll(userDetails)));
         modelAndView.addObject("testBenches", testBenchService.getAllTestBenches());
         modelAndView.addObject("userRole", userRole);
+        modelAndView.addObject("activeTestBenches", testBenchService.countActiveTestBenches());
         return modelAndView;
     }
 
     @GetMapping("/add")
-    public ModelAndView add() {
-        return new ModelAndView("admin/add-technician");
+    public String add(Model model) {
+        model.addAttribute("companies", companyService.getAll());
+        return "admin/add-technician";
     }
 
     @GetMapping("/pending-approvals")

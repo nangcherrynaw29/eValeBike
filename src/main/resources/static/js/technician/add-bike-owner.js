@@ -1,8 +1,11 @@
-import { csrfToken, csrfHeader } from '../util/csrf.js';
+import {csrfToken, csrfHeader} from '../util/csrf.js';
 
 const form = document.querySelector('#add-bikeOwner-form');
 form.addEventListener('submit', async e => {
     e.preventDefault();
+    const companySelect = document.querySelector('#company');
+    const rawCompanyValue = companySelect ? companySelect.value : null;
+    const companyId = rawCompanyValue === "" || rawCompanyValue === undefined ? null : parseInt(rawCompanyValue, 10);
     const response = await fetch('/api/technician/bikeOwners', {
         headers: {
             'Content-Type': 'application/json',
@@ -16,6 +19,7 @@ form.addEventListener('submit', async e => {
             email: document.querySelector('#email').value,
             phoneNumber: document.querySelector('#phoneNumber').value,
             birthDate: document.querySelector('#birthDate').value,
+            companyId: companyId
         })
     });
     if (response.status === 201) {

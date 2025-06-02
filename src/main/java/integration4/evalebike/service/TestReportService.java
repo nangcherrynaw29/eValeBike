@@ -1,15 +1,18 @@
 package integration4.evalebike.service;
 
 import integration4.evalebike.controller.viewModel.ReportViewModel;
+import integration4.evalebike.domain.Role;
 import integration4.evalebike.domain.TestReport;
 import integration4.evalebike.repository.TestReportEntryRepository;
 import integration4.evalebike.repository.TestReportRepository;
+import integration4.evalebike.security.CustomUserDetails;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Files;
@@ -31,8 +34,23 @@ public class TestReportService {
         this.repoTestReportEntry = repoTestReportEntry;
     }
 
-    public List<TestReport> getAllReports() {
-        return testReportRepository.findAllWithBikeAndReportEntries();
+    public List<TestReport> getAllReports(CustomUserDetails user) {
+        Role role = user.getRole();
+
+        return switch (role) {
+            case SUPER_ADMIN -> testReportRepository.findAllWithBikeAndReportEntries();
+
+            case ADMIN, TECHNICIAN -> {
+                if (user.getCompany() == null) {
+                    throw new IllegalStateException("Admin/Technician must belong to a company.");
+                }
+                yield testReportRepository.findAllByOwnerCompanyId(user.getCompany().getId());
+            }
+
+            case BIKE_OWNER -> testReportRepository.findAllByBikeOwnerId(user.getUserId());
+
+            default -> throw new AccessDeniedException("Unauthorized role: " + role);
+        };
     }
 
 

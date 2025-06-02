@@ -1,4 +1,4 @@
-import { csrfToken, csrfHeader } from '../util/csrf.js';
+import {csrfToken, csrfHeader} from '../util/csrf.js';
 
 document.addEventListener("DOMContentLoaded", () => {
     const addTechnicianBtn = document.getElementById("add-technician-btn");
@@ -362,7 +362,11 @@ async function rejectUser(userId) {
 
 async function fetchPendingRequestsCount() {
     try {
-        const response = await fetch('/api/admin/technicians/pending/count');
+        const response = await fetch('/api/admin/technicians/pending/count', {
+            headers: {
+                [csrfHeader]: csrfToken, 'Accept': 'application/json'
+            }
+        });
         if (!response.ok) throw new Error('Failed to fetch pending requests count');
 
         const count = await response.json();

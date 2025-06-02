@@ -12,7 +12,7 @@ public record TechnicianResponseDTO(Integer id, String name, String email) {
         return new TechnicianResponseDTO(
                 technician.getId(),           // Assuming the Technician entity has an 'id' field
                 technician.getName(),         // Get the Technician's name
-                technician.getEmail()         // Get the Technician's email
+                technician.getEmail()        // Get the Technician's email
         );
     }
 }
