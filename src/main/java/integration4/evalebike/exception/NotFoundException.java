@@ -45,4 +45,11 @@ public class NotFoundException extends RuntimeException {
                         .formatted(testBenchId)
         );
     }
+
+    public static NotFoundException forCompany(final int companyId) {
+        return new NotFoundException(
+                "Company with ID %d was not found"
+                        .formatted(companyId)
+        );
+    }
 }

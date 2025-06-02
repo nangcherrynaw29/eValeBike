@@ -1,3 +1,5 @@
+import {csrfToken, csrfHeader} from '../util/csrf.js';
+
 document.addEventListener("DOMContentLoaded", async () => {
     const addAdminBtn = document.querySelector("#add-admin-btn");
     const adminTableBody = document.getElementById("admin-table-body");
@@ -16,7 +18,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (query) fetchFilteredAdmins(query, field);
     });
 
-
     function fetchFilteredAdmins(query, field) {
         let params = new URLSearchParams();
         params.append('type', field);
@@ -26,7 +27,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         console.log('Request URL:', url);
 
         fetch(url, {
-            method: 'GET'
+            method: 'GET',
+            headers: {
+                [csrfHeader]: csrfToken,
+                'Accept': 'application/json'
+            }
         })
             .then(response => {
                 if (!response.ok) {
@@ -41,7 +46,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 console.error('Error fetching admins:', error);
             });
     }
-
 
     function updateAdminTable(admins) {
         tableBody.innerHTML = '';
@@ -59,13 +63,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             row.innerHTML = `
             <td>${admin.name}</td>
             <td>${admin.email}</td>
-            <td>${admin.companyName || ''}</td>
+            <td>${admin.company.name || ''}</td>
         `;
 
             tableBody.appendChild(row);
         });
     }
-
 
     const adminsPerPage = 5;
     let currentPage = 1;
@@ -78,10 +81,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
-
     async function loadAdminData() {
         try {
-            const response = await fetch("/api/super-admin/admins");
+            const response = await fetch("/api/super-admin/admins", {
+                headers: {
+                    [csrfHeader]: csrfToken,
+                    "Accept": "application/json"
+                }
+            });
             if (!response.ok) throw new Error("Failed to load admins");
             adminData = await response.json();
             renderTable();
@@ -104,7 +111,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             row.innerHTML = `
                 <td>${admin.name}</td>
                 <td>${admin.email}</td>
-                <td>${admin.companyName}</td>
+                <td>${admin.company.name}</td>
                 <td>
                     <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${admin.id}">
                         <i class="fa-solid fa-trash"></i>
@@ -159,10 +166,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                 if (!adminId) return alert("No admin ID found.");
 
+                const confirmed = confirm("Are you sure you want to delete this admin? \nThis action cannot be undone.");
+                if (!confirmed) return;
+
                 try {
                     const response = await fetch(`/api/super-admin/admins/${adminId}`, {
                         method: "DELETE",
-                        headers: { "Accept": "application/json" }
+                        headers: {[csrfHeader]: csrfToken, "Accept": "application/json"}
                     });
 
                     if (response.ok) {
@@ -219,7 +229,13 @@ async function loadPendingUsers() {
     if (!tableBody) return;
 
     try {
-        const response = await fetch('/api/super-admin/admins/pending');
+        const response = await fetch('/api/super-admin/admins/pending', {
+                headers: {
+                    [csrfHeader]: csrfToken,
+                    'Accept': 'application/json'
+                }
+            }
+        );
         if (!response.ok) {
             const errorText = await response.text();
             throw new Error(`Failed to fetch pending users: ${response.status} ${errorText}`);
@@ -280,7 +296,9 @@ function attachApprovalEventListeners() {
 async function approveUser(userId) {
     try {
         const response = await fetch(`/api/super-admin/admins/${userId}/approve`, {
-            method: 'POST'
+            method: 'POST', headers: {
+                [csrfHeader]: csrfToken, 'Content-Type': 'application/json'
+            },
         });
 
         if (!response.ok) throw new Error('Failed to approve user');
@@ -296,7 +314,9 @@ async function approveUser(userId) {
 async function rejectUser(userId) {
     try {
         const response = await fetch(`/api/super-admin/admins/${userId}/reject`, {
-            method: 'POST'
+            method: 'POST', headers: {
+                [csrfHeader]: csrfToken, 'Content-Type': 'application/json'
+            },
         });
 
         if (!response.ok) throw new Error('Failed to reject user');
@@ -311,7 +331,12 @@ async function rejectUser(userId) {
 
 async function fetchPendingRequestsCount() {
     try {
-        const response = await fetch('/api/super-admin/admins/pending/count');
+        const response = await fetch('/api/super-admin/admins/pending/count', {
+            headers: {
+                [csrfHeader]: csrfToken,
+                'Accept': 'application/json'
+            }
+        });
         if (!response.ok) throw new Error('Failed to fetch pending requests count');
 
         const count = await response.json();

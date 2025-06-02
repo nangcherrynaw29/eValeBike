@@ -1,24 +1,25 @@
 package integration4.evalebike.service;
 
-import integration4.evalebike.domain.Administrator;
-import integration4.evalebike.domain.UserStatus;
+import integration4.evalebike.domain.*;
 import integration4.evalebike.exception.NotFoundException;
 import integration4.evalebike.repository.AdminRepository;
 import integration4.evalebike.repository.UserRepository;
-import integration4.evalebike.utility.PasswordUtility;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 public class AdminService {
     private final AdminRepository adminRepository;
-    private final PasswordUtility passwordUtility;
+    private final PasswordService passwordService;
+    private final EmailService emailService;
     private final UserRepository userRepository;
 
-    public AdminService(AdminRepository adminRepository, PasswordUtility passwordUtility, UserRepository userRepository) {
+    public AdminService(AdminRepository adminRepository, PasswordService passwordService, EmailService emailService, UserRepository userRepository) {
         this.adminRepository = adminRepository;
-        this.passwordUtility = passwordUtility;
+        this.passwordService = passwordService;
+        this.emailService = emailService;
         this.userRepository = userRepository;
     }
 
@@ -30,16 +31,20 @@ public class AdminService {
         return adminRepository.findById(id).orElseThrow(() -> NotFoundException.forAdmin(id));
     }
 
-    public Administrator saveAdmin(final String name, final String email, final String companyName, int createdBy) {
+    public Administrator saveAdmin(final String name, final String email, final Company company, int createdBy) {
         // Generate and hash the password using PasswordUtility
-        String rawPassword = passwordUtility.generateRandomPassword(8);
-        String hashedPassword = passwordUtility.hashPassword(rawPassword);
+        String rawPassword = passwordService.generateRandomPassword(8);
+        String hashedPassword = passwordService.hashPassword(rawPassword);
 
         // Create and save the Administrator
-        final Administrator admin = new Administrator(name, email, companyName);
+        final Administrator admin = new Administrator();
+        admin.setName(name);
+        admin.setEmail(email);
+        admin.setCompany(company);
         admin.setPassword(hashedPassword);
+        admin.setRole(Role.ADMIN);
         admin.setCreatedBy(userRepository.findById(createdBy).orElseThrow(() -> NotFoundException.forSuperAdmin(createdBy)));
-        passwordUtility.sendPasswordEmail(email, rawPassword);
+        emailService.sendPasswordEmail(email, rawPassword);
         return adminRepository.save(admin);
     }
 
@@ -48,12 +53,21 @@ public class AdminService {
         existingAdmin.setName(adminDetails.getName());
         existingAdmin.setEmail(adminDetails.getEmail());
 //      existingAdmin.setRole(adminDetails.getRole());
-        existingAdmin.setCompanyName(adminDetails.getCompanyName());
+        existingAdmin.setCompany(adminDetails.getCompany());
         return adminRepository.save(existingAdmin);
     }
 
+    @Transactional
     public void deleteAdmin(Integer id) {
         Administrator admin = adminRepository.findById(id).orElseThrow(() -> new RuntimeException("Admin not found"));
+
+        // Find all users created by this technician
+        List<User> createdUsers = userRepository.findByCreatedById(id);
+        if (!createdUsers.isEmpty()) {
+            createdUsers.forEach(user -> user.setCreatedBy(null));
+            userRepository.saveAll(createdUsers);
+        }
+
         adminRepository.deleteById(id);
     }
 
@@ -68,6 +82,4 @@ public class AdminService {
     public List<Administrator> filterAdminsByCompany(String companyName) {
         return adminRepository.findByCompanyNameContainingIgnoreCase(companyName); // Adjust to your repo method
     }
-
-
 }

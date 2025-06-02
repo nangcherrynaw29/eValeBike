@@ -2,9 +2,12 @@ package integration4.evalebike.service;
 
 import integration4.evalebike.controller.technician.dto.BikeDto;
 import integration4.evalebike.domain.Bike;
+import integration4.evalebike.domain.BikeOwner;
+import integration4.evalebike.domain.BikeOwnerBike;
 import integration4.evalebike.domain.BikeSize;
 import integration4.evalebike.exception.NotFoundException;
 import integration4.evalebike.repository.BikeOwnerBikeRepository;
+import integration4.evalebike.repository.BikeOwnerRepository;
 import integration4.evalebike.repository.BikeRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -18,11 +21,13 @@ import java.util.Optional;
 public class BikeService {
     private final BikeRepository bikeRepository;
     private final BikeOwnerBikeRepository bikeOwnerBikeRepository;
+    private final BikeOwnerRepository bikeOwnerRepository;
     private final QrCodeService qrCodeService;
 
-    public BikeService(BikeRepository bikeRepository, BikeOwnerBikeRepository bikeOwnerBikeRepository, QrCodeService qrCodeService) {
+    public BikeService(BikeRepository bikeRepository, BikeOwnerBikeRepository bikeOwnerBikeRepository, BikeOwnerRepository bikeOwnerRepository, QrCodeService qrCodeService) {
         this.bikeRepository = bikeRepository;
         this.bikeOwnerBikeRepository = bikeOwnerBikeRepository;
+        this.bikeOwnerRepository = bikeOwnerRepository;
         this.qrCodeService = qrCodeService;
     }
 
@@ -34,11 +39,39 @@ public class BikeService {
         return bikeRepository.findById(qrCode).orElseThrow(() -> NotFoundException.forBike(qrCode));
     }
 
-    public Bike add(String brand, String model, String chassisNumber, int productionYear, BikeSize bikeSize, int mileage, String gearType, String engineType, String powerTrain, double accuCapacity, double maxSupport, double maxEnginePower, double nominalEnginePower, double engineTorque, LocalDate lastTestDate) throws Exception {
+    public Bike add(
+            String brand,
+            String model,
+            String chassisNumber,
+            int productionYear,
+            BikeSize bikeSize,
+            int mileage,
+            String gearType,
+            String engineType,
+            String powerTrain,
+            double accuCapacity,
+            double maxSupport,
+            double maxEnginePower,
+            double nominalEnginePower,
+            double engineTorque,
+            LocalDate lastTestDate,
+            Integer bikeOwnerId
+    ) throws Exception {
+        // Fetch the owner
+        BikeOwner bikeOwner = bikeOwnerRepository.findById(bikeOwnerId)
+                .orElseThrow(() -> NotFoundException.forBikeOwner(bikeOwnerId));
 
-        Bike bike = new Bike(brand, model, chassisNumber, productionYear, bikeSize, mileage, gearType, engineType, powerTrain, accuCapacity, maxSupport, maxEnginePower, nominalEnginePower, engineTorque, lastTestDate);
+        // Create and save the bike
+        Bike bike = new Bike(brand, model, chassisNumber, productionYear, bikeSize, mileage,
+                gearType, engineType, powerTrain, accuCapacity, maxSupport,
+                maxEnginePower, nominalEnginePower, engineTorque, lastTestDate);
+        Bike savedBike = bikeRepository.save(bike);
 
-        return bikeRepository.save(bike);
+        // Link the owner to the bike
+        BikeOwnerBike bikeOwnerBike = new BikeOwnerBike(savedBike, bikeOwner);
+        bikeOwnerBikeRepository.save(bikeOwnerBike);
+
+        return savedBike;
     }
 
     public Optional<Bike> findById(String bikeQR) {

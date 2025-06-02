@@ -7,7 +7,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 import static org.springframework.security.web.util.matcher.RegexRequestMatcher.regexMatcher;
@@ -15,20 +14,23 @@ import static org.springframework.security.web.util.matcher.RegexRequestMatcher.
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
-
-    private final AuthenticationSuccessHandler customLoginSuccessHandler;
-    public WebSecurityConfig(AuthenticationSuccessHandler customLoginSuccessHandler) {
-        this.customLoginSuccessHandler = customLoginSuccessHandler;
-    }
-
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity security) throws Exception{
+//       ? `/api/technician/normalized-test-report-entries/${testId}`
+//            : `/api/technician/test-report-entries/${testId}`;
+    SecurityFilterChain securityFilterChain(HttpSecurity security) throws Exception {
         return security
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/login", "/home").permitAll()
                         .requestMatchers("/api/test/**").hasAnyRole("ADMIN", "TECHNICIAN")
                         .requestMatchers("/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
                         .requestMatchers("/superAdmin/**").hasRole("SUPER_ADMIN")
+                        .requestMatchers("/technician/reports-by-bike/**").permitAll()
+                        .requestMatchers("/technician/report/**").permitAll()
+                        .requestMatchers("/technician/visualization-for-test-entry/**").permitAll()
+                        .requestMatchers("/technician/test-report-dashboard").permitAll()
+                        .requestMatchers("/technician/compare/**").permitAll()
+                        .requestMatchers("/api/technician/normalized-test-report-entries/**").permitAll()
+                        .requestMatchers("/api/technician/test-report-entries/**").permitAll()
                         .requestMatchers("/technician/**").hasAnyRole("TECHNICIAN", "ADMIN", "SUPER_ADMIN")
                         .requestMatchers("/bikeOwner/**").hasAnyRole("BIKE_OWNER", "TECHNICIAN", "ADMIN", "SUPER_ADMIN")
                         .requestMatchers("/api/bike-owner/**").hasAnyRole("BIKE_OWNER", "TECHNICIAN", "ADMIN", "SUPER_ADMIN")
@@ -45,13 +47,9 @@ public class WebSecurityConfig {
 
                         .anyRequest().authenticated()
                 )
-                .csrf(csrf -> csrf.disable())
+//                .csrf(csrf -> csrf.disable())
                 .formLogin(login -> {
-                    login
-                            .loginPage("/login")
-                            .successHandler(customLoginSuccessHandler)
-                            .failureUrl("/login")
-                            .permitAll();
+                    login.loginPage("/login").failureUrl("/login").defaultSuccessUrl("/technician/test-report-dashboard").permitAll();
                 })
                 .logout(logout -> logout
                         .logoutUrl("/logout")
@@ -67,5 +65,4 @@ public class WebSecurityConfig {
     BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
 }

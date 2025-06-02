@@ -18,7 +18,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 qrbox: 250,
             },
             (decodedText, decodedResult) => {
-                alert("QR Code Scanned: " + decodedText);
+                // When QR code is scanned, stop the scanner
+                html5QrCode.stop().then(() => {
+                    scannerContainer.style.display = "none";
+                    scanButton.style.display = "inline-block";
+
+                    // Redirect to the related page with the scanned QR code
+                    // Make sure to encodeURIComponent the decodedText for safety
+                    const url = `/technician/reports-by-bike/${encodeURIComponent(decodedText)}`;
+                    window.location.href = url;
+                }).catch(err => {
+                    console.error("Failed to stop scanner: ", err);
+                });
             },
             (errorMessage) => {
                 console.log(errorMessage);

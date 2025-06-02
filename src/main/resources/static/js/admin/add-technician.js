@@ -1,3 +1,5 @@
+import {csrfToken, csrfHeader} from '../util/csrf.js';
+
 document.addEventListener("DOMContentLoaded", function () {
     const addTechnicianForm = document.querySelector("#add-technician-form");
 
@@ -7,11 +9,15 @@ document.addEventListener("DOMContentLoaded", function () {
         // Collect form data
         const name = document.querySelector("#technician-name").value;
         const email = document.querySelector("#technician-email").value;
+        const companySelect = document.querySelector('#company');
+        const rawCompanyValue = companySelect ? companySelect.value : null;
+        const companyId = rawCompanyValue === "" || rawCompanyValue === undefined ? null : parseInt(rawCompanyValue, 10);
 
         // Create the data to send as a JSON object
         const jsonBody = JSON.stringify({
             name: name,
-            email: email
+            email: email,
+            companyId: companyId
         });
 
         try {
@@ -20,7 +26,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json", // Send JSON data
-                    "Accept": "application/json", // Expect JSON response
+                    "Accept": "application/json",// Expect JSON response
+                    [csrfHeader]: csrfToken
+
                 },
                 body: jsonBody, // Attach the JSON data
             });

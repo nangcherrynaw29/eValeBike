@@ -33,9 +33,10 @@ public class TechnicianController {
     private final TestReportService testReportService;
     private final TestReportEntryService testReportEntryService;
     private final VisualInspectionService visualInspectionService;
+    private final CompanyService companyService;
     private static final Logger logger = LoggerFactory.getLogger(TechnicianController.class);
 
-    public TechnicianController(BikeOwnerService bikeOwnerService, BikeService bikeService, QrCodeService qrCodeService, TestBenchService testBenchService, TestReportService testReportService, TestReportEntryService testReportEntryService, VisualInspectionService visualInspectionService) {
+    public TechnicianController(BikeOwnerService bikeOwnerService, BikeService bikeService, QrCodeService qrCodeService, TestBenchService testBenchService, TestReportService testReportService, TestReportEntryService testReportEntryService, VisualInspectionService visualInspectionService, CompanyService companyService) {
         this.bikeOwnerService = bikeOwnerService;
         this.bikeService = bikeService;
         this.qrCodeService = qrCodeService;
@@ -43,6 +44,7 @@ public class TechnicianController {
         this.testReportService = testReportService;
         this.testReportEntryService = testReportEntryService;
         this.visualInspectionService = visualInspectionService;
+        this.companyService = companyService;
     }
 
     // Show all bikes owned by a specific bike owner
@@ -50,6 +52,7 @@ public class TechnicianController {
     public String showBikesForOwner(@PathVariable("id") Integer ownerId, Model model) {
         List<BikeDto> bikeOwnerBikes = bikeOwnerService.getAllBikes(ownerId);
         model.addAttribute("bikes", bikeOwnerBikes);
+        model.addAttribute("ownerId", ownerId);
         return "technician/bike-dashboard";
     }
 
@@ -66,15 +69,11 @@ public class TechnicianController {
 
     @GetMapping("/bike-owners")
     public String logBikeOwners(Model model, @AuthenticationPrincipal CustomUserDetails userDetails) {
-        List<BikeOwner> bikeOwners = bikeOwnerService.getAll();
+        List<BikeOwner> bikeOwners = bikeOwnerService.getAll(userDetails);
         long totalBikes = bikeService.countAllBikes();
         long birthdayCount = bikeOwnerService.countOwnersWithBirthdayToday();
 
-        String role = userDetails.getAuthorities()
-                .stream()
-                .map(GrantedAuthority::getAuthority)
-                .findFirst()
-                .orElse("UNKNOWN");
+        String role = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).findFirst().orElse("UNKNOWN");
         String userRole = role.replace("ROLE_", "");
 
         model.addAttribute("bikeOwners", bikeOwners);
@@ -93,6 +92,7 @@ public class TechnicianController {
     @GetMapping("/bike-owners/add")
     public String showAddBikeOwnerForm(Model model) {
         model.addAttribute("bikeOwner", new BikeOwner());
+        model.addAttribute("companies", companyService.getAll());
         return "technician/add-bike-owner";
     }
 
@@ -132,11 +132,8 @@ public class TechnicianController {
     @ResponseBody
     public Mono<TestResponseDTO> getTestStatus(@PathVariable String testId) {
         logger.info("Fetching status for testId: {}", testId);
-        return testBenchService.getTestStatusById(testId)
-                .doOnNext(response -> logger.debug("Status for testId {}: {}", testId, response.getState()))
-                .doOnError(e -> logger.error("Error fetching status for testId {}: {}", testId, e.getMessage()));
+        return testBenchService.getTestStatusById(testId).doOnNext(response -> logger.debug("Status for testId {}: {}", testId, response.getState())).doOnError(e -> logger.error("Error fetching status for testId {}: {}", testId, e.getMessage()));
     }
-
 
 
     @GetMapping("/report/{testId}")
@@ -148,9 +145,7 @@ public class TechnicianController {
 
             ReportViewModel reportVm = ReportViewModel.from(report);
             List<TestReportEntry> entries = report.getReportEntries();
-            TestReportEntryViewModel summaryVm = (entries != null && !entries.isEmpty())
-                    ? TestReportEntryViewModel.summarize(entries)
-                    : null;
+            TestReportEntryViewModel summaryVm = (entries != null && !entries.isEmpty()) ? TestReportEntryViewModel.summarize(entries) : null;
 
             VisualInspection inspection = visualInspectionService.getInspectionByReportID(testId);
             VisualInspectionViewModel inspectionViewModel = VisualInspectionViewModel.toViewModel(inspection);
@@ -168,12 +163,22 @@ public class TechnicianController {
     }
 
 
-
-    //this shows a list of test report
+    // This shows a list of a test report
     @GetMapping("/test-report-dashboard")
-    public ModelAndView showReportDashboard(Model model) {
-        final ModelAndView modelAndView = new ModelAndView("technician/test-report-dashboard");
-        modelAndView.addObject("reports", ReportsViewModel.from(testReportService.getAllReports()));
+    public ModelAndView showReportDashboard(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        // Get all data from services
+        List<TestReport> reports = testReportService.getAllReports(userDetails);
+        long totalTests = testReportService.getTotalTestCount();
+        long completedTests = testReportService.getCompletedTestCount();
+        long incompleteTests = testReportService.getIncompleteTestCount();
+
+        // Create and populate ModelAndView
+        ModelAndView modelAndView = new ModelAndView("technician/test-report-dashboard");
+        modelAndView.addObject("reports", ReportsViewModel.from(reports));  // Just reports
+        modelAndView.addObject("totalTests", totalTests);
+        modelAndView.addObject("completedTests", completedTests);
+        modelAndView.addObject("incompleteTests", incompleteTests);
+
         return modelAndView;
     }
 
@@ -192,7 +197,6 @@ public class TechnicianController {
         return modelAndView;
     }
 
-
     @GetMapping("/manual-test-form/{bikeQR}")
     public String showManualTestForm(@PathVariable String bikeQR, Model model) {
         Bike bike = bikeService.getByQR(bikeQR);
@@ -208,11 +212,9 @@ public class TechnicianController {
         return modelAndView;
     }
 
-
-
     @GetMapping("/reports-by-bike/{qr}")
     public String getReportsByBike(@PathVariable("qr") String bikeQr, Model model) {
-        List<ReportViewModel> reports = testReportService.getTestReportsByBikeQR(bikeQr) ;
+        List<ReportViewModel> reports = testReportService.getTestReportsByBikeQR(bikeQr);
         model.addAttribute("bikeQr", bikeQr);
         model.addAttribute("reports", reports);
 
@@ -223,25 +225,23 @@ public class TechnicianController {
     public String compare(@PathVariable String id1, @PathVariable String id2, Model model) {
         try {
             List<ReportViewModel> reportViewModels = new ArrayList<>();
-            List<TestReportEntryViewModel> summaries = new ArrayList<>();
+            List<List<TestReportEntryViewModel>> reportEntries = new ArrayList<>();
 
-            // Add each report based on the IDs
-            for (String id : new String[]{id1, id2}) {  // Loop over id1 and id2
+            for (String id : new String[]{id1, id2}) {
                 TestReport report = testReportService.getTestReportWithEntriesById(id);
                 ReportViewModel reportVm = ReportViewModel.from(report);
                 reportViewModels.add(reportVm);
 
                 List<TestReportEntry> entries = report.getReportEntries();
-                TestReportEntryViewModel summaryVm = (entries != null && !entries.isEmpty())
-                        ? TestReportEntryViewModel.summarize(entries)
-                        : null;
-                summaries.add(summaryVm);
+                List<TestReportEntryViewModel> entryVMs = entries.stream()
+                        .map(TestReportEntryViewModel::from)
+                        .collect(Collectors.toList());
+
+                reportEntries.add(entryVMs);
             }
 
-            // Add the reports and summaries to the model
             model.addAttribute("reports", reportViewModels);
-            model.addAttribute("summaries", summaries);
-
+            model.addAttribute("entries", reportEntries);
             return "technician/compare";
         } catch (RuntimeException e) {
             logger.error("Error fetching reports for testIds {} and {}: {}", id1, id2, e.getMessage(), e);
@@ -249,25 +249,4 @@ public class TechnicianController {
             return "error";
         }
     }
-
-
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

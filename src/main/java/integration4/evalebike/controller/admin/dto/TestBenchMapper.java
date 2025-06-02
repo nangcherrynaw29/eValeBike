@@ -8,6 +8,6 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface TestBenchMapper {
 
-    @Mapping(target = "technicianId", source = "technician.id")
+    @Mapping(target = "technicianId", expression = "java(testBench.getTechnician() != null ? testBench.getTechnician().getId() : null)")
     TestBenchResponseDTO toDto(TestBench testBench);
 }

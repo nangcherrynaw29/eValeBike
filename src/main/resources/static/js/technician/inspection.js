@@ -1,3 +1,5 @@
+import {csrfToken, csrfHeader} from '../util/csrf.js';
+
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("visualForm");
     // const testId = new URLSearchParams(window.location.search).get('testId');
@@ -43,7 +45,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const headers = {
             'Content-Type': 'application/json',
-            'Accept': 'application/json'
+            'Accept': 'application/json',
+            [csrfHeader]: csrfToken
         };
 
 
