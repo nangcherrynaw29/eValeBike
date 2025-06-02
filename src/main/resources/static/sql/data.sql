@@ -806,4 +806,136 @@ WHERE email = 'jane.admin@example.com'
         SELECT id FROM app_user WHERE email = 'jane.admin@example.com'
     )
 );
+-- Test Reports for mike.tech@example.com
+INSERT INTO test_reports (id, expiry_date, state, type, battery_capacity, max_support, engine_power_max, engine_power_nominal, engine_torque, bike_QR, technician_username)
+VALUES
+    ('rpt-mike-001', '2025-12-31', 'COMPLETED', 'Fast', 420, 25, 250, 200, 70, '123e4567-e89b-12d3-a456-426614174001', 'mike.tech@example.com'),
+    ('rpt-mike-002', '2025-12-31', 'COMPLETED', 'Fast', 430, 25, 250, 200, 70, '123e4567-e89b-12d3-a456-426614174001', 'mike.tech@example.com'),
+    ('rpt-mike-003', '2025-12-31', 'COMPLETED', 'Manual', 440, 25, 250, 200, 70, '123e4567-e89b-12d3-a456-426614174001', 'mike.tech@example.com');
+
+-- Visual Inspections for Mike
+INSERT INTO visual_inspection (
+    tires, bell, cranks, electric_wiring, front_fork, handles, chain_belt, pedals, reflectors,
+    brake_pads, brake_handles, brake_cables, brake_discs, mudguards, handle_bar, rear_sprocket,
+    front_sprocket, rims_spokes, rear_suspension, suspension_front, saddle, test_report_id
+) VALUES (
+            NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+             NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+             NULL, NULL, NULL, NULL, NULL, 'rpt-mike-001'
+         );
+
+INSERT INTO visual_inspection (
+    tires, bell, cranks, electric_wiring, front_fork, handles, chain_belt, pedals, reflectors,
+    brake_pads, brake_handles, brake_cables, brake_discs, mudguards, handle_bar, rear_sprocket,
+    front_sprocket, rims_spokes, rear_suspension, suspension_front, saddle, test_report_id
+) VALUES (
+            NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+             NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+             NULL, NULL, NULL, NULL, NULL, 'rpt-mike-002'
+         );
+
+INSERT INTO visual_inspection (
+    tires, bell, cranks, electric_wiring, front_fork, handles, chain_belt, pedals, reflectors,
+    brake_pads, brake_handles, brake_cables, brake_discs, mudguards, handle_bar, rear_sprocket,
+    front_sprocket, rims_spokes, rear_suspension, suspension_front, saddle, test_report_id
+) VALUES (
+            NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+             NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+             NULL, NULL, NULL, NULL, NULL, 'rpt-mike-003'
+         );
+
+-- Test Entries for Mike
+INSERT INTO test_report_entries (test_report_id, timestamp, battery_voltage, battery_current, battery_capacity, battery_temperature_celsius, charge_status, assistance_level, torque_crank_nm, bike_wheel_speed_kmh, cadance_rpm, engine_rpm, engine_power_watt, wheel_power_watt, roll_torque, loadcell_n, rol_hz, horizontal_inclination, vertical_inclination, load_power, status_plug)
+VALUES
+-- rpt-mike-001
+('rpt-mike-001', '2025-04-30T10:00:00', 36.5, 1.5, 420, 25.0, 1, 3, 30.0, 22.5, 80, 90, 200.0, 180.0, 2.0, 15.0, 1.2, 0.5, 0.3, 250.0, true),
+('rpt-mike-001', '2025-04-30T10:00:00', 36.8, 1.8, 420, 26.0, 1, 3, 31.0, 22.8, 82, 91, 205.0, 185.0, 2.1, 15.5, 1.25, 0.5, 0.3, 255.0, true),
+('rpt-mike-001', '2025-04-30T10:00:00', 36.8, 1.7, 420, 26.0, 1, 3, 30.1, 22.9, 81, 89, 204.0, 186.0, 2.0, 15.8, 1.35, 0.5, 0.3, 255.0, true),
+('rpt-mike-001', '2025-04-30T10:00:00', 36.8, 1.6, 420, 26.0, 1, 3, 31.2, 22.7, 80, 87, 202.0, 182.0, 2.2, 15.9, 1.45, 0.5, 0.3, 255.0, true),
+('rpt-mike-001', '2025-04-30T10:00:00', 36.8, 1.5, 420, 26.0, 1, 3, 31.3, 22.6, 83, 88, 201.0, 180.0, 2.3, 16.1, 1.39, 0.5, 0.3, 255.0, true),
+('rpt-mike-001', '2025-04-30T10:00:00', 36.8, 1.7, 420, 26.0, 1, 3, 30.0, 22.4, 82, 91, 203.0, 180.0, 2.7, 15.9, 1.51, 0.5, 0.3, 255.0, true),
+('rpt-mike-001', '2025-04-30T10:00:00', 36.8, 1.8, 420, 26.0, 1, 3, 30.5, 22.6, 80, 93, 208.0, 186.0, 2.5, 15.8, 1.50, 0.5, 0.3, 255.0, true),
+('rpt-mike-001', '2025-04-30T10:00:00', 36.8, 1.8, 420, 26.0, 1, 3, 30.9, 22.5, 79, 94, 205.0, 189.0, 2.7, 15.9, 1.47, 0.5, 0.3, 255.0, true),
+('rpt-mike-001', '2025-04-30T10:00:00', 36.8, 1.7, 420, 26.0, 1, 3, 31.0, 22.9, 82, 90, 202.0, 187.0, 2.5, 15.6, 1.44, 0.5, 0.3, 255.0, true),
+-- rpt-mike-002
+('rpt-mike-002', '2025-05-15T10:00:00', 36.5, 1.5, 420, 25.0, 1, 3, 30.0, 22.5, 80, 90, 200.0, 180.0, 2.0, 15.0, 1.2, 0.5, 0.3, 250.0, true),
+('rpt-mike-002', '2025-05-15T10:00:00', 36.8, 1.8, 420, 26.0, 1, 3, 30.0, 21.8, 82, 91, 205.0, 185.0, 2.1, 15.5, 1.25, 0.5, 0.3, 255.0, true),
+('rpt-mike-002', '2025-05-15T10:00:00', 36.8, 1.8, 420, 26.0, 1, 3, 30.1, 21.9, 81, 89, 204.0, 186.0, 2.0, 15.8, 1.30, 0.5, 0.3, 255.0, true),
+('rpt-mike-002', '2025-05-15T10:00:00', 36.8, 1.6, 420, 26.0, 1, 3, 30.2, 22.3, 80, 88, 201.0, 180.0, 2.1, 15.9, 1.45, 0.5, 0.3, 255.0, true),
+('rpt-mike-002', '2025-05-15T10:00:00', 36.8, 1.6, 420, 26.0, 1, 3, 30.3, 22.6, 85, 86, 203.0, 180.0, 2.3, 16.2, 1.39, 0.5, 0.3, 255.0, true),
+('rpt-mike-002', '2025-05-15T10:00:00', 36.8, 1.7, 420, 26.0, 1, 3, 30.0, 22.4, 83, 91, 204.0, 180.0, 2.5, 15.9, 1.40, 0.5, 0.3, 255.0, true),
+('rpt-mike-002', '2025-05-15T10:00:00', 36.8, 1.7, 420, 26.0, 1, 3, 30.5, 22.6, 82, 92, 205.0, 186.0, 2.5, 15.7, 1.40, 0.5, 0.3, 255.0, true),
+('rpt-mike-002', '2025-05-15T10:00:00', 36.8, 1.9, 420, 26.0, 1, 3, 30.9, 22.5, 79, 91, 205.0, 189.0, 2.7, 15.9, 1.41, 0.5, 0.3, 255.0, true),
+('rpt-mike-002', '2025-05-15T10:00:00', 36.8, 1.7, 420, 26.0, 1, 3, 31.0, 22.9, 80, 90, 202.0, 186.0, 2.5, 15.6, 1.44, 0.5, 0.3, 255.0, true),
+
+-- rpt-mike-003
+('rpt-mike-003', '2025-05-30T10:00:00', 36.5, 1.5, 420, 25.0, 1, 3, 30.0, 23.5, 80, 90, 200.0, 180.0, 3.0, 16.0, 2.2, 0.6, 0.2, 240.0, true),
+('rpt-mike-003', '2025-05-30T10:05:00', 36.6, 1.2, 420, 26.0, 1, 3, 32.0, 23.8, 82, 92, 205.0, 180.0, 3.1, 16.5, 2.25, 0.6, 0.2, 245.0, true),
+('rpt-mike-003', '2025-05-30T10:05:00', 36.7, 1.5, 420, 26.0, 1, 3, 32.1, 23.9, 79, 88, 204.0, 182.0, 3.0, 16.8, 2.35, 0.6, 0.2, 255.0, true),
+('rpt-mike-003', '2025-05-30T10:05:00', 36.2, 1.6, 420, 26.0, 1, 3, 32.2, 23.7, 78, 87, 200.0, 182.0, 3.2, 16.9, 2.45, 0.6, 0.2, 245.0, true),
+('rpt-mike-003', '2025-05-30T10:05:00', 36.1, 1.4, 420, 26.0, 1, 3, 32.3, 23.6, 83, 88, 200.0, 180.0, 3.3, 16.1, 2.39, 0.6, 0.2, 245.0, true),
+('rpt-mike-003', '2025-05-30T10:05:00', 36.3, 1.6, 420, 26.0, 1, 3, 32.0, 23.4, 80, 90, 200.0, 180.0, 3.7, 16.9, 2.51, 0.6, 0.2, 245.0, true),
+('rpt-mike-003', '2025-05-30T10:05:00', 36.5, 1.8, 420, 26.0, 1, 3, 32.5, 23.6, 80, 92, 204.0, 181.0, 3.5, 16.8, 2.50, 0.6, 0.2, 245.0, true),
+('rpt-mike-003', '2025-05-30T10:05:00', 36.8, 1.8, 420, 26.0, 1, 3, 32.9, 23.5, 79, 94, 202.0, 182.0, 3.7, 16.9, 2.47, 0.6, 0.2, 245.0, true),
+('rpt-mike-003', '2025-05-30T10:05:00', 36.9, 1.7, 420, 26.0, 1, 3, 32.0, 23.9, 82, 90, 202.0, 182.0, 3.5, 16.6, 2.44, 0.6, 0.2, 245.0, true);
+
+-- Test Reports for riko@example.com
+INSERT INTO test_reports (id, expiry_date, state, type, battery_capacity, max_support, engine_power_max, engine_power_nominal, engine_torque, bike_QR, technician_username)
+VALUES
+    ('rpt-riko-001', '2026-06-01', 'COMPLETED', 'Manual', 395, 23, 230, 190, 60, 'e8a1a1d2-7c55-4b34-b8c1-4f5b6e9d9a12', 'riko@example.com'),
+    ('rpt-riko-002', '2026-06-01', 'COMPLETED', 'Fast', 400, 23, 230, 190, 60, 'e8a1a1d2-7c55-4b34-b8c1-4f5b6e9d9a12', 'riko@example.com');
+
+-- Visual Inspections for Riko
+INSERT INTO visual_inspection (
+    tires, bell, cranks, electric_wiring, front_fork, handles, chain_belt, pedals, reflectors,
+    brake_pads, brake_handles, brake_cables, brake_discs, mudguards, handle_bar, rear_sprocket,
+    front_sprocket, rims_spokes, rear_suspension, suspension_front, saddle, test_report_id
+) VALUES (
+            NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+             NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+             NULL, NULL, NULL, NULL, NULL, 'rpt-riko-001'
+         );
+
+INSERT INTO visual_inspection (
+    tires, bell, cranks, electric_wiring, front_fork, handles, chain_belt, pedals, reflectors,
+    brake_pads, brake_handles, brake_cables, brake_discs, mudguards, handle_bar, rear_sprocket,
+    front_sprocket, rims_spokes, rear_suspension, suspension_front, saddle, test_report_id
+) VALUES (
+            NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+             NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+             NULL, NULL, NULL, NULL, NULL, 'rpt-riko-002'
+         );
+
+-- Test Entries for Riko
+INSERT INTO test_report_entries (test_report_id, timestamp, battery_voltage, battery_current, battery_capacity, battery_temperature_celsius, charge_status, assistance_level, torque_crank_nm, bike_wheel_speed_kmh, cadance_rpm, engine_rpm, engine_power_watt, wheel_power_watt, roll_torque, loadcell_n, rol_hz, horizontal_inclination, vertical_inclination, load_power, status_plug)
+VALUES
+-- rpt-riko-001
+('rpt-riko-001', '2025-05-30T13:00:00', 35.8, 1.3, 395, 28.0, 0, 2, 28.0, 20.0, 75, 88, 180.0, 160.0, 1.8, 14.0, 1.1, 0.4, 0.1, 230.0, false),
+('rpt-riko-001', '2025-05-30T13:10:00', 35.9, 1.4, 395, 28.5, 0, 2, 29.0, 20.5, 76, 89, 182.0, 162.0, 1.7, 14.2, 1.10, 0.4, 0.1, 232.0, false),
+('rpt-riko-001', '2025-05-30T13:10:00', 36.2, 1.3, 395, 28.4, 0, 2, 29.1, 21.5, 74, 87, 181.0, 161.0, 1.7, 14.3, 1.10, 0.4, 0.1, 232.0, false),
+('rpt-riko-001', '2025-05-30T13:10:00', 35.9, 1.2, 395, 28.0, 0, 2, 29.3, 21.5, 74, 87, 183.0, 161.0, 1.6, 14.3, 1.12, 0.4, 0.1, 232.0, false),
+('rpt-riko-001', '2025-05-30T13:10:00', 35.8, 1.1, 395, 28.1, 0, 2, 29.3, 20.9, 74, 85, 181.0, 161.0, 1.7, 14.2, 1.12, 0.4, 0.1, 232.0, false),
+('rpt-riko-001', '2025-05-30T13:10:00', 35.7, 1.0, 395, 28.1, 0, 2, 29.3, 20.9, 73, 86, 181.0, 162.0, 1.6, 14.2, 1.13, 0.4, 0.1, 232.0, false),
+('rpt-riko-001', '2025-05-30T13:10:00', 35.8, 1.2, 395, 28.1, 0, 2, 29.3, 20.9, 73, 85, 181.0, 162.0, 1.5, 14.1, 1.13, 0.4, 0.1, 232.0, false),
+('rpt-riko-001', '2025-05-30T13:10:00', 35.9, 1.1, 395, 28.3, 0, 2, 29.5, 20.8, 72, 85, 183.0, 162.0, 1.6, 14.1, 1.13, 0.4, 0.1, 232.0, false),
+('rpt-riko-001', '2025-05-30T13:10:00', 36.0, 1.3, 395, 28.2, 0, 2, 29.5, 20.8, 72, 84, 183.0, 163.0, 1.7, 14.1, 1.13, 0.4, 0.1, 232.0, false),
+('rpt-riko-001', '2025-05-30T13:10:00', 35.9, 1.4, 395, 28.2, 0, 2, 29.6, 20.7, 71, 84, 182.0, 163.0, 1.9, 14.0, 1.12, 0.4, 0.1, 232.0, false),
+('rpt-riko-001', '2025-05-30T13:10:00', 35.7, 1.4, 395, 28.2, 0, 2, 29.6, 20.7, 71, 84, 182.0, 163.0, 1.8, 14.0, 1.12, 0.4, 0.1, 232.0, false),
+('rpt-riko-001', '2025-05-30T13:10:00', 35.6, 1.4, 395, 28.3, 0, 2, 29.6, 20.7, 70, 83, 182.0, 164.0, 1.8, 14.0, 1.11, 0.4, 0.1, 232.0, false),
+('rpt-riko-001', '2025-05-30T13:10:00', 35.4, 1.3, 395, 28.3, 0, 2, 29.6, 20.4, 72, 82, 183.0, 164.0, 1.8, 14.2, 1.11, 0.4, 0.1, 232.0, false),
+-- rpt-riko-002
+('rpt-riko-002', '2025-05-30T14:00:00', 36.0, 1.2, 400, 27.5, 0, 2, 27.0, 21.0, 74, 87, 178.0, 158.0, 1.7, 13.8, 1.05, 0.3, 0.2, 228.0, false),
+('rpt-riko-002', '2025-05-30T14:10:00', 36.2, 1.3, 400, 28.0, 0, 2, 28.5, 21.4, 75, 88, 181.0, 160.0, 1.81, 14.1, 1.09, 0.3, 0.2, 229.0, false),
+('rpt-riko-002', '2025-05-30T14:10:00', 36.2, 1.3, 400, 27.8, 0, 2, 28.0, 21.3, 75, 87, 181.0, 161.0, 1.81, 14.1, 1.10, 0.3, 0.2, 231.0, false),
+('rpt-riko-002', '2025-05-30T14:10:00', 36.2, 1.3, 400, 28.0, 0, 2, 28.0, 21.3, 76, 87, 181.0, 162.0, 1.81, 15.1, 1.08, 0.3, 0.2, 231.0, false),
+('rpt-riko-002', '2025-05-30T14:10:00', 36.2, 1.2, 400, 28.0, 0, 2, 28.0, 21.3, 76, 87, 181.0, 163.0, 1.82, 14.6, 1.06, 0.3, 0.2, 231.0, false),
+('rpt-riko-002', '2025-05-30T14:10:00', 36.2, 1.2, 400, 28.1, 0, 2, 28.0, 21.3, 76, 87, 181.0, 162.0, 1.81, 14.9, 1.03, 0.3, 0.2, 232.0, false),
+('rpt-riko-002', '2025-05-30T14:10:00', 36.2, 1.2, 400, 28.1, 0, 2, 28.1, 21.3, 76, 87, 182.0, 162.0, 1.81, 14.6, 1.02, 0.3, 0.2, 232.0, false),
+('rpt-riko-002', '2025-05-30T14:10:00', 36.2, 1.3, 400, 28.1, 0, 2, 28.1, 21.4, 75, 86, 182.0, 161.0, 1.81, 14.6, 1.01, 0.3, 0.2, 231.0, false),
+('rpt-riko-002', '2025-05-30T14:10:00', 36.2, 1.3, 400, 28.3, 0, 2, 28.1, 21.4, 75, 86, 182.0, 161.0, 1.82, 14.6, 1.03, 0.3, 0.2, 231.0, false),
+('rpt-riko-002', '2025-05-30T14:10:00', 36.2, 1.4, 400, 28.3, 0, 2, 28.1, 21.4, 75, 86, 182.0, 162.0, 1.82, 14.5, 1.04, 0.3, 0.2, 230.0, false),
+('rpt-riko-002', '2025-05-30T14:10:00', 36.2, 1.4, 400, 28.3, 0, 2, 28.1, 21.4, 75, 88, 180.0, 162.0, 1.83, 14.4, 1.05, 0.3, 0.2, 230.0, false),
+('rpt-riko-002', '2025-05-30T14:10:00', 36.2, 1.4, 400, 28.2, 0, 2, 28.4, 21.4, 74, 88, 180.0, 163.0, 1.83, 14.3, 1.07, 0.3, 0.2, 230.0, false),
+('rpt-riko-002', '2025-05-30T14:10:00', 36.2, 1.3, 400, 28.2, 0, 2, 28.4, 21.4, 74, 88, 180.0, 162.0, 1.84, 14.0, 1.08, 0.3, 0.2, 231.0, false),
+('rpt-riko-002', '2025-05-30T14:10:00', 36.2, 1.3, 400, 28.2, 0, 2, 28.4, 21.4, 74, 87, 181.0, 163.0, 1.85, 14.1, 1.09, 0.3, 0.2, 231.0, false);
 
