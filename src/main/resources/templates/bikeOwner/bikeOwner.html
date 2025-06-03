@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="" type="module" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}">
+    <title>Bike Owner Dashboard</title>
+</head>
+<body>
+<div class="page-wrapper">
+    <div th:insert="~{fragments/menu.html}"></div>
+    <div class="dashboard-container ">
+        <div class="dashboard-header mb-4">
+            <h2 class="dashboard-title mb-3">Bike Owner Dashboard</h2>
+            <div class="user-info d-flex align-items-center gap-3">
+                <span class="mb-0">Welcome, <strong><span sec:authentication="name"></span></strong>!</span>
+                <div class="user-avatar">B</div>
+            </div>
+        </div>
+            <div class="table-column">
+                <div class="table-container">
+                    <div class="d-flex align-content-center mb-4">
+                        <h5>User Profile</h5>
+                    </div>
+                    <form th:action="@{/bikeOwner/edit}" th:object="${profile}" method="post" th:csrf="true">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" th:field="*{email}" class="form-control" id="email" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Name</label>
+                            <input type="text" th:field="*{name}" class="form-control" id="name" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="phoneNumber" class="form-label">Phone Number</label>
+                            <input type="text" th:field="*{phoneNumber}" class="form-control" id="phoneNumber">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="birthDate" class="form-label">Birth Date</label>
+                            <input type="date"
+                                   th:value="${profile.birthDate != null} ? ${#temporals.format(profile.birthDate, 'yyyy-MM-dd')} : ''"
+                                   name="birthDate"
+                                   class="form-control"
+                                   id="birthDate">
+
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </form>
+                    <p th:if="${modified}" class="text-danger mt-3">User info has been modified</p>
+
+                </div>
+        </div>
+    </div>
+</div>
+    <div th:insert="~{fragments/footer.html}"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
+</body>
+</html>

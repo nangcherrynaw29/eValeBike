@@ -11,13 +11,15 @@
   <link rel="stylesheet" href="/css/add-bike.css">
   <link rel="stylesheet" href="/css/form.css">
   <script src="/js/technician/add-bike.js"  type="module" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/validate.js/0.13.1/validate.min.js"></script> <!-- validate.js CDN -->
+
 </head>
 <body>
 <div th:insert="~{fragments/menu.html}"></div>
 <div class="form-container">
   <div class="card p-4 shadow form-card">
     <h2 class="text-center mb-4">Add Bike</h2>
-    <form id="add-bike-form">
+    <form id="add-bike-form" novalidate>
       <div class="form-grid">
         <!-- Column 1 -->
         <div>

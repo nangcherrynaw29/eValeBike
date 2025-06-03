@@ -521,3 +521,288 @@ WHERE email = 'mike.tech@example.com'
     )
 );
 
+INSERT INTO recent_activity (activity, description, date, user_id)
+SELECT 'CREATED_USER', 'Created technician Malcolm', '2025-04-25', id
+FROM app_user
+WHERE email = 'bob.brown@example.com'
+  AND NOT EXISTS (
+    SELECT 1 FROM recent_activity
+    WHERE activity = 'CREATED_USER' AND user_id = (
+        SELECT id FROM app_user WHERE email = 'bob.brown@example.com'
+    )
+);
+
+INSERT INTO recent_activity (activity, description, date, user_id)
+SELECT 'UPDATED_USER', 'Updated technician Mike', '2025-04-27', id
+FROM app_user
+WHERE email = 'bob.brown@example.com'
+  AND NOT EXISTS (
+    SELECT 1 FROM recent_activity
+    WHERE activity = 'UPDATED_USER' AND user_id = (
+        SELECT id FROM app_user WHERE email = 'bob.brown@example.com'
+    )
+);
+
+INSERT INTO recent_activity (activity, description, date, user_id)
+SELECT 'FAILED_TEST', 'Failed manual test', '2025-05-03', id
+FROM app_user
+WHERE email = 'mike.tech@example.com'
+  AND NOT EXISTS (
+    SELECT 1 FROM recent_activity
+    WHERE activity = 'FAILED_TEST' AND user_id = (
+        SELECT id FROM app_user WHERE email = 'mike.tech@example.com'
+    )
+);
+
+INSERT INTO recent_activity (activity, description, date, user_id)
+SELECT 'DELETED_USER', 'Deleted technician Malcolm', '2025-04-26', id
+FROM app_user
+WHERE email = 'bob.brown@example.com'
+  AND NOT EXISTS (
+    SELECT 1 FROM recent_activity
+    WHERE activity = 'DELETED_USER' AND user_id = (
+        SELECT id FROM app_user WHERE email = 'bob.brown@example.com'
+    )
+);
+
+INSERT INTO recent_activity (activity, description, date, user_id)
+SELECT 'CREATED_USER', 'Created bike owner Tony', '2025-03-26', id
+FROM app_user
+WHERE email = 'andrew@example.com'
+  AND NOT EXISTS (
+    SELECT 1 FROM recent_activity
+    WHERE activity = 'CREATED_USER' AND user_id = (
+        SELECT id FROM app_user WHERE email = 'andrew@example.com'
+    )
+);
+
+INSERT INTO recent_activity (activity, description, date, user_id)
+SELECT 'DELETED_USER', 'Deleted bike owner Tony', '2025-04-01', id
+FROM app_user
+WHERE email = 'andrew@example.com'
+  AND NOT EXISTS (
+    SELECT 1 FROM recent_activity
+    WHERE activity = 'DELETED_USER' AND user_id = (
+        SELECT id FROM app_user WHERE email = 'andrew@example.com'
+    )
+);
+
+INSERT INTO recent_activity (activity, description, date, user_id)
+SELECT 'CREATED_USER', 'Created bike owner Ollie', '2025-03-26', id
+FROM app_user
+WHERE email = 'mike.tech@example.com'
+  AND NOT EXISTS (
+    SELECT 1 FROM recent_activity
+    WHERE activity = 'CREATED_USER' AND user_id = (
+        SELECT id FROM app_user WHERE email = 'mike.tech@example.com'
+    )
+);
+
+INSERT INTO recent_activity (activity, description, date, user_id)
+SELECT 'INITIALIZED_TEST', 'Fast test initiated', '2024-12-26', id
+FROM app_user
+WHERE email = 'nathaniel@example.com'
+  AND NOT EXISTS (
+    SELECT 1 FROM recent_activity
+    WHERE activity = 'INITIALIZED_TEST' AND user_id = (
+        SELECT id FROM app_user WHERE email = 'nathaniel@example.com'
+    )
+);
+
+INSERT INTO recent_activity (activity, description, date, user_id)
+SELECT 'BIKE_ADDED', 'Added bike bq-1234', '2025-03-20', id
+FROM app_user
+WHERE email = 'nathaniel@example.com'
+  AND NOT EXISTS (
+    SELECT 1 FROM recent_activity
+    WHERE activity = 'BIKE_ADDED' AND user_id = (
+        SELECT id FROM app_user WHERE email = 'nathaniel@example.com'
+    )
+);
+
+INSERT INTO recent_activity (activity, description, date, user_id)
+SELECT 'CREATED_USER', 'Created bike owner Piet', '2025-04-21', id
+FROM app_user
+WHERE email = 'jeremy@example.com'
+  AND NOT EXISTS (
+    SELECT 1 FROM recent_activity
+    WHERE activity = 'CREATED_USER' AND user_id = (
+        SELECT id FROM app_user WHERE email = 'jeremy@example.com'
+    )
+);
+
+INSERT INTO recent_activity (activity, description, date, user_id)
+SELECT 'FAILED_TEST', 'Failed fast test', '2025-05-15', id
+FROM app_user
+WHERE email = 'jeremy@example.com'
+  AND NOT EXISTS (
+    SELECT 1 FROM recent_activity
+    WHERE activity = 'FAILED_TEST' AND user_id = (
+        SELECT id FROM app_user WHERE email = 'jeremy@example.com'
+    )
+);
+
+INSERT INTO recent_activity (activity, description, date, user_id)
+SELECT 'INITIALIZED_TEST', 'Fast test run', '2025-04-20', id
+FROM app_user
+WHERE email = 'jean@example.com'
+  AND NOT EXISTS (
+    SELECT 1 FROM recent_activity
+    WHERE activity = 'INITIALIZED_TEST' AND user_id = (
+        SELECT id FROM app_user WHERE email = 'jean@example.com'
+    )
+);
+
+INSERT INTO recent_activity (activity, description, date, user_id)
+SELECT 'CREATED_USER', 'Created bike owner Suzane', '2025-01-26', id
+FROM app_user
+WHERE email = 'riko@example.com'
+  AND NOT EXISTS (
+    SELECT 1 FROM recent_activity
+    WHERE activity = 'CREATED_USER' AND user_id = (
+        SELECT id FROM app_user WHERE email = 'riko@example.com'
+    )
+);
+
+INSERT INTO recent_activity (activity, description, date, user_id)
+SELECT 'APPROVED_USER', 'Approved technician Lori', '2024-11-13', id
+FROM app_user
+WHERE email = 'abby@example.com'
+  AND NOT EXISTS (
+    SELECT 1 FROM recent_activity
+    WHERE activity = 'APPROVED_USER' AND user_id = (
+        SELECT id FROM app_user WHERE email = 'abby@example.com'
+    )
+);
+
+INSERT INTO recent_activity (activity, description, date, user_id)
+SELECT 'APPROVED_USER', 'Approved technician Horace', '2025-02-11', id
+FROM app_user
+WHERE email = 'abby@example.com'
+  AND NOT EXISTS (
+    SELECT 1 FROM recent_activity
+    WHERE activity = 'APPROVED_USER' AND user_id = (
+        SELECT id FROM app_user WHERE email = 'abby@example.com'
+    )
+);
+
+INSERT INTO recent_activity (activity, description, date, user_id)
+SELECT 'APPROVED_USER', 'Approved technician Holly', '2025-02-27', id
+FROM app_user
+WHERE email = 'betsy@example.com'
+  AND NOT EXISTS (
+    SELECT 1 FROM recent_activity
+    WHERE activity = 'APPROVED_USER' AND user_id = (
+        SELECT id FROM app_user WHERE email = 'betsy@example.com'
+    )
+);
+
+INSERT INTO recent_activity (activity, description, date, user_id)
+SELECT 'REJECTED_APPROVAL', 'Rejected technician Liam', '2025-04-22', id
+FROM app_user
+WHERE email = 'betsy@example.com'
+  AND NOT EXISTS (
+    SELECT 1 FROM recent_activity
+    WHERE activity = 'REJECTED_APPROVAL' AND user_id = (
+        SELECT id FROM app_user WHERE email = 'betsy@example.com'
+    )
+);
+
+INSERT INTO recent_activity (activity, description, date, user_id)
+SELECT 'CREATED_USER', 'Created technician Miller', '2025-04-19', id
+FROM app_user
+WHERE email = 'betsy@example.com'
+  AND NOT EXISTS (
+    SELECT 1 FROM recent_activity
+    WHERE activity = 'CREATED_USER' AND user_id = (
+        SELECT id FROM app_user WHERE email = 'betsy@example.com'
+    )
+);
+
+INSERT INTO recent_activity (activity, description, date, user_id)
+SELECT 'UPDATED_USER', 'Updated technician Miller', '2025-04-26', id
+FROM app_user
+WHERE email = 'betsy@example.com'
+  AND NOT EXISTS (
+    SELECT 1 FROM recent_activity
+    WHERE activity = 'UPDATED_USER' AND user_id = (
+        SELECT id FROM app_user WHERE email = 'betsy@example.com'
+    )
+);
+
+INSERT INTO recent_activity (activity, description, date, user_id)
+SELECT 'CREATED_USER', 'Created technician Holmes', '2025-04-20', id
+FROM app_user
+WHERE email = 'wymack@example.com'
+  AND NOT EXISTS (
+    SELECT 1 FROM recent_activity
+    WHERE activity = 'CREATED_USER' AND user_id = (
+        SELECT id FROM app_user WHERE email = 'wymack@example.com'
+    )
+);
+
+INSERT INTO recent_activity (activity, description, date, user_id)
+SELECT 'BIKE_ADDED', 'Added a new bike', '2025-04-21', id
+FROM app_user
+WHERE email = 'wymack@example.com'
+  AND NOT EXISTS (
+    SELECT 1 FROM recent_activity
+    WHERE activity = 'BIKE_ADDED' AND user_id = (
+        SELECT id FROM app_user WHERE email = 'wymack@example.com'
+    )
+);
+
+INSERT INTO recent_activity (activity, description, date, user_id)
+SELECT 'BIKE_REMOVED', 'Removed a bike', '2025-02-26', id
+FROM app_user
+WHERE email = 'wymack@example.com'
+  AND NOT EXISTS (
+    SELECT 1 FROM recent_activity
+    WHERE activity = 'BIKE_REMOVED' AND user_id = (
+        SELECT id FROM app_user WHERE email = 'wymack@example.com'
+    )
+);
+
+INSERT INTO recent_activity (activity, description, date, user_id)
+SELECT 'BIKE_REMOVED', 'Removed a bike', '2025-04-05', id
+FROM app_user
+WHERE email = 'wymack@example.com'
+  AND NOT EXISTS (
+    SELECT 1 FROM recent_activity
+    WHERE activity = 'BIKE_REMOVED' AND user_id = (
+        SELECT id FROM app_user WHERE email = 'wymack@example.com'
+    )
+);
+
+INSERT INTO recent_activity (activity, description, date, user_id)
+SELECT 'BIKE_ADDED', 'Added a new bike', '2025-05-26', id
+FROM app_user
+WHERE email = 'wymack@example.com'
+  AND NOT EXISTS (
+    SELECT 1 FROM recent_activity
+    WHERE activity = 'BIKE_ADDED' AND user_id = (
+        SELECT id FROM app_user WHERE email = 'wymack@example.com'
+    )
+);
+
+INSERT INTO recent_activity (activity, description, date, user_id)
+SELECT 'CREATED_USER', 'Created technician Laila', '2025-04-17', id
+FROM app_user
+WHERE email = 'jane.admin@example.com'
+  AND NOT EXISTS (
+    SELECT 1 FROM recent_activity
+    WHERE activity = 'CREATED_USER' AND user_id = (
+        SELECT id FROM app_user WHERE email = 'jane.admin@example.com'
+    )
+);
+
+INSERT INTO recent_activity (activity, description, date, user_id)
+SELECT 'CREATED_USER', 'Created technician Gigi', '2025-04-01', id
+FROM app_user
+WHERE email = 'jane.admin@example.com'
+  AND NOT EXISTS (
+    SELECT 1 FROM recent_activity
+    WHERE activity = 'CREATED_USER' AND user_id = (
+        SELECT id FROM app_user WHERE email = 'jane.admin@example.com'
+    )
+);

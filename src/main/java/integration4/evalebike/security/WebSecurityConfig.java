@@ -15,8 +15,6 @@ import static org.springframework.security.web.util.matcher.RegexRequestMatcher.
 @EnableWebSecurity
 public class WebSecurityConfig {
     @Bean
-//       ? `/api/technician/normalized-test-report-entries/${testId}`
-//            : `/api/technician/test-report-entries/${testId}`;
     SecurityFilterChain securityFilterChain(HttpSecurity security) throws Exception {
         return security
                 .authorizeHttpRequests((requests) -> requests
@@ -37,7 +35,6 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/technician/**").hasAnyRole("TECHNICIAN", "ADMIN", "SUPER_ADMIN")
                         .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
                         .requestMatchers("/api/super-admin/**").hasRole("SUPER_ADMIN")
-
                         .requestMatchers(
                                 antMatcher(HttpMethod.GET, "/js/**"),
                                 antMatcher(HttpMethod.GET, "/css/**"),
@@ -50,7 +47,7 @@ public class WebSecurityConfig {
                 )
 //                .csrf(csrf -> csrf.disable())
                 .formLogin(login -> {
-                    login.loginPage("/login").failureUrl("/login").defaultSuccessUrl("/technician/test-report-dashboard").permitAll();
+                    login.loginPage("/login").failureUrl("/login").defaultSuccessUrl("/technician/test-report-dashboard", true).permitAll();
                 })
                 .logout(logout -> logout
                         .logoutUrl("/logout")
@@ -61,7 +58,6 @@ public class WebSecurityConfig {
                 )
                 .build();
     }
-
     @Bean
     BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
