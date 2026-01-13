@@ -1,7 +1,7 @@
 # eValeBike Project
 
 ## 📌 Project Overview
-**eValeBike** is a Spring Boot application using Gradle and PostgreSQL. It supports both local development and **cloud deployment to Azure** using Docker and Spring profiles.
+**eValeBike** Developed cloud-based e-bike testing platform integrating with test bench API using Spring Boot backend and PostgreSQL. Built comprehensive dashboard with automated test report generation, role-based authentication, QR code integration, and predictive analytics for battery health assessment and bike performance scoring.
 
 ---
 ## 👥 Team 4 Members
